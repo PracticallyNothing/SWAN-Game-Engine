@@ -10,17 +10,20 @@
 
 #include "../Physics/Transform.hpp"
 
+#include "../Utility/Debug.hpp" // For DEBUG_DO()
+
 #include <string> // For std::string
 
 struct TextConfig {
 	std::string text;
 	const BitmapFont* font;
-	bool bold;
-	bool italics;
-	glm::vec3 color;
+	bool bold = false;
+	bool italics = false;
+	glm::vec3 color = glm::vec3(1, 1, 1);
 };
 
 struct Character {
+	DEBUG_VAR(char, c);
 	bool isSpace = false;
 
 	const Texture* tex = nullptr;

@@ -1,19 +1,26 @@
 #include "Text.hpp"
 
 #include "../Utility/Math.hpp"  // For Util::GLToPixelCoord()
-#include "../Utility/Debug.hpp" // For DEBUG_DO()
 
-Mesh* genRect2D_ptr() {
-    Vertex v1(glm::vec3(-0.5, -0.5, 0), glm::vec2(0, 0),
-              glm::normalize(glm::vec3(-0.5, -0.5, 0.5)));
-    Vertex v2(glm::vec3(0.5, 0.5, 0), glm::vec2(1, 1),
-              glm::normalize(glm::vec3(0.5, 0.5, 0.5)));
-    Vertex v3(glm::vec3(0.5, -0.5, 0), glm::vec2(1, 0),
-              glm::normalize(glm::vec3(0.5, -0.5, 0.5)));
-    Vertex v4(glm::vec3(-0.5, 0.5, 0), glm::vec2(0, 1),
-              glm::normalize(glm::vec3(-0.5, 0.5, 0.5)));
+/*
+ *  v0      v1
+ *   o-----o
+ *   |    /|
+ *   |   / |
+ *   |  /  |
+ *   | /   |
+ *   |/    |
+ *   o-----o
+ *  v2      v3
+ */
 
-    return new Mesh({v1, v2, v3, v4}, {0, 1, 2, 0, 3, 1});
+Mesh* genRect2D_ptr() {  
+	Vertex v0(glm::vec3(-1,  1, 0), glm::vec2(0, 1), glm::normalize(glm::vec3(-0.5, -0.5, 0.5)));
+	Vertex v1(glm::vec3( 1,  1, 0), glm::vec2(1, 1), glm::normalize(glm::vec3( 0.5,  0.5, 0.5)));
+	Vertex v2(glm::vec3(-1, -1, 0), glm::vec2(0, 0), glm::normalize(glm::vec3( 0.5, -0.5, 0.5)));
+	Vertex v3(glm::vec3( 1, -1, 0), glm::vec2(1, 0), glm::normalize(glm::vec3(-0.5,  0.5, 0.5)));
+   	
+	return new Mesh({v0, v1, v2, v3}, {0, 2, 1, 1, 2, 3});
 }
 
 void Text::initCharMesh(){
@@ -22,10 +29,17 @@ void Text::initCharMesh(){
 
 // TODO: WAY TOO MANY ARGUMENTS
 void Text::set(const Display& d, TextConfig tc, bool append){
+	if(!tc.font){
+		std::cout << "ERROR(Text::set(): No font was set\n";
+		return;
+	}
 	this->font = tc.font;
 
-	if(!append)
+	if(!append){
 		chars.clear();
+		lastX = 0;
+		lastY = 0;
+	}
 	
 	int currLine = 0;
 	int ii = 0;
@@ -36,11 +50,12 @@ void Text::set(const Display& d, TextConfig tc, bool append){
 	for(unsigned i = 0; i < tc.text.length(); i++){
 		char c = tc.text[i];
 
-		x = (append ? lastX : 0) + font->getGlyphWidth(c) * (i - ii);
-		y = (append ? lastY : 0) + font->getGlyphHeight() * currLine;
+		x = lastX + font->getGlyphWidth(c) * (i - ii);
+		y = lastY + font->getGlyphHeight() * currLine;
+		
+		Character res;
 		
 		if(c == ' '){
-			Character res;
 			res.isSpace = true;
 			chars.push_back(res);
 			continue;
@@ -51,8 +66,7 @@ void Text::set(const Display& d, TextConfig tc, bool append){
 			continue;
 		}
 
-		Character res;
-
+		DEBUG_DO(res.c = c);
 		res.tex = font->getGlyphTexture(c, tc.bold, tc.italics);
 		res.mesh = charMesh;
 		res.color = tc.color;

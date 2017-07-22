@@ -144,23 +144,6 @@ class Game {
 			}
 			textShader.unuse();
 			
-			TextConfig errorText;
-			errorText.text = std::string("ERROR: ");
-			errorText.font = &font;
-			errorText.color = glm::vec3(1, 0.1, 0.1);
-			errorText.bold = true;
-			errorText.italics = false;
-			
-			TextConfig tc;
-			tc.text = std::string("Hello World\nWoot! Multiline text!\nSweet!");
-			tc.font = &font;
-			tc.color = glm::vec3(1, 1, 1);
-			tc.bold = true;
-			tc.italics = true;
-
-			txt.set(display, errorText, false);
-			txt.set(display, tc, true);
-
 			plane.setMesh(planeMesh.get());
 			plane.setTexture(tex.get());
 
@@ -171,7 +154,7 @@ class Game {
 			glEnable(GL_PROGRAM_POINT_SIZE);
 			glEnable(GL_DEPTH_TEST);
 			
-			//glEnable(GL_CULL_FACE);
+			glEnable(GL_CULL_FACE);
 			glCullFace(GL_BACK);
 			
 			glEnable(GL_BLEND);
@@ -181,8 +164,6 @@ class Game {
 		~Game() {}
 
 		void update() {
-			auto start = Clock::now();
-	
 			Input.handleEvents();
 			if (Input.Window.exitRequest || Input.Keyboard.escapeKey) run = false;
 
@@ -235,22 +216,24 @@ class Game {
 			//plane.getTransform_ref().pos.y = std::cos(time) * 10;
 			//plane.getTransform_ref().pos.z = std::sin(time) * std::cos(time) * 10;
 			
-			//time += 0.01f;
+			time += 0.01f;
 
 			PrevInput = Input;
-
-			updateTime = duration_cast<Ms>(Clock::now() - start);
+				
+			TextConfig tc;
+			tc.text = std::string("time: ") + std::to_string(time) + " ";
+			tc.font = &font;
+			txt.set(display, tc, false);
 		}
 
 		void render() {
 			shader.use();
 			{
+				const float shininessD = 0.5;
 				if(Input.Keyboard.letterKeys['p' - 'a']){
-					shininess += 2;
-					DEBUG_OUT(shininess);
+					shininess += shininessD;
 				} else if (Input.Keyboard.letterKeys['o' - 'a']) {
-					shininess -= 2;
-					DEBUG_OUT(shininess);
+					shininess -= shininessD;
 				}
 				
 				if(shininess < 0)
@@ -272,10 +255,16 @@ class Game {
 			}
 			shader.unuse();
 
+			TextConfig tc;
+			tc.text = std::string("\nshininess: ") + std::to_string(shininess);
+			tc.font = &font;
+			txt.set(display, tc, true);
+			
 			txt.render(&textShader);
 			
 			glClear(GL_DEPTH_BUFFER_BIT);
 			display.clear();
+			
 		}
 
 		bool running() { return run; }
@@ -300,7 +289,6 @@ class Game {
 
 		float shininess = 10.0f;
 		float time = 0;
-		Ms renderTime = 0ms, updateTime = 0ms;
 };
 
 int main(/*int argc, char** argv*/) {
