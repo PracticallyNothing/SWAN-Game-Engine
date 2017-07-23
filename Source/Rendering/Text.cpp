@@ -30,7 +30,7 @@ void Text::initCharMesh(){
 // TODO: WAY TOO MANY ARGUMENTS
 void Text::set(const Display& d, TextConfig tc, bool append){
 	if(!tc.font){
-		std::cout << "ERROR(Text::set(): No font was set\n";
+		std::cout << "ERROR(Text::set()): No font was set\n";
 		return;
 	}
 	this->font = tc.font;

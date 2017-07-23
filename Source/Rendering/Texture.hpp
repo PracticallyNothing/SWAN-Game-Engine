@@ -32,10 +32,10 @@ class Texture{
 
         void Bind() const;
 
-        inline int getW(){ return (img ? img->width : -1); }
-        inline int getH(){ return (img ? img->height: -1); }
+        inline int getW() const { return (img ? img->width : -1); }
+        inline int getH() const { return (img ? img->height: -1); }
 		
-		const Image* getImage(){ return img; } 
+		const Image* getImage() const { return img; } 
     private:
 		void init(bool isPixelated);
 

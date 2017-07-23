@@ -13,6 +13,7 @@
 #include "Rendering/Light.hpp"		// For DirectionalLight, PointLight
 #include "Rendering/BitmapFont.hpp" // For BitmapFont
 #include "Rendering/Text.hpp"       // For Text
+#include "Core/Resources.hpp"       // For Resources::LoadFromFile(), Resources::Get*()
 
 #define STBI_IMPLEMENTATION
 #include "External/stb_image.h" // For stbi_set_flip_vertically_on_load()
@@ -42,22 +43,30 @@ struct DisplayConfig {
 class Game {
 	public:
 		explicit Game(DisplayConfig conf = {1280, 720, "OpenGL-CPP-Engine"})
-			: display(conf.w, conf.h, conf.title), 
-			  run(true),
-			  font("./Resources/Font.toml")
+			: display(conf.w, conf.h, conf.title),
+			  run(true)
 		{	
 			UTIL_PROFILE();
 			Display::setClearColor(0.0f, 0.3f, 0.25f, 0.0f);
 			// SDL_SetRelativeMouseMode(SDL_TRUE);
 			Input_init();
 
+			Resources::LoadFromFile("./Resources/res.xml");
+
+			tex = Resources::GetTexture("Monkey Head Texture");
+			planeMesh = Resources::GetMesh("Plane");
+			shotgunMesh = Resources::GetMesh("SPAS 12");
+			torusMesh = Resources::GetMesh("Torus");
+			cam = make_unique<Camera>(display.getAspect(), glm::vec3(0.0f, 0.0f, -1.0f));
+			font = Resources::GetBitmapFont("Monospace 16");
+
+/*
 			tex = make_unique<Texture>("./Resources/Textures/Diffuse_Color.png");
 			planeMesh 	  = Import::OBJ("./Resources/Meshes/SimplePlane.obj", Import::Settings{false});
 			shotgunMesh = Import::OBJ("./Resources/Meshes/SPAS-12.obj", Import::Settings{true});
-			cam = make_unique<Camera>(display.getAspect(), glm::vec3(0.0f, 0.0f, -1.0f));
 			torusMesh = Import::OBJ("./Resources/Meshes/Torus.obj", Import::Settings{true});
 			// ent.setCurrAngVel(glm::vec3(0.0, 0.0, 10.0));
-			
+*/			
 			DirectionalLight dl0;
 			dl0.direction = glm::normalize(glm::vec3(1, 1, 1));
 			dl0.ambient   = glm::vec3(0.003, 0.0, 0.003);
@@ -144,11 +153,11 @@ class Game {
 			}
 			textShader.unuse();
 			
-			plane.setMesh(planeMesh.get());
-			plane.setTexture(tex.get());
+			plane.setMesh(planeMesh);
+			plane.setTexture(tex);
 
-			shotgun.setMesh(shotgunMesh.get());
-			shotgun.setTexture(tex.get());
+			shotgun.setMesh(shotgunMesh);
+			shotgun.setTexture(tex);
 		
 			// ----- GL enable stuff -----
 			glEnable(GL_PROGRAM_POINT_SIZE);
@@ -221,12 +230,15 @@ class Game {
 			PrevInput = Input;
 				
 			TextConfig tc;
-			tc.text = std::string("time: ") + std::to_string(time) + " ";
-			tc.font = &font;
+			//tc.bold = true;
+			tc.italics = true;
+			tc.text = std::string("time: ") + std::to_string(time) + "\n ";
+			tc.font = font;
 			txt.set(display, tc, false);
 		}
 
 		void render() {
+			display.focus();
 			shader.use();
 			{
 				const float shininessD = 0.5;
@@ -254,17 +266,18 @@ class Game {
 				plane.getMesh()->renderVerts();
 			}
 			shader.unuse();
-
+			
 			TextConfig tc;
-			tc.text = std::string("\nshininess: ") + std::to_string(shininess);
-			tc.font = &font;
+			tc.text = std::string("shininess: ") + std::to_string(shininess);
+			tc.font = font;
+			tc.color = glm::vec3(0.3, 0.0, 0.7);
 			txt.set(display, tc, true);
 			
 			txt.render(&textShader);
 			
+			display.focus();
 			glClear(GL_DEPTH_BUFFER_BIT);
 			display.clear();
-			
 		}
 
 		bool running() { return run; }
@@ -279,13 +292,13 @@ class Game {
 		Entity plane, shotgun,
 			   xTorus, yTorus, zTorus;
 		
-		unique_ptr<Mesh> planeMesh, shotgunMesh, torusMesh;
-		unique_ptr<Texture> tex;
+		const Mesh *planeMesh, *shotgunMesh, *torusMesh;
+		const Texture* tex;
 		unique_ptr<Camera> cam;
 		
 		Text txt;
 		Shader textShader;
-		BitmapFont font;
+		const BitmapFont* font;
 
 		float shininess = 10.0f;
 		float time = 0;
