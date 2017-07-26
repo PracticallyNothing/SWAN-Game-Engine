@@ -81,6 +81,10 @@ void Text::set(const Display& d, TextConfig tc, bool append){
 		chars.push_back(res);
 
 	}
+
+	x = lastX + font->getGlyphWidth(' ') * (tc.text.length() - ii);
+	y = lastY + font->getGlyphHeight() * currLine;
+
 	if(chars.size()){
 		lastX = x;
 		lastY = y;

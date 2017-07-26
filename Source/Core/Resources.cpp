@@ -62,7 +62,7 @@ namespace Resources {
 
 		std::string dir = Util::getDirectory(filename);
 		
-		auto meshes      = res.root.findTagsWithName("Mesh");
+		auto meshes = res.root.findTagsWithName("Mesh");
 		for(auto tag : meshes){
 			auto fileIt = tag->attribs.find("file");
 
@@ -74,7 +74,7 @@ namespace Resources {
 			auto nameIt = tag->attribs.find("name");
 			if(nameIt == tag->attribs.end() || !nameIt->second.size()){
 				std::cout << "Warning: <Mesh> tag with empty or nonexistant name attribute.\n"
-						  << "         The filename will be used as the name.\n";
+						  << "         The filename (\"" << dir+ fileIt->second << "\") will be used as the name.\n";
 			}
 
 			std::string name = nameIt->second;
@@ -86,7 +86,7 @@ namespace Resources {
 			);
 		}
 
-		auto textures    = res.root.findTagsWithName("Texture");
+		auto textures = res.root.findTagsWithName("Texture");
 		for(auto tag : textures){
 			auto fileIt = tag->attribs.find("file");
 
@@ -98,7 +98,7 @@ namespace Resources {
 			auto nameIt = tag->attribs.find("name");
 			if(nameIt == tag->attribs.end() || !nameIt->second.size()){
 				std::cout << "Warning: <Texture> tag with empty or nonexistant name attribute.\n"
-						  << "         The filename will be used as the name.\n";
+						  << "         The filename (\"" << dir+ fileIt->second << "\") will be used as the name.\n";
 			}
 
 			std::string name = nameIt->second;

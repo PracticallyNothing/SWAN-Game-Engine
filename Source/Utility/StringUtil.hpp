@@ -13,7 +13,7 @@ namespace Util {
 	using std::string;
 	using std::vector;
 	
-	string trim(string s);	
+	string trim(string s);
 	
 	vector<string> splitOn(const string& line, char c = ' ');
 

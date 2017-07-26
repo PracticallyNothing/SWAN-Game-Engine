@@ -9,6 +9,10 @@ namespace Util {
     constexpr inline int GLCoordToPixel(int screenSize, double GLCoord) {
         return screenSize / 2 * (GLCoord + 1);
     }
+
+    constexpr inline double Normalize(double v, double min, double max){
+        return (v - min) / (max - min);
+    }
 } /* Util */
 
 #endif //UTIL_MATH_HPP

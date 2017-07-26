@@ -59,7 +59,7 @@ class BitmapFont {
 		Image *img, *boldImg, *italicsImg, *boldItalicsImg;
 
 		std::vector<Texture> 
-			glyphs, 
+			glyphs,
 			boldGlyphs,
 			italicsGlyphs,
 			boldItalicsGlyphs;

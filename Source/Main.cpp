@@ -1,9 +1,13 @@
 #include "Core/Display.hpp" // For Display
 #include "Core/Input.hpp"   // For Input
+#include "Core/Resources.hpp"       // For Resources::LoadFromFile(), Resources::Get*()
+
+#include "GUI/GUI.hpp" // For GUI::*
 
 #include "Utility/Debug.hpp"   // For DEBUG_OUT()
 #include "Utility/Math.hpp"    // For Util::pixelToGLCoord()
 #include "Utility/Profile.hpp" // For Util::CurrentProfile, UTIL_PROFILE()
+#include "Utility/XML.hpp"     // For Util::ReadXML(), Util::XML
 
 #include "Rendering/Camera.hpp"		// For Camera
 #include "Rendering/Mesh.hpp"		// For Mesh
@@ -13,7 +17,6 @@
 #include "Rendering/Light.hpp"		// For DirectionalLight, PointLight
 #include "Rendering/BitmapFont.hpp" // For BitmapFont
 #include "Rendering/Text.hpp"       // For Text
-#include "Core/Resources.hpp"       // For Resources::LoadFromFile(), Resources::Get*()
 
 #define STBI_IMPLEMENTATION
 #include "External/stb_image.h" // For stbi_set_flip_vertically_on_load()
@@ -35,283 +38,316 @@ using std::chrono::operator""ms;
 using std::chrono::duration_cast;
 
 struct DisplayConfig {
-	int w, h;
-	std::string title;
+    int w, h;
+    std::string title;
 };
 
 // TODO: Remove this class, it's a disgusting god object
 class Game {
-	public:
-		explicit Game(DisplayConfig conf = {1280, 720, "OpenGL-CPP-Engine"})
-			: display(conf.w, conf.h, conf.title),
-			  run(true)
-		{	
-			UTIL_PROFILE();
-			Display::setClearColor(0.0f, 0.3f, 0.25f, 0.0f);
-			// SDL_SetRelativeMouseMode(SDL_TRUE);
-			Input_init();
+    public:
+        explicit Game(DisplayConfig conf = {640, 480, "OpenGL-CPP-Engine"})
+            : display(conf.w, conf.h, conf.title),
+            run(true)
+            {
+                UTIL_PROFILE();
+                Display::setClearColor(0.0f, 0.3f, 0.25f, 0.0f);
+                // SDL_SetRelativeMouseMode(SDL_TRUE);
+                Input_init();
 
-			Resources::LoadFromFile("./Resources/res.xml");
+                Resources::LoadFromFile("./Resources/res.xml");
 
-			tex = Resources::GetTexture("Monkey Head Texture");
-			planeMesh = Resources::GetMesh("Plane");
-			shotgunMesh = Resources::GetMesh("SPAS 12");
-			torusMesh = Resources::GetMesh("Torus");
-			cam = make_unique<Camera>(display.getAspect(), glm::vec3(0.0f, 0.0f, -1.0f));
-			font = Resources::GetBitmapFont("Monospace 16");
+                tex = Resources::GetTexture("Monkey Head Texture");
+                planeMesh = Resources::GetMesh("Plane");
+                shotgunMesh = Resources::GetMesh("SPAS 12");
+                torusMesh = Resources::GetMesh("Torus");
+                cam = make_unique<Camera>(display.getAspect(), glm::vec3(0.0f, 0.0f, -1.0f));
+                font = Resources::GetBitmapFont("Monospace 16");
 
-/*
-			tex = make_unique<Texture>("./Resources/Textures/Diffuse_Color.png");
-			planeMesh 	  = Import::OBJ("./Resources/Meshes/SimplePlane.obj", Import::Settings{false});
-			shotgunMesh = Import::OBJ("./Resources/Meshes/SPAS-12.obj", Import::Settings{true});
-			torusMesh = Import::OBJ("./Resources/Meshes/Torus.obj", Import::Settings{true});
-			// ent.setCurrAngVel(glm::vec3(0.0, 0.0, 10.0));
-*/			
-			DirectionalLight dl0;
-			dl0.direction = glm::normalize(glm::vec3(1, 1, 1));
-			dl0.ambient   = glm::vec3(0.003, 0.0, 0.003);
-			dl0.diffuse   = glm::vec3(0.0, 0.0, 0.3);
-			dl0.specular  = glm::vec3(1, 1, 1);
+                /*
+                   tex = make_unique<Texture>("./Resources/Textures/Diffuse_Color.png");
+                   planeMesh 	  = Import::OBJ("./Resources/Meshes/SimplePlane.obj", Import::Settings{false});
+                   shotgunMesh = Import::OBJ("./Resources/Meshes/SPAS-12.obj", Import::Settings{true});
+                   torusMesh = Import::OBJ("./Resources/Meshes/Torus.obj", Import::Settings{true});
+                // ent.setCurrAngVel(glm::vec3(0.0, 0.0, 10.0));
+                */
 
-			PointLight pl1;
-			pl1.position     = glm::vec3(1, 7, 15);
-			pl1.ambient      = glm::vec3(0.05, 0.0005, 0.0);
-			pl1.diffuse      = glm::vec3(0.5, 0.005, 0.0);
-			pl1.specular     = glm::vec3(1, 1, 1);
-			pl1.linearAtt    = 0.045;
-			pl1.quadraticAtt = 0.0075;
+				guiRenderer.add(new GUI::Draggable(Resources::GetTexture("Flat Blue"), 
+												//Resources::GetTexture("Flat Red"), 
+												//Resources::GetTexture("Flat Cyan"),
+												100, 100));
+                
+				DirectionalLight dl0;
+                dl0.direction = glm::normalize(glm::vec3(1, 1, 1));
+                dl0.ambient   = glm::vec3(0.003, 0.0, 0.003);
+                dl0.diffuse   = glm::vec3(0.0, 0.0, 0.3);
+                dl0.specular  = glm::vec3(1, 1, 1);
 
-			plane.getTransform_ref().pos = pl1.position;
+                PointLight pl1;
+                pl1.position     = glm::vec3(1, 7, 15);
+                pl1.ambient      = glm::vec3(0.05, 0.0005, 0.0);
+                pl1.diffuse      = glm::vec3(0.5, 0.005, 0.0);
+                pl1.specular     = glm::vec3(1, 1, 1);
+                pl1.linearAtt    = 0.045;
+                pl1.quadraticAtt = 0.0075;
 
-			shader.compileShaders("./Resources/Shaders/proper.vert",
-								  "./Resources/Shaders/proper.frag");
-			{
-				shader.addAttrib("pos");  // GL Error: 1281
-				shader.addAttrib("UV");   // GL Error: 1281
-				shader.addAttrib("norm"); // GL Error: 1281
-			}
-			shader.linkShaders();
-			
-			shader.use();
-			{
-				shader.addUniform("transform");
-				shader.addUniform("perspective");
-				shader.addUniform("view");
-				
-				shader.addUniform("activeLights");
+                plane.getTransform_ref().pos = pl1.position;
 
-				shader.addUniform("camPos");
+                shader.compileShaders("./Resources/Shaders/proper.vert",
+                        "./Resources/Shaders/proper.frag");
+                {
+                    shader.addAttrib("pos");  // GL Error: 1281
+                    shader.addAttrib("UV");   // GL Error: 1281
+                    shader.addAttrib("norm"); // GL Error: 1281
+                }
+                shader.linkShaders();
 
-				shader.addUniform("matSpecular");
-				shader.addUniform("matShininess");
+                shader.use();
+                {
+                    shader.addUniform("transform");
+                    shader.addUniform("perspective");
+                    shader.addUniform("view");
 
-				shader.setUniformData("matSpecular", glm::vec3(0.5, 0.5, 0.5));
-				shader.setUniformData("matShininess", 2.0f);
-				
-				shader.addUniform("lights[0].type");
-				shader.addUniform("lights[0].ambient");
-				shader.addUniform("lights[0].diffuse");
-				shader.addUniform("lights[0].specular");
-				shader.addUniform("lights[0].pos");
-				shader.addUniform("lights[0].dir");
-				shader.addUniform("lights[0].cutoff");
-				shader.addUniform("lights[0].outerCutoff");
-				shader.addUniform("lights[0].constAtt");
-				shader.addUniform("lights[0].linAtt");
-				shader.addUniform("lights[0].quadAtt");
-				
-				shader.addUniform("lights[1].type");
-				shader.addUniform("lights[1].ambient");
-				shader.addUniform("lights[1].diffuse");
-				shader.addUniform("lights[1].specular");
-				shader.addUniform("lights[1].pos");
-				shader.addUniform("lights[1].dir");
-				shader.addUniform("lights[1].cutoff");
-				shader.addUniform("lights[1].outerCutoff");
-				shader.addUniform("lights[1].constAtt");
-				shader.addUniform("lights[1].linAtt");
-				shader.addUniform("lights[1].quadAtt");
-				
-				shader.setUniformData("lights[0]", dl0);
-				shader.setUniformData("lights[1]", pl1);
-				shader.setUniformData("activeLights", 2);
-			}
-			shader.unuse();
-			
-			textShader.compileShaders("./Resources/Shaders/text.vert",
-								  	  "./Resources/Shaders/text.frag");
-			{
-				textShader.addAttrib("pos");  // GL Error: 1281
-				textShader.addAttrib("UV");
-			}
-			textShader.linkShaders();
+                    shader.addUniform("activeLights");
 
-			textShader.use();
-			{
-				textShader.addUniform("model");
-				textShader.addUniform("color");
-			}
-			textShader.unuse();
-			
-			plane.setMesh(planeMesh);
-			plane.setTexture(tex);
+                    shader.addUniform("camPos");
 
-			shotgun.setMesh(shotgunMesh);
-			shotgun.setTexture(tex);
-		
-			// ----- GL enable stuff -----
-			glEnable(GL_PROGRAM_POINT_SIZE);
-			glEnable(GL_DEPTH_TEST);
-			
-			glEnable(GL_CULL_FACE);
-			glCullFace(GL_BACK);
-			
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		}
+                    shader.addUniform("matSpecular");
+                    shader.addUniform("matShininess");
 
-		~Game() {}
+                    shader.setUniformData("matSpecular", glm::vec3(0.5, 0.5, 0.5));
+                    shader.setUniformData("matShininess", 2.0f);
 
-		void update() {
-			Input.handleEvents();
-			if (Input.Window.exitRequest || Input.Keyboard.escapeKey) run = false;
+                    shader.addUniform("lights[0].type");
+                    shader.addUniform("lights[0].ambient");
+                    shader.addUniform("lights[0].diffuse");
+                    shader.addUniform("lights[0].specular");
+                    shader.addUniform("lights[0].pos");
+                    shader.addUniform("lights[0].dir");
+                    shader.addUniform("lights[0].cutoff");
+                    shader.addUniform("lights[0].outerCutoff");
+                    shader.addUniform("lights[0].constAtt");
+                    shader.addUniform("lights[0].linAtt");
+                    shader.addUniform("lights[0].quadAtt");
 
-			float moveSpeed = 0.1;
-			Util::Radians rotSpeed(.05);
-			
-			if (Input.Keyboard.letterKeys['a' - 'a'])
-				cam->moveRight(-moveSpeed);
-			else if (Input.Keyboard.letterKeys['d' - 'a'])
-				cam->moveRight(moveSpeed);
+                    shader.addUniform("lights[1].type");
+                    shader.addUniform("lights[1].ambient");
+                    shader.addUniform("lights[1].diffuse");
+                    shader.addUniform("lights[1].specular");
+                    shader.addUniform("lights[1].pos");
+                    shader.addUniform("lights[1].dir");
+                    shader.addUniform("lights[1].cutoff");
+                    shader.addUniform("lights[1].outerCutoff");
+                    shader.addUniform("lights[1].constAtt");
+                    shader.addUniform("lights[1].linAtt");
+                    shader.addUniform("lights[1].quadAtt");
 
-			if (Input.Keyboard.letterKeys['w' - 'a'])
-				cam->moveForw(moveSpeed);
-			else if (Input.Keyboard.letterKeys['s' - 'a'])
-				cam->moveForw(-moveSpeed);
+                    shader.addUniform("lights[2].type");
+                    shader.addUniform("lights[2].ambient");
+                    shader.addUniform("lights[2].diffuse");
+                    shader.addUniform("lights[2].specular");
+                    shader.addUniform("lights[2].pos");
+                    shader.addUniform("lights[2].dir");
+                    shader.addUniform("lights[2].cutoff");
+                    shader.addUniform("lights[2].outerCutoff");
+                    shader.addUniform("lights[2].constAtt");
+                    shader.addUniform("lights[2].linAtt");
+                    shader.addUniform("lights[2].quadAtt");
 
-			if (Input.Keyboard.letterKeys['q' - 'a'])
-				cam->rotateByZ(rotSpeed);
-			else if (Input.Keyboard.letterKeys['e' - 'a'])
-				cam->rotateByZ(-rotSpeed);
+                    shader.setUniformData("lights[0]", dl0);
+                    shader.setUniformData("lights[1]", pl1);
+                    shader.setUniformData("activeLights", 2);
+                }
+                shader.unuse();
 
-			if (Input.Keyboard.spaceKey)
-				cam->moveUp(moveSpeed);
-			else if (Input.Keyboard.LShiftKey)
-				cam->moveUp(-moveSpeed);
+                textShader.compileShaders("./Resources/Shaders/text.vert",
+                        				  "./Resources/Shaders/text.frag");
+                {
+                    textShader.addAttrib("pos");  // GL Error: 1281
+                    textShader.addAttrib("UV");
+                }
+                textShader.linkShaders();
 
-			if (Input.Keyboard.letterKeys['y' - 'a'])
-				std::cout << "Camera FOV: " << (cam->fov -= glm::radians(1.0))
-					<< '\n';
-			if (Input.Keyboard.letterKeys['h' - 'a'])
-				std::cout << "Camera FOV: " << (cam->fov += glm::radians(1.0))
-					<< '\n';
+                textShader.use();
+                {
+                    textShader.addUniform("model");
+                    textShader.addUniform("color");
+                }
+                textShader.unuse();
 
-			auto mouseX 	= Util::pixelToGLCoord(display.getW(), Input.Mouse.x);
-			auto prevMouseX = Util::pixelToGLCoord(display.getW(), PrevInput.Mouse.x);
+                plane.setMesh(planeMesh);
+                plane.setTexture(tex);
 
-			cam->rotateByY(Util::Radians((mouseX - prevMouseX) * 2.0));
-			
-			auto mouseY 	= Util::pixelToGLCoord(display.getH(), Input.Mouse.y);
-			auto prevMouseY = Util::pixelToGLCoord(display.getH(), PrevInput.Mouse.y);
-			
-			cam->rotateByX(Util::Radians((mouseY - prevMouseY) * 2.0));
-			
-			//DEBUG_OUT(Util::Degrees::fromRadians(cam->getTransform_ref().rot.x));
-			//DEBUG_OUT(Util::Degrees::fromRadians(cam->getTransform_ref().rot.y));
-			//DEBUG_OUT(Util::Degrees::fromRadians(cam->getTransform_ref().rot.z));
-			//plane.getTransform_ref().rot.x += 0.01f;
-			
-			plane.getTransform_ref().pos.x = std::sin(time) * 10;
-			//plane.getTransform_ref().pos.y = std::cos(time) * 10;
-			//plane.getTransform_ref().pos.z = std::sin(time) * std::cos(time) * 10;
-			
-			time += 0.01f;
+                shotgun.setMesh(shotgunMesh);
+                shotgun.setTexture(tex);
 
-			PrevInput = Input;
-				
-			TextConfig tc;
-			//tc.bold = true;
-			tc.italics = true;
-			tc.text = std::string("time: ") + std::to_string(time) + "\n ";
-			tc.font = font;
-			txt.set(display, tc, false);
-		}
+                // ----- GL enable stuff -----
+                glEnable(GL_PROGRAM_POINT_SIZE);
+                glEnable(GL_DEPTH_TEST);
 
-		void render() {
-			display.focus();
-			shader.use();
-			{
-				const float shininessD = 0.5;
-				if(Input.Keyboard.letterKeys['p' - 'a']){
-					shininess += shininessD;
-				} else if (Input.Keyboard.letterKeys['o' - 'a']) {
-					shininess -= shininessD;
-				}
-				
-				if(shininess < 0)
-					shininess = 0;
+                glEnable(GL_CULL_FACE);
+                glCullFace(GL_BACK);
 
-				shader.setUniformData("matShininess", shininess);
-				
-				shader.setUniformData("camPos", cam->getPos());
-				shader.setUniformData("view", cam->getView());
-				shader.setUniformData("perspective", cam->getPerspective());
+                glEnable(GL_BLEND);
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            }
 
-				shotgun.useTransform(&shader);
-				shotgun.render();
-					
-				plane.useTransform(&shader);
-				plane.render();
-				plane.getMesh()->renderWireframe();
-				plane.getMesh()->renderVerts();
-			}
-			shader.unuse();
-			
-			TextConfig tc;
-			tc.text = std::string("shininess: ") + std::to_string(shininess);
-			tc.font = font;
-			tc.color = glm::vec3(0.3, 0.0, 0.7);
-			txt.set(display, tc, true);
-			
-			txt.render(&textShader);
-			
-			display.focus();
+        ~Game() {}
+
+        void update() {
+            Input.handleEvents();
+            if (Input.Window.exitRequest || Input.Keyboard.escapeKey) run = false;
+
+            float moveSpeed = 0.1;
+            Util::Radians rotSpeed(.05);
+
+            if (Input.Keyboard.letterKeys['a' - 'a'])
+                cam->moveRight(-moveSpeed);
+            else if (Input.Keyboard.letterKeys['d' - 'a'])
+                cam->moveRight(moveSpeed);
+
+            if (Input.Keyboard.letterKeys['w' - 'a'])
+                cam->moveForw(moveSpeed);
+            else if (Input.Keyboard.letterKeys['s' - 'a'])
+                cam->moveForw(-moveSpeed);
+
+            if (Input.Keyboard.letterKeys['q' - 'a'])
+                cam->rotateByZ(rotSpeed);
+            else if (Input.Keyboard.letterKeys['e' - 'a'])
+                cam->rotateByZ(-rotSpeed);
+
+            if (Input.Keyboard.spaceKey)
+                cam->moveUp(moveSpeed);
+            else if (Input.Keyboard.LShiftKey)
+                cam->moveUp(-moveSpeed);
+
+            if (Input.Keyboard.letterKeys['y' - 'a'])
+                std::cout << "Camera FOV: " << (cam->fov -= glm::radians(1.0))
+                    << '\n';
+            if (Input.Keyboard.letterKeys['h' - 'a'])
+                std::cout << "Camera FOV: " << (cam->fov += glm::radians(1.0))
+                    << '\n';
+
+            auto mouseX 	= Util::pixelToGLCoord(display.getW(), Input.Mouse.x);
+            auto prevMouseX = Util::pixelToGLCoord(display.getW(), PrevInput.Mouse.x);
+
+            cam->rotateByY(Util::Radians((mouseX - prevMouseX) * 2.0));
+
+            auto mouseY 	= Util::pixelToGLCoord(display.getH(), Input.Mouse.y);
+            auto prevMouseY = Util::pixelToGLCoord(display.getH(), PrevInput.Mouse.y);
+
+            cam->rotateByX(Util::Radians((mouseY - prevMouseY) * 2.0));
+
+            //DEBUG_OUT(Util::Degrees::fromRadians(cam->getTransform_ref().rot.x));
+            //DEBUG_OUT(Util::Degrees::fromRadians(cam->getTransform_ref().rot.y));
+            //DEBUG_OUT(Util::Degrees::fromRadians(cam->getTransform_ref().rot.z));
+            //plane.getTransform_ref().rot.x += 0.01f;
+
+            plane.getTransform_ref().pos.x = std::sin(time) * 10;
+            //plane.getTransform_ref().pos.y = std::cos(time) * 10;
+            //plane.getTransform_ref().pos.z = std::sin(time) * std::cos(time) * 10;
+
+            time += 0.01f;
+
+            PrevInput = Input;
+
+            TextConfig tc;
+            //tc.bold = true;
+            tc.italics = true;
+            tc.text = std::string("time: ") + std::to_string(time) + "\n ";
+            tc.font = font;
+            txt.set(display, tc, false);
+
+			guiRenderer.update();
+        }
+
+        void render() {
+            display.focus();
+            shader.use();
+            {
+                const float shininessD = 0.5;
+                if(Input.Keyboard.letterKeys['p' - 'a']){
+                    shininess += shininessD;
+                } else if (Input.Keyboard.letterKeys['o' - 'a']) {
+                    shininess -= shininessD;
+                }
+
+                if(shininess < 0)
+                    shininess = 0;
+
+                shader.setUniformData("matShininess", shininess);
+
+                shader.setUniformData("camPos", cam->getPos());
+                shader.setUniformData("view", cam->getView());
+                shader.setUniformData("perspective", cam->getPerspective());
+
+                shotgun.useTransform(&shader);
+                shotgun.render();
+
+                plane.useTransform(&shader);
+                plane.render();
+                plane.getMesh()->renderWireframe();
+                plane.getMesh()->renderVerts();
+            }
+            shader.unuse();
+
+            TextConfig tc;
+            tc.text = std::string("shininess: ") + std::to_string(shininess);
+            tc.font = font;
+            tc.color = glm::vec3(0.3, 0.0, 0.7);
+            txt.set(display, tc, true);
+
+            //txt.render(&textShader);
+
 			glClear(GL_DEPTH_BUFFER_BIT);
-			display.clear();
-		}
+			guiRenderer.render(display);
 
-		bool running() { return run; }
+            display.focus();
+            glClear(GL_DEPTH_BUFFER_BIT);
+            display.clear();
+        }
 
-	private:
-		Display display;
-		bool run;
+        bool running() { return run; }
 
-		_input PrevInput;
+    private:
+        Display display;
+        bool run;
 
-		Shader shader;
-		Entity plane, shotgun,
-			   xTorus, yTorus, zTorus;
-		
-		const Mesh *planeMesh, *shotgunMesh, *torusMesh;
-		const Texture* tex;
-		unique_ptr<Camera> cam;
-		
-		Text txt;
-		Shader textShader;
-		const BitmapFont* font;
+        _input PrevInput;
 
-		float shininess = 10.0f;
-		float time = 0;
+        Shader shader;
+        Entity plane, shotgun,
+               xTorus, yTorus, zTorus;
+
+        const Mesh *planeMesh, *shotgunMesh, *torusMesh;
+        const Texture* tex;
+        unique_ptr<Camera> cam;
+
+        Text txt;
+        Shader textShader;
+        const BitmapFont* font;
+
+		GUI::Renderer guiRenderer;
+
+        float shininess = 10.0f;
+        float time = 0;
 };
 
 int main(/*int argc, char** argv*/) {
-	//stbi_set_flip_vertically_on_load(true);
-	Game game;
+    //stbi_set_flip_vertically_on_load(true);
+	
+	auto xml = Util::ReadXML("Config.xml");
+	auto v = xml.root.findTagsWithName("Resolution");
+	
+	Game game({
+				std::stoi(v.front()->attribs.find("width")->second), 
+				std::stoi(v.front()->attribs.find("height")->second),
+				"OGL-Engine"
+			});
 
-	while (game.running()) {
-		game.update();
-		game.render();
-	}
+    while (game.running()) {
+        game.update();
+        game.render();
+    }
 
-	return 0;
+    return 0;
 }
