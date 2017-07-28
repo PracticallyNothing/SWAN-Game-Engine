@@ -298,7 +298,8 @@ void ProcessArgs(int argc, char** argv){
             }
             strcpy(ConfigFile, argv[i] + 9);
         } else {
-            std::cout << "ERROR: Unknown or unsupported flag \"" << argv[i] << "\" was passed.\n";
+            std::cout << "ERROR: Unknown or unsupported flag \"" << argv[i] << "\" was passed.\n"
+					  << "-------------------------------------------------------------------------\n";
 			Usage();
 			exit(EXIT_FAILURE);
         }
