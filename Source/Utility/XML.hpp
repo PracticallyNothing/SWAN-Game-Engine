@@ -22,11 +22,11 @@ namespace Util {
 			std::map<std::string /* name */, std::string /* value */> attribs;
 			bool hasAttrib(const std::string& name){ return attribs.find(name) != attribs.end(); }
 
-			std::vector<const XMLTag*> findTagsWithName(std::string name);
+			std::vector<const XMLTag*> findTagsWithName (std::string name) const;
 
 			std::vector<XMLTag*> children;
 		private:
-			 void findTagsWithName(const std::string& name, std::vector<const XMLTag*>& v);
+			 void findTagsWithName (const std::string& name, std::vector<const XMLTag*>& v) const;
 	};
 
 	struct XML {
@@ -35,7 +35,7 @@ namespace Util {
 		XMLTag root;
 		std::string filename;
 
-		std::vector<const XMLTag*> findTagsWithName(const std::string& name){ root.findTagsWithName(name); }
+		std::vector<const XMLTag*> findTagsWithName(const std::string& name){ return root.findTagsWithName(name); }
 	};
 
 	XML ReadXML(std::string filename);

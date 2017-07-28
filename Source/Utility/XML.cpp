@@ -31,14 +31,14 @@ string Trim(string s) {
 
 	size_t i;
 	int ii;
-	for (i = 0; i < s.length() && isspace(s[i]); i++);  // Find front Trim position 
+	for (i = 0; i < s.length() && isspace(s[i]); i++);  // Find front Trim position
 	for (ii = s.length() - 1; ii >= 0 && isspace(s[ii]); ii--);  // Find back Trim position
 
 	s.erase(0, i);
 
 	ii -= i;
 
-	if (ii > 0 && s[ii] == '=') 
+	if (ii > 0 && s[ii] == '=')
 		s.erase(ii);
 
 	return s;
@@ -50,11 +50,11 @@ string unquote(string s){
 		s.erase(it);
 	}
 	return s;
-}	
+}
 
 vector<string> toContents(string line){
 	vector<string> lineContents;
-	
+
 	line = Trim(line);
 
 	size_t prevI = 0;
@@ -62,7 +62,7 @@ vector<string> toContents(string line){
 		if(line[prevI + i] == '\"'){
 			i++;
 			while(line[prevI + i] != '\"')
-			   i++;	
+			   i++;
 		} else if (std::isspace(line[prevI + i])) {
 			lineContents.push_back(line.substr(prevI, i));
 			prevI += i;
@@ -77,15 +77,15 @@ vector<string> toContents(string line){
 
 XMLTag parseTag(const string& line){
 	XMLTag res;
-	
+
 	auto v = toContents(line);
 	v[0] = Trim(v[0]);
 	res.name = v[0].erase(0, 1);
-	
+
 	for(auto it = ++v.begin(); it != v.end(); it++){
 		auto eqSignPos = it->find('=');
 		string name = Trim(it->substr(0, eqSignPos));
-		
+
 		string value;
 		if(eqSignPos != string::npos)
 			value = unquote(it->substr(eqSignPos+1, it->length() - eqSignPos));
@@ -96,7 +96,7 @@ XMLTag parseTag(const string& line){
 			value.erase(--value.end());
 			res.attribs.insert({"/", ""});
 		}
-		
+
 		if(name.length() != 0)
 			res.attribs.insert({name, value});
 	}
@@ -109,10 +109,10 @@ XML Util::ReadXML(string filename){
 	res.filename = filename;
 
 	ifstream file(filename);
-	
+
 	string rootLine;
 	bool gotRoot = false;
-	// Handle first <?xml ...?> tag explicitly 
+	// Handle first <?xml ...?> tag explicitly
 	{
 		getline(file, rootLine, '>');
 
@@ -132,13 +132,13 @@ XML Util::ReadXML(string filename){
 		getline(file, line, '>');
 		res.root = parseTag(line);
 	}
-	
+
 	stack<XMLTag*> tags;
 	tags.push(&res.root);
 
 	for(string line; getline(file, line, '>') && !tags.empty();){
 		string trimmed = Trim(line);
-		
+
 		if(trimmed.length() && trimmed[0] != '<'){
 			int i;
 			for(i = 0; trimmed[i] != '<'; i++);
@@ -146,8 +146,8 @@ XML Util::ReadXML(string filename){
 			trimmed.erase(0, i);
 		}
 
-		XMLTag* tag = new XMLTag(parseTag(trimmed));	
-		
+		XMLTag* tag = new XMLTag(parseTag(trimmed));
+
 		if(tag->name[0] == '/'){ // Closing tag (e.g. </user>
 			tags.pop();
 			delete tag;
@@ -163,9 +163,9 @@ XML Util::ReadXML(string filename){
 	return res;
 }
 
-vector<const XMLTag*> XMLTag::findTagsWithName(string name){
+vector<const XMLTag*> XMLTag::findTagsWithName(string name) const{
 	vector<const XMLTag*> res;
-	
+
 	for(auto c : children){
 		if(c->name == name)
 			res.push_back(c);
@@ -176,7 +176,7 @@ vector<const XMLTag*> XMLTag::findTagsWithName(string name){
 	return res;
 }
 
-void XMLTag::findTagsWithName(const string& name, vector<const XMLTag*>& v){
+void XMLTag::findTagsWithName(const string& name, vector<const XMLTag*>& v) const{
 	for(auto c : children){
 		if(c->name == name)
 			v.push_back(c);
@@ -188,11 +188,11 @@ void XMLTag::findTagsWithName(const string& name, vector<const XMLTag*>& v){
 /*
 void print(const XMLTag& tag, int indent = 8){
 	string i = string(indent, ' ');
-	
+
 	cout << i << "\"" << tag.name << "\" {\n"
 		 << i << "    data: \"" << tag.data << "\" ,\n"
 		 << i << "    attributes: {";
-	
+
 	if(!tag.attribs.empty()){
 		cout << '\n';
 		for(auto p : tag.attribs){
@@ -218,11 +218,11 @@ void print(const XMLTag& tag, int indent = 8){
 void print(const XML& xml){
 	cout << std::boolalpha;
 
-	cout << "XML file {\n" 
+	cout << "XML file {\n"
 		 << "    hasDeclTag: " << xml.hasDeclTag << ",\n"
 		 << "    declTag: ";
 
-	if(xml.hasDeclTag){	
+	if(xml.hasDeclTag){
 		cout << "\n";
 		print(xml.declTag);
 	} else {

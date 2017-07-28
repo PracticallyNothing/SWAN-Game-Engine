@@ -1,5 +1,6 @@
 #include "BitmapFont.hpp"
 
+#include "../Utility/StringUtil.hpp" // For Util::GetDirectory(), Util::IsAbsolutePath()
 
 #include "../External/cpptoml/cpptoml.h" // For cpptoml::parse_file()
 #include <iostream> // For std::cout
@@ -13,34 +14,46 @@ BitmapFont::BitmapFont(const std::string& confFilename)
 	auto conf = cpptoml::parse_file(confFilename);
 
 	auto confGlyphWidth = conf->get_as<int>("glyph_width");
-	if(!confGlyphWidth)
+	if(!confGlyphWidth){
 		std::cout << "ERROR: Bitmap font config file \"" << confFilename << "\" doesn't contain a \"glyph_width\" field!\n";
-	else if (*confGlyphWidth < 4)
+		return;
+	} else if (*confGlyphWidth < 4) {
 		std::cout << "ERROR: Bitmap font config file \"" << confFilename << "\" has too small of a \"glyph_width\" field!\n";
-	else
+		return;
+	} else {
 		glyphWidth = *confGlyphWidth;
+	}
 
 	auto confGlyphHeight = conf->get_as<int>("glyph_height");
-	if(!confGlyphHeight)
+	if(!confGlyphHeight){
 		std::cout << "ERROR: Bitmap font config file \"" << confFilename << "\" doesn't contain a \"glyph_height\" field!\n";
-	else if (*confGlyphHeight < 4)
+		return;
+	} else if (*confGlyphHeight < 4) {
 		std::cout << "ERROR: Bitmap font config file \"" << confFilename << "\" has too small of a \"glyph_height\" field!\n";
-	else
+		return;
+	} else {
 		glyphHeight = *confGlyphHeight;
+	}
 
 	auto confImageName = conf->get_as<std::string>("image_file");
-	if(!confImageName)
-		std::cout << "ERROR: Bitmap font config file \""
-			<< confFilename
-			<< "\" doesn't contain a \"image_file\" field!\n";
+	if(!confImageName){
+		std::cout << "ERROR: Bitmap font config file \"" << confFilename << "\" doesn't contain a \"image_file\" field!\n";
+		return;
+	}
 
-	img = new Image(confImageName->c_str());
-	if(!img->data)
+	std::string dir = "";
+	if(Util::IsRelativePath(confFilename))
+		dir = Util::GetDirectory(confFilename);
+
+	img = new Image((dir + *confImageName).c_str());
+	if(!img->data){
 		std::cout << "ERROR: Bitmap font config file \"" << confFilename << "\" has an incorrect \"image_file\" field!\n";
+		return;
+	}
 
 	auto confImgBold = conf->get_as<std::string>("image_bold_file");
 	if(confImgBold){
-		boldImg = new Image(confImgBold->c_str());
+		boldImg = new Image((dir + *confImgBold).c_str());
 		if(!boldImg->isValid()){
 			delete boldImg;
 			boldImg = nullptr;
@@ -49,7 +62,7 @@ BitmapFont::BitmapFont(const std::string& confFilename)
 
 	auto confImgItalics = conf->get_as<std::string>("image_italics_file");
 	if(confImgItalics){
-		italicsImg = new Image(confImgItalics->c_str());
+		italicsImg = new Image((dir + *confImgItalics).c_str());
 		if(!italicsImg->isValid()){
 			delete italicsImg;
 			italicsImg = nullptr;
@@ -58,7 +71,7 @@ BitmapFont::BitmapFont(const std::string& confFilename)
 
 	auto confImgBoldItalics = conf->get_as<std::string>("image_bold_italics_file");
 	if(confImgBoldItalics){
-		boldItalicsImg = new Image(confImgBoldItalics->c_str());
+		boldItalicsImg = new Image((dir + *confImgBoldItalics).c_str());
 		if(!boldItalicsImg->isValid()){
 			delete boldItalicsImg;
 			boldItalicsImg = nullptr;

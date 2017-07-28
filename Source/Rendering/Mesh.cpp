@@ -2,44 +2,61 @@
 
 #include <GL/gl.h>
 
+#include "../Utility/Debug.hpp"
+
 using std::vector;
 using std::initializer_list;
 
-Mesh::Mesh(uint numVerts, Vertex* verts, uint numInds, uint* inds) : vertCount(numVerts), indCount(numInds){
+Mesh::Mesh(uint numVerts, Vertex* verts, uint numInds, uint* inds){
+    vertCount = numVerts;
+    indCount = numInds;
+
     init(verts, inds);
 }
 
-Mesh::Mesh(vector<Vertex> verts, vector<uint> inds) : vertCount(verts.size()), indCount(inds.size()) {
-    init(&verts[0], &inds[0]);
+Mesh::Mesh(vector<Vertex> verts, vector<uint> inds) {
+    vertCount = verts.size();
+    indCount = inds.size();
+
+    init(verts.data(), inds.data());
 }
 
-Mesh::Mesh(initializer_list<Vertex> verts, vector<uint> inds) : vertCount(verts.size()), indCount(inds.size()) {
+Mesh::Mesh(initializer_list<Vertex> verts, vector<uint> inds) {
     Vertex* v2 = new Vertex[verts.size()];
+
+    vertCount = verts.size();
+    indCount = inds.size();
 
     int i = 0;
     for (const Vertex *v = verts.begin(); v < verts.end(); ++v, ++i) {
         v2[i] = *v;
     }
 
-    init(v2, &inds[0]);
+    init(v2, inds.data());
     delete[] v2;
 }
 
-Mesh::Mesh(vector<Vertex> verts, initializer_list<uint> inds) : vertCount(verts.size()), indCount(inds.size()) {
+Mesh::Mesh(vector<Vertex> verts, initializer_list<uint> inds) {
     uint* i2 = new uint[inds.size()];
+
+    vertCount = verts.size();
+    indCount = inds.size();
 
     int i = 0;
     for (const uint *ind = inds.begin(); ind < inds.end(); ++ind, ++i) {
         i2[i] = *ind;
     }
 
-    init(&verts[0], i2);
+    init(verts.data(), i2);
     delete[] i2;
 }
 
-Mesh::Mesh(initializer_list<Vertex> verts, initializer_list<uint> inds) : vertCount(verts.size()), indCount(inds.size()) {
+Mesh::Mesh(initializer_list<Vertex> verts, initializer_list<uint> inds) {
     Vertex* v2 = new Vertex[verts.size()];
     uint* i2 = new uint[inds.size()];
+
+    vertCount = verts.size();
+    indCount = inds.size();
 
     int i = 0;
     for (const Vertex *v = verts.begin(); v < verts.end(); ++v, ++i) {
@@ -74,8 +91,7 @@ void Mesh::init(Vertex* verts, uint* inds) {
 
     //---------------Positions---------------//
     glBindBuffer(GL_ARRAY_BUFFER, vboID[VBO_POS]);
-    glBufferData(GL_ARRAY_BUFFER, posV.size() * sizeof(posV[0]), &posV[0],
-                 GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, posV.size() * sizeof(posV[0]), posV.data(), GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(VBO_POS);  // This enables the first vertex attribute
 
@@ -89,24 +105,21 @@ void Mesh::init(Vertex* verts, uint* inds) {
 
     //---------------Texture coordinates---------------//
     glBindBuffer(GL_ARRAY_BUFFER, vboID[VBO_UV]);
-    glBufferData(GL_ARRAY_BUFFER, texCoordV.size() * sizeof(texCoordV[0]),
-                 &texCoordV[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, texCoordV.size() * sizeof(texCoordV[0]), texCoordV.data(), GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(VBO_UV);
     glVertexAttribPointer(VBO_UV, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
     //---------------Normals---------------//
     glBindBuffer(GL_ARRAY_BUFFER, vboID[VBO_NORM]);
-    glBufferData(GL_ARRAY_BUFFER, normV.size() * sizeof(normV[0]), &normV[0],
-                 GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, normV.size() * sizeof(normV[0]), normV.data(), GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(VBO_NORM);
     glVertexAttribPointer(VBO_NORM, 3, GL_FLOAT, GL_TRUE, 0, 0);
 
     //---------------Indices---------------//
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboID[VBO_INDEX]);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indCount * sizeof(uint), inds,
-                 GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indCount * sizeof(uint), inds, GL_STATIC_DRAW);
 
     glBindVertexArray(0);
 }

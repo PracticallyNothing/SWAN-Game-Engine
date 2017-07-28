@@ -1,7 +1,10 @@
 #include "GUI.hpp"
 
 #include <algorithm>
+
 #include "../Core/Input.hpp"
+#include "../Core/Resources.hpp"
+
 #include "../Utility/Math.hpp"
 
 namespace GUI {
@@ -67,22 +70,7 @@ namespace GUI {
 	}
 	// -----------------------------------------------------------
 	Renderer::Renderer() {
-		//TODO: Load shader with Resources::GetShader()
-		shad = new Shader();
-		shad->compileShaders("Resources/Shaders/GUIShader.vert",
-							 "Resources/Shaders/GUIShader.frag");
-		{
-			shad->addAttrib("pos");
-			shad->addAttrib("UV");
-			shad->addAttrib("norm");
-		}
-		shad->linkShaders();
-
-		shad->use();
-		{
-			shad->addUniform("transform");
-		}
-		shad->unuse();
+		shad = Resources::GetShader("GUI");
 
 		Vertex v0(glm::vec3(-1,  1, 0), glm::vec2(0, 1), glm::normalize(glm::vec3(-0.5, -0.5, 0.5)));
 		Vertex v1(glm::vec3( 1,  1, 0), glm::vec2(1, 1), glm::normalize(glm::vec3( 0.5,  0.5, 0.5)));

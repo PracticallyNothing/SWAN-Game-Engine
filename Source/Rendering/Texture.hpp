@@ -17,14 +17,14 @@ class Texture{
         Texture(const std::string& fileName,
                 bool isPixelated = false,
                 int type = TEXTURE_DIFFUSE_MAP);
-		
+
 		Texture(const Image& img,
 				bool isPixelated = false,
 				int type = TEXTURE_DIFFUSE_MAP);
-		
+
 		Texture(const Texture& tex) = delete;
 		Texture& operator=(const Texture& tex) = delete;
-		
+
 		Texture(Texture&& t);
 		void operator=(Texture&& tex);
 
@@ -34,8 +34,8 @@ class Texture{
 
         inline int getW() const { return (img ? img->width : -1); }
         inline int getH() const { return (img ? img->height: -1); }
-		
-		const Image* getImage() const { return img; } 
+
+		const Image* getImage() const { return img; }
     private:
 		void init(bool isPixelated);
 

@@ -1,7 +1,8 @@
 #include "Resources.hpp"
 
 #include "../Utility/XML.hpp"        // For Util::XML, Util::ReadXML()
-#include "../Utility/StringUtil.hpp" // For Util::GetDirectory()
+#include "../Utility/StringUtil.hpp" // For Util::GetDirectory(), Util::IsAbsolutePath()
+#include "../Utility/Debug.hpp"      // For DEBUG_OUT()
 
 #include "../Rendering/OBJ-Import.hpp" // For Import::OBJ()
 
@@ -10,10 +11,10 @@
 namespace Resources {
 
 	namespace detail{
-		Map<String, Pointer<Mesh>> meshes;
-		Map<String, Pointer<Texture>> textures;
+		Map<String, Pointer<Mesh>>       meshes;
+		Map<String, Pointer<Texture>>    textures;
 		Map<String, Pointer<BitmapFont>> bitmapFonts;
-		Map<String, Pointer<Shader>> shaders;
+		Map<String, Pointer<Shader>>     shaders;
 	}
 
 	const Mesh* GetMesh(const std::string& name){
@@ -24,7 +25,7 @@ namespace Resources {
 		else
 			return nullptr;
 	}
-	
+
 	const Texture* GetTexture(const std::string& name){
 		auto it = detail::textures.find(name);
 
@@ -33,7 +34,7 @@ namespace Resources {
 		else
 			return nullptr;
 	}
-	
+
 	const BitmapFont* GetBitmapFont(const std::string& name){
 		auto it = detail::bitmapFonts.find(name);
 
@@ -42,7 +43,7 @@ namespace Resources {
 		else
 			return nullptr;
 	}
-	
+
 	Shader* GetShader(const std::string& name){
 		auto it = detail::shaders.find(name);
 
@@ -56,13 +57,14 @@ namespace Resources {
 		Util::XML res = Util::ReadXML(filename);
 		if(res.root.name != "Resources"){
 			std::cout << "ERROR: Attempted to load resources from file \"" << filename << "\", but file has incorrect root tag.\n"
-					  << "       (Required: \"Resources\", Got: \"" << res.root.name << "\")\n";
+				<< "       (Required: \"Resources\", Got: \"" << res.root.name << "\")\n";
 			return false;
 		}
 
 		std::string dir = Util::GetDirectory(filename);
-		
-		auto meshes = res.root.findTagsWithName("Mesh");
+		DEBUG_OUT(dir);
+
+		auto meshes = res.findTagsWithName("Mesh");
 		for(auto tag : meshes){
 			auto fileIt = tag->attribs.find("file");
 
@@ -74,19 +76,19 @@ namespace Resources {
 			auto nameIt = tag->attribs.find("name");
 			if(nameIt == tag->attribs.end() || !nameIt->second.size()){
 				std::cout << "Warning: <Mesh> tag with empty or nonexistant name attribute.\n"
-						  << "         The filename (\"" << dir+ fileIt->second << "\") will be used as the name.\n";
+					<< "         The filename (\"" << dir+ fileIt->second << "\") will be used as the name.\n";
 			}
 
 			std::string name = nameIt->second;
 			std::string file = dir + fileIt->second;
-			
+
 			detail::meshes.emplace(
-				(name.length() ? name : file), 
-				Import::OBJ(file)
-			);
+					(name.length() ? name : file),
+					Import::OBJ(file)
+					);
 		}
 
-		auto textures = res.root.findTagsWithName("Texture");
+		auto textures = res.findTagsWithName("Texture");
 		for(auto tag : textures){
 			auto fileIt = tag->attribs.find("file");
 
@@ -98,19 +100,19 @@ namespace Resources {
 			auto nameIt = tag->attribs.find("name");
 			if(nameIt == tag->attribs.end() || !nameIt->second.size()){
 				std::cout << "Warning: <Texture> tag with empty or nonexistant name attribute.\n"
-						  << "         The filename (\"" << dir+ fileIt->second << "\") will be used as the name.\n";
+					<< "         The filename (\"" << dir+ fileIt->second << "\") will be used as the name.\n";
 			}
 
 			std::string name = nameIt->second;
 			std::string file = dir + fileIt->second;
 
 			detail::textures.emplace(
-				(name.length() ? name : file), 
-				std::make_unique<Texture>(file)
-			);
+					(name.length() ? name : file),
+					std::make_unique<Texture>(file)
+					);
 		}
 
-		auto bitmapFonts = res.root.findTagsWithName("BitmapFont");
+		auto bitmapFonts = res.findTagsWithName("BitmapFont");
 		for(auto tag : bitmapFonts){
 			auto fileIt = tag->attribs.find("file");
 
@@ -122,15 +124,62 @@ namespace Resources {
 			auto nameIt = tag->attribs.find("name");
 			if(nameIt == tag->attribs.end() || !nameIt->second.size()){
 				std::cout << "Warning: <BitmapFont> tag with empty or nonexistant name attribute.\n"
-						  << "         The filename will be used as the name.\n";
+					<< "         The filename will be used as the name.\n";
 			}
 
 			std::string name = nameIt->second;
 			std::string file = dir + fileIt->second;
 
 			detail::bitmapFonts.emplace(
-				(name.length() ? name : file),
-				std::make_unique<BitmapFont>(file)
+					(name.length() ? name : file),
+					std::make_unique<BitmapFont>(file)
+					);
+		}
+
+		auto shaderTags = res.findTagsWithName("Shader");
+		for(auto tag : shaderTags){
+			auto res = std::make_unique<Shader>();
+			res->compileShaders(
+				dir + tag->attribs.find("vertex")->second,
+				dir + tag->attribs.find("fragment")->second
+			);
+
+			{ // ----------- <Attribute/> -----------
+				auto tags = tag->findTagsWithName("Attribute");
+				for(auto tag : tags)
+					res->addAttrib(tag->attribs.find("name")->second);
+			}
+			res->linkShaders();
+
+			res->use();
+			{
+				{ // ----------- <Uniform/> -----------
+					auto tags = tag->findTagsWithName("Uniform");
+					for(auto tag : tags)
+						res->addUniform(tag->attribs.find("name")->second);
+				}
+				{ // -------- <ArrayUniform/> --------
+					auto tags = tag->findTagsWithName("ArrayUniform");
+					for(auto tag : tags)
+						for(int i = 0; i < std::stoi(tag->attribs.find("size")->second); i++)
+							res->addUniform(tag->attribs.find("name")->second + "[" + std::to_string(i) + "]");
+				}
+				{ // -------- <StructArrayUniform> --------
+					auto tags = tag->findTagsWithName("StructArrayUniform");
+					for(auto tag : tags)
+						for(int i = 0; i < std::stoi(tag->attribs.find("size")->second); i++){
+							std::string s = tag->attribs.find("name")->second + "[" + std::to_string(i) + "].";
+
+							for(auto x : tag->children)
+								res->addUniform(s + x->attribs.find("name")->second);
+						}
+				}
+			}
+			res->unuse();
+
+			detail::shaders.emplace(
+				tag->attribs.find("name")->second,
+				std::move(res)
 			);
 		}
 

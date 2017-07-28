@@ -1,4 +1,4 @@
-#include "CMakeConfig.h"
+#include "../Build/CMakeConfig.h"
 
 #include "Core/Display.hpp"    // For Display
 #include "Core/Input.hpp"      // For Input
@@ -6,10 +6,11 @@
 
 #include "GUI/GUI.hpp" // For GUI::*
 
-#include "Utility/Debug.hpp"   // For DEBUG_OUT()
-#include "Utility/Math.hpp"    // For Util::pixelToGLCoord()
-#include "Utility/Profile.hpp" // For Util::CurrentProfile, UTIL_PROFILE()
-#include "Utility/XML.hpp"     // For Util::ReadXML(), Util::XML
+#include "Utility/StringUtil.hpp" // For Util::GetDirectory(), Util::IsAbsolutePath()
+#include "Utility/Debug.hpp"      // For DEBUG_OUT()
+#include "Utility/Math.hpp"       // For Util::pixelToGLCoord()
+#include "Utility/Profile.hpp"    // For Util::CurrentProfile, UTIL_PROFILE()
+#include "Utility/XML.hpp"        // For Util::ReadXML(), Util::XML
 
 #include "Rendering/Camera.hpp"		// For Camera
 #include "Rendering/Mesh.hpp"		// For Mesh
@@ -48,7 +49,7 @@ struct DisplayConfig {
 // TODO: Remove this class, it's a disgusting god object
 class Game {
     public:
-        explicit Game(DisplayConfig conf = {640, 480, "OpenGL-CPP-Engine"})
+        explicit Game(std::string resourcesFile, DisplayConfig conf = {640, 480, "OpenGL-CPP-Engine"})
             : display(conf.w, conf.h, conf.title),
             run(true)
             {
@@ -57,11 +58,16 @@ class Game {
                 // SDL_SetRelativeMouseMode(SDL_TRUE);
                 Input_init();
 
+                Resources::LoadFromFile(resourcesFile);
+
                 tex         = Resources::GetTexture("Monkey Head Texture");
                 planeMesh   = Resources::GetMesh("Plane");
                 shotgunMesh = Resources::GetMesh("SPAS 12");
                 torusMesh   = Resources::GetMesh("Torus");
                 font        = Resources::GetBitmapFont("Monospace 16");
+
+                shader = Resources::GetShader("Proper");
+                textShader = Resources::GetShader("Text");
 
                 cam = make_unique<Camera>(display.getAspect(), glm::vec3(0.0f, 0.0f, -1.0f));
 
@@ -72,12 +78,7 @@ class Game {
                    torusMesh = Import::OBJ("./Resources/Meshes/Torus.obj", Import::Settings{true});
                 // ent.setCurrAngVel(glm::vec3(0.0, 0.0, 10.0));
                 */
-
-				guiRenderer.add(new GUI::Draggable(Resources::GetTexture("Flat Blue"),
-												//Resources::GetTexture("Flat Red"),
-												//Resources::GetTexture("Flat Cyan"),
-												100, 100));
-
+		
 				DirectionalLight dl0;
                 dl0.direction = glm::normalize(glm::vec3(1, 1, 1));
                 dl0.ambient   = glm::vec3(0.003, 0.0, 0.003);
@@ -92,89 +93,23 @@ class Game {
                 pl1.linearAtt    = 0.045;
                 pl1.quadraticAtt = 0.0075;
 
+				shader->use();
+				{
+					shader->setUniformData("matSpecular", glm::vec3(0.5, 0.5, 0.5));
+					shader->setUniformData("matShininess", 2.0f);
+					shader->setUniformData("lights[0]", dl0);
+					shader->setUniformData("lights[1]", pl1);
+					shader->setUniformData("activeLights", 2);
+				}
+				shader->unuse();
+
+				guiRenderer = make_unique<GUI::Renderer>();
+				guiRenderer->add(new GUI::Draggable(Resources::GetTexture("Flat Blue"),
+												//Resources::GetTexture("Flat Red"),
+												//Resources::GetTexture("Flat Cyan"),
+												100, 100));
+
                 plane.getTransform_ref().pos = pl1.position;
-
-                shader.compileShaders("./Resources/Shaders/proper.vert",
-                        "./Resources/Shaders/proper.frag");
-                {
-                    shader.addAttrib("pos");  // GL Error: 1281
-                    shader.addAttrib("UV");   // GL Error: 1281
-                    shader.addAttrib("norm"); // GL Error: 1281
-                }
-                shader.linkShaders();
-
-                shader.use();
-                {
-                    shader.addUniform("transform");
-                    shader.addUniform("perspective");
-                    shader.addUniform("view");
-
-                    shader.addUniform("activeLights");
-
-                    shader.addUniform("camPos");
-
-                    shader.addUniform("matSpecular");
-                    shader.addUniform("matShininess");
-
-                    shader.setUniformData("matSpecular", glm::vec3(0.5, 0.5, 0.5));
-                    shader.setUniformData("matShininess", 2.0f);
-
-                    shader.addUniform("lights[0].type");
-                    shader.addUniform("lights[0].ambient");
-                    shader.addUniform("lights[0].diffuse");
-                    shader.addUniform("lights[0].specular");
-                    shader.addUniform("lights[0].pos");
-                    shader.addUniform("lights[0].dir");
-                    shader.addUniform("lights[0].cutoff");
-                    shader.addUniform("lights[0].outerCutoff");
-                    shader.addUniform("lights[0].constAtt");
-                    shader.addUniform("lights[0].linAtt");
-                    shader.addUniform("lights[0].quadAtt");
-
-                    shader.addUniform("lights[1].type");
-                    shader.addUniform("lights[1].ambient");
-                    shader.addUniform("lights[1].diffuse");
-                    shader.addUniform("lights[1].specular");
-                    shader.addUniform("lights[1].pos");
-                    shader.addUniform("lights[1].dir");
-                    shader.addUniform("lights[1].cutoff");
-                    shader.addUniform("lights[1].outerCutoff");
-                    shader.addUniform("lights[1].constAtt");
-                    shader.addUniform("lights[1].linAtt");
-                    shader.addUniform("lights[1].quadAtt");
-
-                    shader.addUniform("lights[2].type");
-                    shader.addUniform("lights[2].ambient");
-                    shader.addUniform("lights[2].diffuse");
-                    shader.addUniform("lights[2].specular");
-                    shader.addUniform("lights[2].pos");
-                    shader.addUniform("lights[2].dir");
-                    shader.addUniform("lights[2].cutoff");
-                    shader.addUniform("lights[2].outerCutoff");
-                    shader.addUniform("lights[2].constAtt");
-                    shader.addUniform("lights[2].linAtt");
-                    shader.addUniform("lights[2].quadAtt");
-
-                    shader.setUniformData("lights[0]", dl0);
-                    shader.setUniformData("lights[1]", pl1);
-                    shader.setUniformData("activeLights", 2);
-                }
-                shader.unuse();
-
-                textShader.compileShaders("./Resources/Shaders/text.vert",
-                        				  "./Resources/Shaders/text.frag");
-                {
-                    textShader.addAttrib("pos");  // GL Error: 1281
-                    textShader.addAttrib("UV");
-                }
-                textShader.linkShaders();
-
-                textShader.use();
-                {
-                    textShader.addUniform("model");
-                    textShader.addUniform("color");
-                }
-                textShader.unuse();
 
                 plane.setMesh(planeMesh);
                 plane.setTexture(tex);
@@ -259,12 +194,11 @@ class Game {
             tc.font = font;
             txt.set(display, tc, false);
 
-			guiRenderer.update();
+			guiRenderer->update();
         }
 
         void render() {
-            display.focus();
-            shader.use();
+            shader->use();
             {
                 const float shininessD = 0.5;
                 if(Input.Keyboard.letterKeys['p' - 'a']){
@@ -276,21 +210,21 @@ class Game {
                 if(shininess < 0)
                     shininess = 0;
 
-                shader.setUniformData("matShininess", shininess);
+                shader->setUniformData("matShininess", shininess);
 
-                shader.setUniformData("camPos", cam->getPos());
-                shader.setUniformData("view", cam->getView());
-                shader.setUniformData("perspective", cam->getPerspective());
+                shader->setUniformData("camPos", cam->getPos());
+                shader->setUniformData("view", cam->getView());
+                shader->setUniformData("perspective", cam->getPerspective());
 
-                shotgun.useTransform(&shader);
+                shotgun.useTransform(shader);
                 shotgun.render();
 
-                plane.useTransform(&shader);
+                plane.useTransform(shader);
                 plane.render();
                 plane.getMesh()->renderWireframe();
                 plane.getMesh()->renderVerts();
             }
-            shader.unuse();
+            shader->unuse();
 
             TextConfig tc;
             tc.text = std::string("shininess: ") + std::to_string(shininess);
@@ -298,12 +232,11 @@ class Game {
             tc.color = glm::vec3(0.3, 0.0, 0.7);
             txt.set(display, tc, true);
 
-            //txt.render(&textShader);
 
 			glClear(GL_DEPTH_BUFFER_BIT);
-			guiRenderer.render(display);
+            //txt.render(textShader);
+			guiRenderer->render(display);
 
-            display.focus();
             glClear(GL_DEPTH_BUFFER_BIT);
             display.clear();
         }
@@ -316,7 +249,7 @@ class Game {
 
         _input PrevInput;
 
-        Shader shader;
+        Shader* shader;
         Entity plane, shotgun,
                xTorus, yTorus, zTorus;
 
@@ -325,10 +258,10 @@ class Game {
         unique_ptr<Camera> cam;
 
         Text txt;
-        Shader textShader;
+        Shader* textShader;
         const BitmapFont* font;
 
-		GUI::Renderer guiRenderer;
+		unique_ptr<GUI::Renderer> guiRenderer;
 
         float shininess = 10.0f;
         float time = 0;
@@ -348,7 +281,7 @@ void Usage(){
         << "    --config=<config>  Use custom configuration file, default is ./Config.xml\n";
 }
 
-char configFile[256] = {0};
+char ConfigFile[256] = {0};
 
 void ProcessArgs(int argc, char** argv){
     for(int i = 1; i < argc; i++){
@@ -363,7 +296,7 @@ void ProcessArgs(int argc, char** argv){
                 std::cout << "ERROR: \"--config=\" flag was passed, but no file was set, the flag will be ignored.\n";
                 continue;
             }
-            strcpy(configFile, argv[i] + 9);
+            strcpy(ConfigFile, argv[i] + 9);
         } else {
             std::cout << "ERROR: Unknown or unsupported flag \"" << argv[i] << "\" was passed, it will be ignored.\n";
         }
@@ -377,18 +310,21 @@ int main(int argc, char** argv) {
         ProcessArgs(argc, argv);
     }
 
-    if(!configFile[0]){
-        strcpy(configFile, "./Config.xml");
+    if(!ConfigFile[0]){
+        strcpy(ConfigFile, "./Config.xml");
     }
 
+    auto xml = Util::ReadXML(Util::Unquote(std::string(ConfigFile)));
+    auto v = xml.findTagsWithName("Resolution");
+    auto resourcesFile = xml.findTagsWithName("Resources").at(0)->attribs.find("file")->second;
 
-	auto xml = Util::ReadXML(std::string(configFile));
-	auto v = xml.findTagsWithName("Resolution");
-    auto resourcesFile = xml.findTagsWithName("Resources").front()->attribs.find("file")->second;
+    if(Util::IsRelativePath(resourcesFile))
+        resourcesFile = Util::GetDirectory(std::string(ConfigFile), true) + resourcesFile;
 
-    Resources::LoadFromFile(resourcesFile);
+    DEBUG_OUT(resourcesFile);
 
-	Game game({
+	Game game(resourcesFile,
+            {
 				std::stoi(v.front()->attribs.find("width")->second),
 				std::stoi(v.front()->attribs.find("height")->second),
 				"OGL-Engine"

@@ -10,7 +10,8 @@ namespace Util {
 	using std::string;
 	using std::vector;
 
-	string Trim(string s);
+	string Trim(const string& s);
+	string Unquote(const string& s);
 
 	vector<string> SplitOn(const string& line, char c = ' ');
 

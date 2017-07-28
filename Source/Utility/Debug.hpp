@@ -13,6 +13,8 @@
 # endif
 
 # if defined(DEBUG) && !defined(NO_DEBUG)
+#include <iostream>
+#	 define DEBUG_PRINT(str)          do { std::cout << "DEBUG: " << (str) << '\n'; } while(0)
 #	 define DEBUG_OUT(function)   	  do { std::cout << STRINGIFY(function) << ": " << (function) << '\n'; } while(0)
 #    define DEBUG_PRINT_CONTEXT() 	  do { std::cout << "Context: " << __PRETTY_FUNCTION__ << '\n'; } while(0)
 #    define DEBUG_VAR(type, name) 	  type name
@@ -27,6 +29,7 @@
 										(expr_false) 		\
 								} while(0)
 # else
+#	 define DEBUG_PRINT(str)          (void)0
 #	 define DEBUG_OUT(function)   	  (void)0
 #    define DEBUG_PRINT_CONTEXT() 	  (void)0
 #	 define DEBUG_VAR(type, name) 	  struct CONCATENATE(CONCATENATE(__, __LINE__), __) {}

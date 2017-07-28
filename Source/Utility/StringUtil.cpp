@@ -3,18 +3,20 @@
 #include "../Utility/Collect.hpp"  // For Util::CollectIter()
 
 namespace Util {
-	string Trim(string s) {
+	string Trim(const string& s) {
+		string res(s);
+
 		size_t i;
 		int ii;
-		for (i = 0; i < s.length() && isspace(s[i]); i++);  // Trim front
-		for (ii = s.length() - 1; ii >= 0 && isspace(s[ii]); ii--);  // Trim back
+		for (i = 0; i < res.length() && isspace(res[i]); i++);  // Trim front
+		for (ii = res.length() - 1; ii >= 0 && isspace(res[ii]); ii--);  // Trim back
 
-		s.erase(0, i);
+		res.erase(0, i);
 
 		ii -= i;
-		if (ii > 0 && isspace(s[ii])) s.erase(ii);
+		if (ii > 0 && isspace(res[ii])) res.erase(ii);
 
-		return s;
+		return res;
 	}
 	vector<string> SplitOn(const string& line, char c) {
 		vector<string> lineContents;
@@ -50,6 +52,7 @@ namespace Util {
 
 		return lineContents;
 	}
+
 	array<int, 5> ReadFace(string str) {
 		array<int, 5> res {{0, 0, 0, 0, 0}};
 
@@ -67,6 +70,18 @@ namespace Util {
 			res[3] = v[2].size();
 		if(res[3])
 			res[4] = stoi(v[2]);
+
+		return res;
+	}
+
+	string Unquote(const string& s){
+		string res = Trim(s);
+
+		if(res.front() == '\"')
+			res.erase(0, 1);
+
+		if(res.back() == '\"')
+			res.pop_back();
 
 		return res;
 	}
