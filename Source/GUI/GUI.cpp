@@ -181,32 +181,36 @@ namespace GUI {
 	Renderer::ElementType& Renderer::getElem(int index) { return elems[index]; }
 	// -----------------------------------------------------------
 	void Draggable::update() {
-		bool mousedOver = Input.Mouse.x > x && Input.Mouse.y > y &&
-			Input.Mouse.x < x + w && Input.Mouse.y < y + h;
+		bool mousedOver = 
+			Input.Mouse.x > x &&
+			Input.Mouse.y > y &&
+			Input.Mouse.x < x + w &&
+			Input.Mouse.y < y + h;
 
 		if ((currFocused == this || noCurrFocused()) && mousedOver && Input.Mouse.lButton) {
 			setCurrentlyFocused(this);
-			
-			int relMouseX = x - Input.Mouse.x, 
-				relMouseY = y - Input.Mouse.y;
+			moving = true;
+				
+			int relMouseX = Input.Mouse.x - x, 
+				relMouseY = Input.Mouse.y - y;
 
-			if (lastX < 0)
-				lastX = relMouseX;
-			if (lastY < 0)
-				lastY = relMouseY;
+			if (lastMouseX < 0)
+				lastMouseX = relMouseX;
+			if (lastMouseY < 0)
+				lastMouseY = relMouseY;
 
-			x -= lastX - relMouseX;
-			y -= lastY - relMouseY;
+			x += (relMouseX - lastMouseX) ;
+			y += (relMouseY - lastMouseY) ;
 
-			lastX = relMouseX;
-			lastY = relMouseY;
+			lastMouseX = relMouseX;
+			lastMouseY = relMouseY;
 		} else {
 			if (currFocused == this) {
 				setCurrentlyFocused(NULL);
 			}
 
-			lastX = -1;
-			lastY = -1;
+			lastMouseX = -1;
+			lastMouseY = -1;
 		}
 	}
 }

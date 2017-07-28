@@ -21,24 +21,19 @@ void Display::focus() {
     SDL_GL_MakeCurrent(win, Display::glContext);
 }
 
-Display::Display(int w, int h, const std::string& title) {
-    // Save the width and height of the display
-    // to be used later.
-    this->w = w;
-    this->h = h;
-
+Display::Display(int w, int h, const std::string& title) : w(w), h(h) {
     // If this is the first display initialize all attributes
     // needed for the proper functioning
     // of OpenGL inside the SDL_GLContext.
     if (!Display::numDisplays) {
         // Initialize SDL for the first display only
         SDL_Init(SDL_INIT_VIDEO);
-    	
+
 		// Set the OpenGL versions to be used (in this case, 3.2)
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
-		
+
         // Set in bits:
 		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);    // The amount of red.
         SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);   // The amount of blue.

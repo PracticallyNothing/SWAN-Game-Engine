@@ -114,7 +114,8 @@ namespace GUI {
 
 			const Texture* texture;
 		private:
-			int lastX = -1, lastY = -1;
+			int lastMouseX = -1, lastMouseY = -1;
+			bool moving = false;
 	};
 
 	struct LayerSorter {

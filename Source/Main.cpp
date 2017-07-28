@@ -1,6 +1,8 @@
-#include "Core/Display.hpp" // For Display
-#include "Core/Input.hpp"   // For Input
-#include "Core/Resources.hpp"       // For Resources::LoadFromFile(), Resources::Get*()
+#include "CMakeConfig.h"
+
+#include "Core/Display.hpp"    // For Display
+#include "Core/Input.hpp"      // For Input
+#include "Core/Resources.hpp"  // For Resources::LoadFromFile(), Resources::Get*()
 
 #include "GUI/GUI.hpp" // For GUI::*
 
@@ -26,7 +28,8 @@
 
 #include <iostream>	// For std::cout
 #include <memory>	// For std::unique_ptr<T>, std::make_unique<T>()
-#include <chrono>	// For std::chrono::milliseconds, std::chrono::steady_clock, std::chrono::operator""ms
+#include <chrono>	// For std::chrono::*
+#include <cstring>  // For std::strcmp(), std::strncmp()
 
 using namespace Util::StreamOps;
 using std::unique_ptr;
@@ -56,12 +59,13 @@ class Game {
 
                 Resources::LoadFromFile("./Resources/res.xml");
 
-                tex = Resources::GetTexture("Monkey Head Texture");
-                planeMesh = Resources::GetMesh("Plane");
+                tex         = Resources::GetTexture("Monkey Head Texture");
+                planeMesh   = Resources::GetMesh("Plane");
                 shotgunMesh = Resources::GetMesh("SPAS 12");
-                torusMesh = Resources::GetMesh("Torus");
+                torusMesh   = Resources::GetMesh("Torus");
+                font        = Resources::GetBitmapFont("Monospace 16");
+
                 cam = make_unique<Camera>(display.getAspect(), glm::vec3(0.0f, 0.0f, -1.0f));
-                font = Resources::GetBitmapFont("Monospace 16");
 
                 /*
                    tex = make_unique<Texture>("./Resources/Textures/Diffuse_Color.png");
@@ -71,11 +75,11 @@ class Game {
                 // ent.setCurrAngVel(glm::vec3(0.0, 0.0, 10.0));
                 */
 
-				guiRenderer.add(new GUI::Draggable(Resources::GetTexture("Flat Blue"), 
-												//Resources::GetTexture("Flat Red"), 
+				guiRenderer.add(new GUI::Draggable(Resources::GetTexture("Flat Blue"),
+												//Resources::GetTexture("Flat Red"),
 												//Resources::GetTexture("Flat Cyan"),
 												100, 100));
-                
+
 				DirectionalLight dl0;
                 dl0.direction = glm::normalize(glm::vec3(1, 1, 1));
                 dl0.ambient   = glm::vec3(0.003, 0.0, 0.003);
@@ -332,14 +336,58 @@ class Game {
         float time = 0;
 };
 
-int main(/*int argc, char** argv*/) {
+void version(){
+    std::cout << PROJECT_NAME << " version " << VERSION_STRING << " (Build type: " << BUILD_TYPE << ")\n";
+}
+
+void usage(){
+    std::cout
+        << "Usage: " << PROJECT_NAME << " [options]\n"
+        << '\n'
+        << "Available options:\n"
+        << "    -h, --help         Show this help\n"
+        << "    -v, --version      Display version\n"
+        << "    --config=<config>  Use custom configuration file, default is ./Config.xml\n";
+}
+
+char configFile[256] = {0};
+
+void process_args(int argc, char** argv){
+    for(int i = 1; i < argc; i++){
+        if(!std::strcmp(argv[i], "-h") || !std::strcmp(argv[i], "--help")){
+            usage();
+            exit(EXIT_SUCCESS);
+        } else if(!std::strcmp(argv[i], "-v") || !std::strcmp(argv[i], "--version")){
+            version();
+            exit(EXIT_SUCCESS);
+        } else if(!std::strncmp(argv[i], "--config=", 9)){
+            if(strlen(argv[i]) <= 9){
+                std::cout << "ERROR: \"--config=\" flag was passed, but no file was set, the flag will be ignored.\n";
+                continue;
+            }
+            strcpy(configFile, argv[i] + 9);
+        } else {
+            std::cout << "ERROR: Unknown or unsupported flag \"" << argv[i] << "\" was passed, it will be ignored.\n";
+        }
+    }
+}
+
+int main(int argc, char** argv) {
     //stbi_set_flip_vertically_on_load(true);
-	
-	auto xml = Util::ReadXML("Config.xml");
+
+    if(argc > 1){
+        process_args(argc, argv);
+    }
+
+    if(!configFile[0]){
+        strcpy(configFile, "./Config.xml");
+    }
+
+	auto xml = Util::ReadXML(std::string(configFile));
 	auto v = xml.root.findTagsWithName("Resolution");
-	
+
 	Game game({
-				std::stoi(v.front()->attribs.find("width")->second), 
+				std::stoi(v.front()->attribs.find("width")->second),
 				std::stoi(v.front()->attribs.find("height")->second),
 				"OGL-Engine"
 			});
