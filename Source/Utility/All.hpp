@@ -1,5 +1,5 @@
-#ifndef MK2_UTIL_ALL_HPP
-#define MK2_UTIL_ALL_HPP
+#ifndef UTIL_ALL_HPP
+#define UTIL_ALL_HPP
 
 #include "Either.hpp"
 #include "NotNull.hpp"
@@ -10,4 +10,4 @@
 #include "ToString.hpp"
 #include "ToVector.hpp"
 
-#endif  // MK2_UTIL_ALL_HPP
+#endif  // UTIL_ALL_HPP

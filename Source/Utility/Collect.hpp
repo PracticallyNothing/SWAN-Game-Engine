@@ -5,7 +5,7 @@
 
 namespace Util {
     template<typename IterT, typename EqComp>
-    std::vector<EqComp> collect(IterT begin, IterT end, EqComp value){
+    std::vector<EqComp> Collect(IterT begin, IterT end, EqComp value){
         std::vector<EqComp> result;
 
         while(begin != end){
@@ -17,7 +17,7 @@ namespace Util {
     }
 
     template<typename IterT, typename Predicate>
-    std::vector<IterT> collect_if(IterT begin, IterT end, Predicate&& p){
+    std::vector<IterT> CollectIf(IterT begin, IterT end, Predicate&& p){
         std::vector<IterT> result;
 
         while(begin != end){
@@ -29,7 +29,7 @@ namespace Util {
     }
 
     template<typename IterT, typename EqComp>
-    std::vector<IterT> collect_iter(IterT begin, IterT end, EqComp value){
+    std::vector<IterT> CollectIter(IterT begin, IterT end, EqComp value){
         std::vector<IterT> result;
 
         while(begin != end){
@@ -41,7 +41,7 @@ namespace Util {
     }
 
     template<typename IterT, typename Predicate>
-    std::vector<IterT> collect_iter_if(IterT begin, IterT end, Predicate&& p){
+    std::vector<IterT> CollectIterIf(IterT begin, IterT end, Predicate&& p){
         std::vector<IterT> result;
 
         while(begin != end){

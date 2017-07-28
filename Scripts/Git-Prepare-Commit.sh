@@ -6,8 +6,8 @@ git add Source/Main.cpp
 git add Source/CMakeConfig.h.in
 
 git add Source/Core/*
-git add GUI/*
-git add Logic/*
-git add Physics/*
-git add Rendering/*
-git add Utility/*
+git add Source/GUI/*
+git add Source/Logic/*
+git add Source/Physics/*
+git add Source/Rendering/*
+git add Source/Utility/*

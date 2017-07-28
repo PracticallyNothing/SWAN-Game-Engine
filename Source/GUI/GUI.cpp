@@ -134,7 +134,7 @@ namespace GUI {
 
 		shad->setUniformData("transform", transform);
 
-		e->getTexture()->Bind();
+		e->getTexture()->bind();
 		e->preRender();
 		rect->render();
 		e->postRender();

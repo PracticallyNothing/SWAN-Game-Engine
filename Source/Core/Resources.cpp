@@ -1,7 +1,7 @@
 #include "Resources.hpp"
 
 #include "../Utility/XML.hpp"        // For Util::XML, Util::ReadXML()
-#include "../Utility/StringUtil.hpp" // For Util::getDirectory()
+#include "../Utility/StringUtil.hpp" // For Util::GetDirectory()
 
 #include "../Rendering/OBJ-Import.hpp" // For Import::OBJ()
 
@@ -60,7 +60,7 @@ namespace Resources {
 			return false;
 		}
 
-		std::string dir = Util::getDirectory(filename);
+		std::string dir = Util::GetDirectory(filename);
 		
 		auto meshes = res.root.findTagsWithName("Mesh");
 		for(auto tag : meshes){

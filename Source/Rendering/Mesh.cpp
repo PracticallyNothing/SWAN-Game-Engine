@@ -2,24 +2,19 @@
 
 #include <GL/gl.h>
 
-Mesh::Mesh(uint numVerts, Vertex* verts, uint numInds, uint* inds) {
-    this->vertCount = numVerts;
-    this->indCount = numInds;
+using std::vector;
+using std::initializer_list;
+
+Mesh::Mesh(uint numVerts, Vertex* verts, uint numInds, uint* inds) : vertCount(numVerts), indCount(numInds){
     init(verts, inds);
 }
 
-Mesh::Mesh(std::vector<Vertex> verts, std::vector<uint> inds) {
-    vertCount = verts.size();
-    indCount = inds.size();
-
+Mesh::Mesh(vector<Vertex> verts, vector<uint> inds) : vertCount(verts.size()), indCount(inds.size()) {
     init(&verts[0], &inds[0]);
 }
 
-Mesh::Mesh(std::initializer_list<Vertex> verts, std::vector<uint> inds) {
+Mesh::Mesh(initializer_list<Vertex> verts, vector<uint> inds) : vertCount(verts.size()), indCount(inds.size()) {
     Vertex* v2 = new Vertex[verts.size()];
-
-    vertCount = verts.size();
-    indCount = inds.size();
 
     int i = 0;
     for (const Vertex *v = verts.begin(); v < verts.end(); ++v, ++i) {
@@ -30,11 +25,8 @@ Mesh::Mesh(std::initializer_list<Vertex> verts, std::vector<uint> inds) {
     delete[] v2;
 }
 
-Mesh::Mesh(std::vector<Vertex> verts, std::initializer_list<uint> inds) {
+Mesh::Mesh(vector<Vertex> verts, initializer_list<uint> inds) : vertCount(verts.size()), indCount(inds.size()) {
     uint* i2 = new uint[inds.size()];
-
-    vertCount = verts.size();
-    indCount = inds.size();
 
     int i = 0;
     for (const uint *ind = inds.begin(); ind < inds.end(); ++ind, ++i) {
@@ -45,20 +37,16 @@ Mesh::Mesh(std::vector<Vertex> verts, std::initializer_list<uint> inds) {
     delete[] i2;
 }
 
-Mesh::Mesh(std::initializer_list<Vertex> verts,
-           std::initializer_list<uint> inds) {
+Mesh::Mesh(initializer_list<Vertex> verts, initializer_list<uint> inds) : vertCount(verts.size()), indCount(inds.size()) {
     Vertex* v2 = new Vertex[verts.size()];
-    vertCount = verts.size();
-
     uint* i2 = new uint[inds.size()];
-    indCount = inds.size();
 
     int i = 0;
     for (const Vertex *v = verts.begin(); v < verts.end(); ++v, ++i) {
         v2[i] = *v;
     }
-    i = 0;
 
+    i = 0;
     for (const uint *ind = inds.begin(); ind < inds.end(); ++ind, ++i) {
         i2[i] = *ind;
     }
@@ -138,7 +126,6 @@ void Mesh::renderWireframe() const {
     glDrawElements(GL_LINE_LOOP, indCount, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 }
-
 
 void Mesh::renderVerts() const {
     glBindVertexArray(vaoID);

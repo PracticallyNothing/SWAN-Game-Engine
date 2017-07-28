@@ -9,7 +9,7 @@
 static std::vector<uint64_t> OtherFreeIDs;
 static uint64_t NextFreeID = 0;
 
-uint64_t getNextFreeID() {
+uint64_t GetNextFreeID() {
 	if (OtherFreeIDs.size()) {
 		uint64_t res = OtherFreeIDs.back();
 		OtherFreeIDs.pop_back();
@@ -19,7 +19,7 @@ uint64_t getNextFreeID() {
 }
 
 struct Node {
-	Node(Node* parent = nullptr) : ID(getNextFreeID), parent(parent) {}
+	Node(Node* parent = nullptr) : ID(GetNextFreeID()), parent(parent) {}
 
 	~Node() {
 		passToParent();
@@ -32,7 +32,7 @@ struct Node {
 		if (passChildren)
 			for (auto& n : children) {
 				if (std::find_if(parent->children.begin(),
-								parent->children.end(), 
+								parent->children.end(),
 								[this](Node& n) {
 									return n.getID() == this->getID();
 								}) == parent->children.end())
@@ -42,8 +42,8 @@ struct Node {
 			for (auto& e : entities) parent->entities.push_back(e);
 	}
 
-	bool operator==(const Node& other) { return ID == other.ID; }
-	bool operator!=(const Node& other) { return ID != other.ID; }
+	bool operator==(const Node& other) const { return ID == other.ID; }
+	bool operator!=(const Node& other) const { return ID != other.ID; }
 
 	Node* parent;
 	bool passChildren = false, passEntities = false;
@@ -52,7 +52,7 @@ struct Node {
 	std::vector<Entity&> entities;
 
 	uint64_t getID() { return ID; }
-	
+
 	bool render = true;
 
 	private:
@@ -63,8 +63,8 @@ class Scene {
 	public:
 		Scene();
 		~Scene();
-		
-		Node& getRootNode(){ return root; }
+
+		const Node& getRootNode(){ return root; }
 	private:
 		Node root;
 };

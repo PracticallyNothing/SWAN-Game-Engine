@@ -25,14 +25,14 @@ using std::prev;
 using Util::XML;
 using Util::XMLTag;
 
-string trim(string s) {
+string Trim(string s) {
 	if(find_if(s.begin(), s.end(), [](char c) -> bool{ return isspace(c); }) == s.end())
 		return s;
 
 	size_t i;
 	int ii;
-	for (i = 0; i < s.length() && isspace(s[i]); i++);  // Find front trim position 
-	for (ii = s.length() - 1; ii >= 0 && isspace(s[ii]); ii--);  // Find back trim position
+	for (i = 0; i < s.length() && isspace(s[i]); i++);  // Find front Trim position 
+	for (ii = s.length() - 1; ii >= 0 && isspace(s[ii]); ii--);  // Find back Trim position
 
 	s.erase(0, i);
 
@@ -55,7 +55,7 @@ string unquote(string s){
 vector<string> toContents(string line){
 	vector<string> lineContents;
 	
-	line = trim(line);
+	line = Trim(line);
 
 	size_t prevI = 0;
 	for (size_t i = 0; prevI + i < line.length(); i++) {
@@ -79,12 +79,12 @@ XMLTag parseTag(const string& line){
 	XMLTag res;
 	
 	auto v = toContents(line);
-	v[0] = trim(v[0]);
+	v[0] = Trim(v[0]);
 	res.name = v[0].erase(0, 1);
 	
 	for(auto it = ++v.begin(); it != v.end(); it++){
 		auto eqSignPos = it->find('=');
-		string name = trim(it->substr(0, eqSignPos));
+		string name = Trim(it->substr(0, eqSignPos));
 		
 		string value;
 		if(eqSignPos != string::npos)
@@ -137,7 +137,7 @@ XML Util::ReadXML(string filename){
 	tags.push(&res.root);
 
 	for(string line; getline(file, line, '>') && !tags.empty();){
-		string trimmed = trim(line);
+		string trimmed = Trim(line);
 		
 		if(trimmed.length() && trimmed[0] != '<'){
 			int i;

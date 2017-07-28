@@ -57,8 +57,6 @@ class Game {
                 // SDL_SetRelativeMouseMode(SDL_TRUE);
                 Input_init();
 
-                Resources::LoadFromFile("./Resources/res.xml");
-
                 tex         = Resources::GetTexture("Monkey Head Texture");
                 planeMesh   = Resources::GetMesh("Plane");
                 shotgunMesh = Resources::GetMesh("SPAS 12");
@@ -241,9 +239,9 @@ class Game {
 
             cam->rotateByX(Util::Radians((mouseY - prevMouseY) * 2.0));
 
-            //DEBUG_OUT(Util::Degrees::fromRadians(cam->getTransform_ref().rot.x));
-            //DEBUG_OUT(Util::Degrees::fromRadians(cam->getTransform_ref().rot.y));
-            //DEBUG_OUT(Util::Degrees::fromRadians(cam->getTransform_ref().rot.z));
+            //DEBUG_OUT(Util::Degrees::FromRadians(cam->getTransform_ref().rot.x));
+            //DEBUG_OUT(Util::Degrees::FromRadians(cam->getTransform_ref().rot.y));
+            //DEBUG_OUT(Util::Degrees::FromRadians(cam->getTransform_ref().rot.z));
             //plane.getTransform_ref().rot.x += 0.01f;
 
             plane.getTransform_ref().pos.x = std::sin(time) * 10;
@@ -336,11 +334,11 @@ class Game {
         float time = 0;
 };
 
-void version(){
+void Version(){
     std::cout << PROJECT_NAME << " version " << VERSION_STRING << " (Build type: " << BUILD_TYPE << ")\n";
 }
 
-void usage(){
+void Usage(){
     std::cout
         << "Usage: " << PROJECT_NAME << " [options]\n"
         << '\n'
@@ -352,13 +350,13 @@ void usage(){
 
 char configFile[256] = {0};
 
-void process_args(int argc, char** argv){
+void ProcessArgs(int argc, char** argv){
     for(int i = 1; i < argc; i++){
         if(!std::strcmp(argv[i], "-h") || !std::strcmp(argv[i], "--help")){
-            usage();
+            Usage();
             exit(EXIT_SUCCESS);
         } else if(!std::strcmp(argv[i], "-v") || !std::strcmp(argv[i], "--version")){
-            version();
+            Version();
             exit(EXIT_SUCCESS);
         } else if(!std::strncmp(argv[i], "--config=", 9)){
             if(strlen(argv[i]) <= 9){
@@ -376,15 +374,19 @@ int main(int argc, char** argv) {
     //stbi_set_flip_vertically_on_load(true);
 
     if(argc > 1){
-        process_args(argc, argv);
+        ProcessArgs(argc, argv);
     }
 
     if(!configFile[0]){
         strcpy(configFile, "./Config.xml");
     }
 
+
 	auto xml = Util::ReadXML(std::string(configFile));
-	auto v = xml.root.findTagsWithName("Resolution");
+	auto v = xml.findTagsWithName("Resolution");
+    auto resourcesFile = xml.findTagsWithName("Resources").front()->attribs.find("file")->second;
+
+    Resources::LoadFromFile(resourcesFile);
 
 	Game game({
 				std::stoi(v.front()->attribs.find("width")->second),

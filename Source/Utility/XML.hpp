@@ -23,7 +23,7 @@ namespace Util {
 			bool hasAttrib(const std::string& name){ return attribs.find(name) != attribs.end(); }
 
 			std::vector<const XMLTag*> findTagsWithName(std::string name);
-			
+
 			std::vector<XMLTag*> children;
 		private:
 			 void findTagsWithName(const std::string& name, std::vector<const XMLTag*>& v);
@@ -34,6 +34,8 @@ namespace Util {
 		XMLTag declTag;
 		XMLTag root;
 		std::string filename;
+
+		std::vector<const XMLTag*> findTagsWithName(const std::string& name){ root.findTagsWithName(name); }
 	};
 
 	XML ReadXML(std::string filename);

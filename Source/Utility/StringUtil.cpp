@@ -1,7 +1,9 @@
 #include "StringUtil.hpp"
 
+#include "../Utility/Collect.hpp"  // For Util::CollectIter()
+
 namespace Util {
-	string trim(string s) {
+	string Trim(string s) {
 		size_t i;
 		int ii;
 		for (i = 0; i < s.length() && isspace(s[i]); i++);  // Trim front
@@ -14,7 +16,7 @@ namespace Util {
 
 		return s;
 	}
-	vector<string> splitOn(const string& line, char c) {
+	vector<string> SplitOn(const string& line, char c) {
 		vector<string> lineContents;
 
 		size_t prevI = 0;
@@ -32,7 +34,7 @@ namespace Util {
 	}
 
 	template<typename Pred>
-	vector<string> splitIf(const string& line, Pred&& p) {
+	vector<string> SplitIf(const string& line, Pred&& p) {
 		vector<string> lineContents;
 
 		size_t prevI = 0;
@@ -48,14 +50,14 @@ namespace Util {
 
 		return lineContents;
 	}
-	array<int, 5> readFace(string str) {
+	array<int, 5> ReadFace(string str) {
 		array<int, 5> res {{0, 0, 0, 0, 0}};
-		
-		str = trim(str);
-		auto v = splitOn(str, '/');
+
+		str = Trim(str);
+		auto v = SplitOn(str, '/');
 
 		res[0] = stoi(v[0]);
-		
+
 		if(v.size() > 1)
 			res[1] = v[1].size();
 		if(res[1])
@@ -69,9 +71,9 @@ namespace Util {
 		return res;
 	}
 
-	string getDirectory(const string& location, bool withSlash){
+	string GetDirectory(const string& location, bool withSlash){
 		auto i = location.find_last_of('/');
-		
+
 		if(i == string::npos){
 			return (withSlash ? "./" : ".");
 		} else {

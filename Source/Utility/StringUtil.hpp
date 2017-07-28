@@ -5,24 +5,24 @@
 #include <string> // For std::string
 #include <vector> // For std::vector<T>
 
-#include "../Utility/FindNext.hpp" // For Util::FindNext<Iter, T>()
-#include "../Utility/Collect.hpp"  // For Util::collect_iter()
-
 namespace Util {
 	using std::array;
 	using std::string;
 	using std::vector;
-	
-	string trim(string s);
-	
-	vector<string> splitOn(const string& line, char c = ' ');
+
+	string Trim(string s);
+
+	vector<string> SplitOn(const string& line, char c = ' ');
 
 	template<typename Pred>
-	vector<string> splitIf(const string& line, Pred&& p);
-	
-	array<int, 5> readFace(string str);
+	vector<string> SplitIf(const string& line, Pred&& p);
 
-	string getDirectory(const string& location, bool withSlash = true);
+	array<int, 5> ReadFace(string str);
+
+	string GetDirectory(const string& location, bool withSlash = true);
+
+	inline bool IsAbsolutePath(const string& path){	return path[0] == '/'; }
+	inline bool IsRelativePath(const string& path){	return path[0] != '/'; }
 }
 
 #endif

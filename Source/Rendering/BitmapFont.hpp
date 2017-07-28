@@ -12,10 +12,11 @@
 
 #ifdef DEBUG
 struct dbg_TextureCoords { int x, y, width, height; };
+
 inline std::ostream& operator<<(std::ostream& os, dbg_TextureCoords d){
-	os << "dbg_TextureCoords { x: " << d.x << 
+	os << "dbg_TextureCoords { x: " << d.x <<
 							", y: " << d.y << 
-							", width: " << d.width << 
+							", width: " << d.width <<
 							", height: " << d.height << " }";
 	return os;
 }
@@ -28,8 +29,8 @@ class BitmapFont {
 	public:
 		explicit BitmapFont(const std::string& confFilename);
 		~BitmapFont();
-		
-		const Texture* getGlyphTexture(char c, bool bold = false, bool italics = false) const { 
+
+		const Texture* getGlyphTexture(char c, bool bold = false, bool italics = false) const {
 			if(hasBoldItalics() && bold && italics)
 				return &boldItalicsGlyphs.at(c - '!');
 			else if(hasBold() && bold)
@@ -37,35 +38,35 @@ class BitmapFont {
 			else if(hasItalics() && italics)
 				return &italicsGlyphs.at(c - '!');
 			else
-				return &glyphs.at(c - '!'); 
+				return &glyphs.at(c - '!');
 		}
 
 		int getGlyphWidth(char c = ' ') const;
 		int getGlyphHeight() const { return glyphHeight; }
-		
+
 		bool isSupported(char c) const { return supportedChars.find(c) != std::string::npos; }
-		
+
 		bool hasBold() const { return boldImg; }
 		bool hasItalics() const { return italicsImg; }
 		bool hasBoldItalics() const { return boldItalicsImg; }
-		
+
 		int tabWidth;
-	
+
 		DEBUG_VAR(Texture*, dbg_tex);
 		DEBUG_VAR(dbg_TexCoordsVec, dbg_coords);
 	private:
 		void genGlyphs();
-		
+
 		Image *img, *boldImg, *italicsImg, *boldItalicsImg;
 
-		std::vector<Texture> 
+		std::vector<Texture>
 			glyphs,
 			boldGlyphs,
 			italicsGlyphs,
 			boldItalicsGlyphs;
-		
+
 		std::string supportedChars;
-		
+
 		int glyphWidth;
 		int glyphHeight;
 };

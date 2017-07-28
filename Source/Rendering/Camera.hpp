@@ -10,7 +10,7 @@ class Camera {
 	public:
         Camera( float aspect, 
 				glm::vec3 pos = glm::vec3(0.0f),
-                Util::Radians fov = Util::Radians::fromDegrees(90.0f), 
+                Util::Radians fov = Util::Radians::FromDegrees(90.0f), 
 				float zNear = 0.1f,
                 float zFar = 100.0f) : aspect(aspect), fov(fov), zNear(zNear), zFar(zFar), transform(pos) {}
 

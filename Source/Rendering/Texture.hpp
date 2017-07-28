@@ -30,7 +30,7 @@ class Texture{
 
         ~Texture();
 
-        void Bind() const;
+        void bind() const;
 
         inline int getW() const { return (img ? img->width : -1); }
         inline int getH() const { return (img ? img->height: -1); }

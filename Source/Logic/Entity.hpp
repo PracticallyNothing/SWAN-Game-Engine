@@ -48,7 +48,7 @@ class Entity {
 		}
 
 		virtual void render() {
-			tex->Bind();
+			tex->bind();
 			mesh->render();
 		}
 

@@ -9,41 +9,41 @@
 
 const Texture* Texture::currBoundTex = nullptr;
 
-Texture::Texture(const std::string& filename, bool isPixelated, int type) 
+Texture::Texture(const std::string& filename, bool isPixelated, int type)
 	: img(new Image(filename.c_str())), delImg(true), type(type)
 {
 	init(isPixelated);
 }
 
-Texture::Texture(const Image& img, bool isPixelated, int type) 
+Texture::Texture(const Image& img, bool isPixelated, int type)
 	: img(&img), delImg(false), type(type)
 {
 	init(isPixelated);
 }
 
-Texture::Texture(Texture&& t) 
-	: img(std::move(t.img)), 
+Texture::Texture(Texture&& t)
+	: img(std::move(t.img)),
 	  delImg(std::move(t.delImg)),
-	  texID(std::move(t.texID)), 
+	  texID(std::move(t.texID)),
 	  type(std::move(t.type))
 {
 	t.texID = 0;
 }
 void Texture::operator=(Texture&& t){
 	img = std::move(t.img);
-	
+
 	texID = std::move(t.texID);
 	t.texID = 0;
-	
+
 	type = std::move(t.type);
 }
 
 void Texture::init(bool isPixelated){
 	glBindTexture(GL_TEXTURE_2D, 0);
-	
+
 	glGenTextures(1, &texID);
 	glBindTexture(GL_TEXTURE_2D, texID);
-    
+
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
@@ -56,13 +56,13 @@ void Texture::init(bool isPixelated){
 }
 
 Texture::~Texture() {
-	glDeleteTextures(1, &texID); 
-	
+	glDeleteTextures(1, &texID);
+
 	if(delImg)
-		delete img; 
+		delete img;
 }
 
-void Texture::Bind() const {
+void Texture::bind() const {
 	if(this == currBoundTex)
 		return;
 

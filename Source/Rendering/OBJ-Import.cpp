@@ -1,4 +1,4 @@
-#include "../Rendering/OBJ-Import.hpp" 
+#include "../Rendering/OBJ-Import.hpp"
 
 #include <algorithm> // For std::find(), std::distance()
 #include <fstream>   // For std::file
@@ -9,7 +9,7 @@
 #include <array> 	 // For std::array<T,N>
 
 #include "../Utility/Debug.hpp"   // For DEBUG_OUT()
-#include "../Utility/Collect.hpp" // For Util::collect_iter_if()
+#include "../Utility/Collect.hpp" // For Util::CollectIterIf()
 #include "../Utility/Profile.hpp" // For UTIL_PROFILE()
 #include "../Utility/StringUtil.hpp"
 
@@ -54,14 +54,14 @@ struct XVertex {
 };
 
 bool operator==(const Vertex& lhs, const XVertex& rhs){
-	return  lhs.pos  == rhs.pos   && 
-			lhs.UV   == rhs.UV    && 
+	return  lhs.pos  == rhs.pos   &&
+			lhs.UV   == rhs.UV    &&
 			lhs.norm == rhs.norm;
 }
 
 bool operator==(const XVertex& lhs, const Vertex& rhs){
-	return lhs.pos  == rhs.pos   && 
-		lhs.UV   == rhs.UV    && 
+	return lhs.pos  == rhs.pos   &&
+		lhs.UV   == rhs.UV    &&
 		lhs.norm == rhs.norm;
 }
 struct Face  { vector<XVertex> verts; };
@@ -76,9 +76,9 @@ enum ReadMode {
 };
 
 Model importOBJ(string filename) {
-	using Util::trim;
-	using Util::readFace;
-	using Util::splitOn;
+	using Util::Trim;
+	using Util::ReadFace;
+	using Util::SplitOn;
 
 	Model res;
 
@@ -95,11 +95,11 @@ Model importOBJ(string filename) {
 	vector<glm::vec3> pos;
 	vector<glm::vec2> UVs;
 	vector<glm::vec3> norms;
-	
+
 	while (!file.eof()) {
 		std::getline(file, line);
 
-		if (line[0] == '#' || line.length() < 2) {  
+		if (line[0] == '#' || line.length() < 2) {
 			// Skip the line, it's either a comment or an empty line.
 			continue;
 		}
@@ -137,33 +137,33 @@ Model importOBJ(string filename) {
 			case READ_NONE:
 				break;
 			case READ_POS: {
-			   auto vec = splitOn(line);
+			   auto vec = SplitOn(line);
 			   pos.push_back(glm::vec3{stof(vec[1]),    // X
 					   stof(vec[2]),    // Y
 					   stof(vec[3])});  // Z
 			   break;
 			}
 			case READ_UV: {
-			  auto vec = splitOn(line);
+			  auto vec = SplitOn(line);
 			  UVs.push_back(glm::vec2{stof(vec[1]),    // X
 					  stof(vec[2])});  // Y
 			  break;
 			}
 			case READ_NORM: {
-				auto vec = splitOn(line);
+				auto vec = SplitOn(line);
 				norms.push_back(glm::vec3{stof(vec[1]),    // X
 										  stof(vec[2]),    // Y
 										  stof(vec[3])});  // Z
 				break;
 			}
 			case READ_FACE: {
-				auto contents = splitOn(line);
+				auto contents = SplitOn(line);
 				Face face;
 
 				for (size_t i = 1; i < contents.size(); i++) {
 					XVertex vert;
-					auto faceV = readFace(contents[i]);
-					
+					auto faceV = ReadFace(contents[i]);
+
 					vert.pos = pos.at(faceV[0] - 1);
 
 					vert.hasUV = faceV[1];
@@ -192,12 +192,12 @@ Model importOBJ(string filename) {
 
 unique_ptr<Mesh> Import::OBJ(std::string filename, Import::Settings s){
 	UTIL_PROFILE();
-	
+
 	Model m = importOBJ(filename);
-	
+
 	vector<Vertex> rVerts;
 	vector<uint> rInds;
-	
+
 	int i = 0;
 	for(auto& face : m.faces){
 		for(auto& vert : face.verts){
@@ -217,23 +217,23 @@ unique_ptr<Mesh> Import::OBJ(std::string filename, Import::Settings s){
 
 	if(s.smoothNormals){
 		vector<bool> checked(rVerts.size());
-		
+
 		fill(checked.begin(), checked.end(), false);
 
 		for(unsigned i = 0; i < rVerts.size(); i++){
-			if(checked[i]) 
+			if(checked[i])
 				continue;
-			
-			auto v = Util::collect_iter_if(rVerts.begin(), rVerts.end(), 
+
+			auto v = Util::CollectIterIf(rVerts.begin(), rVerts.end(), 
 							[&target = rVerts[i]](Vertex v) -> bool { return v.pos == target.pos; });
-			
+
 			glm::vec3 resNorm = glm::vec3(0, 0, 0);
 			for(auto it : v)
 				resNorm += it->norm;
-			
+
 			if(glm::length(resNorm) != 0.0)
 				resNorm = glm::normalize(resNorm);
-			
+
 			for(auto it: v){
 				checked.at(distance(rVerts.begin(), it)) = true;
 				it->norm = resNorm;
