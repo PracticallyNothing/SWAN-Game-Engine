@@ -1,8 +1,9 @@
 #ifndef GUI_HPP
 #define GUI_HPP
 
-#include <vector>  // For std::vector<T>
-#include <utility> // For std::pair<T, U>
+#include <algorithm> // For std::max()
+#include <vector>    // For std::vector<T>
+#include <utility>   // For std::pair<T, U>
 
 #include "../Core/Display.hpp" // For Display
 
@@ -35,7 +36,7 @@ namespace GUI {
 		int x, y, w, h;
 		int layer = 0, sublayer = 0;
 
-		IElement(int x = 0, int y = 0, int w = 0, int h = 0, int layer = 0, int sublayer = 0) 
+		IElement(int x = 0, int y = 0, int w = 0, int h = 0, int layer = 0, int sublayer = 0)
 			: x(x), y(y), w(w), h(h), layer(layer), sublayer(sublayer){}
 		virtual ~IElement(){}
 		virtual const Texture* getTexture() = 0;
@@ -102,7 +103,7 @@ namespace GUI {
 
 	struct Draggable : public IElement {
 		public:
-			Draggable(const Texture* tex) 
+			Draggable(const Texture* tex)
 				: IElement(0, 0, tex->getW(), tex->getH()), texture(tex) {}
 
 			Draggable(const Texture* tex, int w, int h)

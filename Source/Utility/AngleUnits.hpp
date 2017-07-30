@@ -1,7 +1,8 @@
 #ifndef UTIL_ANGLE_UNITS_HPP
 #define UTIL_ANGLE_UNITS_HPP
 
-#include <cmath> // For M_PI
+#define _USE_MATH_DEFINES
+#include <math.h> // For M_PI
 #include <iostream> // For std::ostream
 
 namespace Util {
@@ -11,7 +12,7 @@ namespace Util {
 	class Radians {
 		public:
 			explicit constexpr Radians(double value = 0.0) : v(value){}
-			explicit constexpr operator double() const { return v; }
+			explicit constexpr operator double() const { return (float)v; }
 			explicit constexpr operator float()  const { return v; }
 			constexpr static Radians FromDegrees(double deg);
 
@@ -32,7 +33,7 @@ namespace Util {
 			explicit constexpr Degrees(Radians rad) : v((double)rad * 180 / M_PI) {}
 			constexpr static Degrees FromRadians(double rad){ return Degrees(Radians(rad)); }
 
-			explicit constexpr operator float()   const { return v; }
+			explicit constexpr operator float()   const { return (float)v; }
 			explicit constexpr operator double()  const { return v; }
 			explicit constexpr operator Radians() const { return Radians(v * M_PI / 180.0); }
 

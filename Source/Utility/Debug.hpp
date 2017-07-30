@@ -14,30 +14,33 @@
 
 # if defined(DEBUG) && !defined(NO_DEBUG)
 #include <iostream>
-#	 define DEBUG_PRINT(str)          do { std::cout << "DEBUG: " << (str) << '\n'; } while(0)
-#	 define DEBUG_OUT(function)   	  do { std::cout << STRINGIFY(function) << ": " << (function) << '\n'; } while(0)
-#    define DEBUG_PRINT_CONTEXT() 	  do { std::cout << "Context: " << __PRETTY_FUNCTION__ << '\n'; } while(0)
-#    define DEBUG_VAR(type, name) 	  type name
-#    define DEBUG_USING(as, type) 	  using as = type
-#	 define DEBUG_DO(expr)		  	  do { (expr); } while(0)
-#	 define DEBUG_IF(condition, expr) do { if(condition) (expr); } while(0)
+const std::ostream& dbg_OStream = std::cout;
+#	 define DEBUG_PRINT(str)            do { dbg_OStream << "DEBUG: " << (str) << '\n'; } while(0)
+#	 define DEBUG_OUT(function)   	    do { dbg_OStream << STRINGIFY(function) << ": " << (function) << '\n'; } while(0)
+#    define DEBUG_PRINT_CONTEXT() 	    do { dbg_OStream << "Context: " << __FUNCTION__ << '\n'; } while(0)
+#    define DEBUG_PRINT_CONTEXTUAL(str) do { dbg_OStream << "[" << __FUNCTION__ << "()]: " << (str) << '\n'; } while(0)
+#    define DEBUG_VAR(type, name) 	    type name
+#    define DEBUG_USING(as, type) 	    using as = type
+#	 define DEBUG_DO(expr)		  	    do { (expr); } while(0)
+#	 define DEBUG_IF(condition, expr)   do { if(condition) (expr); } while(0)
 #	 define DEBUG_IF_ELSE(condition, expr_true, expr_false) \
-								do { 						\
-									if(condition) 			\
-										(expr_true); 		\
-									else 					\
-										(expr_false) 		\
-								} while(0)
+		do { 						\
+			if(condition) 			\
+				(expr_true); 		\
+			else 					\
+				(expr_false); 		\
+		} while(0)
 # else
-#	 define DEBUG_PRINT(str)          (void)0
-#	 define DEBUG_OUT(function)   	  (void)0
-#    define DEBUG_PRINT_CONTEXT() 	  (void)0
-#	 define DEBUG_VAR(type, name) 	  struct CONCATENATE(CONCATENATE(__, __LINE__), __) {}
-#    define DEBUG_USING(type, as) 	  struct CONCATENATE(__, __LINE__) {}
-#	 define DEBUG_DO(func)		      (void)0
-#	 define DEBUG_IF(condition, expr) (void)0
+#	 define DEBUG_PRINT(str)            (void)0
+#	 define DEBUG_OUT(function)   	    (void)0
+#    define DEBUG_PRINT_CONTEXT() 	    (void)0
+#    define DEBUG_PRINT_CONTEXTUAL(str) (void)0
+#	 define DEBUG_VAR(type, name) 	    struct CONCATENATE(CONCATENATE(__, __LINE__), __) {}
+#    define DEBUG_USING(type, as) 	    struct CONCATENATE(__, __LINE__) {}
+#	 define DEBUG_DO(func)		        (void)0
+#	 define DEBUG_IF(condition, expr)   (void)0
 #	 define DEBUG_IF_ELSE(condition, expr_true, expr_false) (void)0
-# 	 warning Header "Utility/Debug.hpp" included, but DEBUG isn't defined.
+# 	 warning Header "Utility/Debug.hpp" included, but DEBUG isnt defined.
 # endif
 
 #endif

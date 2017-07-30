@@ -1,44 +1,112 @@
 #ifndef UTIL_XML_HPP
 #define UTIL_XML_HPP
 
-#include <vector> // For std::vector<T>
-#include <string> // For std::string
-#include <map>    // For std::map<K, V>
+#include <vector>   // For std::vector<T>
+#include <string>   // For std::string
+#include <map>      // For std::map<K, V>
+#include <iostream> // For std::ostream
+#include <utility>  // For std::move()
+
+#include "../Utility/Debug.hpp" // For DEBUG_PRINT()
 
 namespace Util {
-	struct XML;
-	class XMLTag;
+    struct XML;
+    class XMLTag;
 
-	class XMLTag {
-		public:
-			~XMLTag(){
-				for(auto c : children){
-					delete c;
-				}
-			}
+    class XMLTag {
+        public:
+            XMLTag(){}
 
-			std::string name;
-			std::string data;
-			std::map<std::string /* name */, std::string /* value */> attribs;
-			bool hasAttrib(const std::string& name){ return attribs.find(name) != attribs.end(); }
+            ~XMLTag(){
+                //DEBUG_PRINT(std::string("        [XMLTag::~XMLTag()] Deleting ") + getFullName());
 
-			std::vector<const XMLTag*> findTagsWithName (std::string name) const;
+                for(auto c : children){
+                    delete c;
+                }
+            }
 
-			std::vector<XMLTag*> children;
-		private:
-			 void findTagsWithName (const std::string& name, std::vector<const XMLTag*>& v) const;
-	};
+            XMLTag(XMLTag&& other)
+                : name(std::move(other.name)),
+                data(std::move(other.data)),
+                attribs(std::move(other.attribs)),
+                children(std::move(other.children)),
+                parent(std::move(other.parent))
+            {
+                other.attribs.clear();
+                other.children.clear();
+            }
 
-	struct XML {
-		bool hasDeclTag = false;
-		XMLTag declTag;
-		XMLTag root;
-		std::string filename;
+            void operator=(XMLTag&& other){
+                name = std::move(other.name);
+                data = std::move(other.data);
+                attribs = std::move(other.attribs);
+                children = std::move(other.children);
+                parent = std::move(other.parent);
 
-		std::vector<const XMLTag*> findTagsWithName(const std::string& name){ return root.findTagsWithName(name); }
-	};
+                other.attribs.clear();
+                other.children.clear();
+            }
 
-	XML ReadXML(std::string filename);
+            XMLTag(const XML& other) = delete;
+            XMLTag& operator=(const XML& other) = delete;
+
+            bool hasAttrib(const std::string& name) const { return attribs.find(name) != attribs.end(); }
+
+            bool isRoot() const { return parent; }
+
+            std::string getAttrib(const std::string& name) const { return attribs.find(name)->second; }
+
+            std::string getFullName() const {
+                if(parent)
+                    return parent->getFullName(name);
+                else
+                    return name;
+            }
+
+            std::vector<const XMLTag*> findTagsWithName (std::string name) const;
+
+            std::string name;
+            std::string data;
+            std::map<std::string /* name */, std::string /* value */> attribs;
+            const XMLTag* parent = nullptr;
+            std::vector<XMLTag*> children;
+
+        private:
+            std::string getFullName(const std::string& postfix) const {
+                if(parent)
+                    return parent->getFullName(name + "::" + postfix);
+                else
+                    return name + "::" + postfix;
+            }
+
+            void findTagsWithName (const std::string& name, std::vector<const XMLTag*>& v) const;
+    };
+
+    struct XML {
+        bool hasDeclTag = false;
+        XMLTag declTag;
+        XMLTag root;
+        std::string filename;
+
+        std::vector<const XMLTag*> findTagsWithName(const std::string& name){ return root.findTagsWithName(name); }
+    };
+
+    XML ReadXML(std::string filename);
+
+    std::string Stringify(const XML&    xml);
+    std::string Stringify(const XMLTag& tag, int indent = 0);
+
+    namespace StreamOps {
+        inline std::ostream& operator<<(std::ostream& os, const XML& xml){
+            os << Stringify(xml);
+            return os;
+        }
+
+        inline std::ostream& operator<<(std::ostream& os, const XMLTag& tag){
+            os << Stringify(tag);
+            return os;
+        }
+    }
 }
 
 #endif

@@ -6,7 +6,7 @@ namespace Util {
         return 2.0 / (double)screenSize * (double)pixel - 1.0;
     }
 
-    constexpr inline int GLCoordToPixel(int screenSize, double GLCoord) {
+    constexpr inline double GLCoordToPixel(int screenSize, double GLCoord) {
         return screenSize / 2 * (GLCoord + 1);
     }
 

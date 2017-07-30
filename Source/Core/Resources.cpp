@@ -140,14 +140,14 @@ namespace Resources {
 		for(auto tag : shaderTags){
 			auto res = std::make_unique<Shader>();
 			res->compileShaders(
-				dir + tag->attribs.find("vertex")->second,
-				dir + tag->attribs.find("fragment")->second
+				dir + tag->getAttrib("vertex"),
+				dir + tag->getAttrib("fragment")
 			);
 
 			{ // ----------- <Attribute/> -----------
 				auto tags = tag->findTagsWithName("Attribute");
 				for(auto tag : tags)
-					res->addAttrib(tag->attribs.find("name")->second);
+					res->addAttrib(tag->getAttrib("name"));
 			}
 			res->linkShaders();
 
@@ -156,29 +156,29 @@ namespace Resources {
 				{ // ----------- <Uniform/> -----------
 					auto tags = tag->findTagsWithName("Uniform");
 					for(auto tag : tags)
-						res->addUniform(tag->attribs.find("name")->second);
+						res->addUniform(tag->getAttrib("name"));
 				}
 				{ // -------- <ArrayUniform/> --------
 					auto tags = tag->findTagsWithName("ArrayUniform");
 					for(auto tag : tags)
-						for(int i = 0; i < std::stoi(tag->attribs.find("size")->second); i++)
-							res->addUniform(tag->attribs.find("name")->second + "[" + std::to_string(i) + "]");
+						for(int i = 0; i < std::stoi(tag->getAttrib("size")); i++)
+							res->addUniform(tag->getAttrib("name") + "[" + std::to_string(i) + "]");
 				}
 				{ // -------- <StructArrayUniform> --------
 					auto tags = tag->findTagsWithName("StructArrayUniform");
 					for(auto tag : tags)
-						for(int i = 0; i < std::stoi(tag->attribs.find("size")->second); i++){
-							std::string s = tag->attribs.find("name")->second + "[" + std::to_string(i) + "].";
+						for(int i = 0; i < std::stoi(tag->getAttrib("size")); i++){
+							std::string s = tag->getAttrib("name") + "[" + std::to_string(i) + "].";
 
 							for(auto x : tag->children)
-								res->addUniform(s + x->attribs.find("name")->second);
+								res->addUniform(s + x->getAttrib("name"));
 						}
 				}
 			}
 			res->unuse();
 
 			detail::shaders.emplace(
-				tag->attribs.find("name")->second,
+				tag->getAttrib("name"),
 				std::move(res)
 			);
 		}

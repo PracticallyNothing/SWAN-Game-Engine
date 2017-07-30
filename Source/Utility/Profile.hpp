@@ -17,7 +17,7 @@
 
 # if defined(PROFILE) && !defined(NO_PROFILE)
 #	define UTIL_PROFILE() \
-			Util::CurrentProfile = Util::Profile{ __PRETTY_FUNCTION__, SDL_GetTicks() }; \
+			Util::CurrentProfile = Util::Profile{ __FUNCTION__, SDL_GetTicks() }; \
 			Util::OnScopeExit _([]{ std::cout << Util::CurrentProfile.funcName << ": " << SDL_GetTicks() - Util::CurrentProfile.durationMs << '\n'; }); \
 			do {} while(0)
 # else

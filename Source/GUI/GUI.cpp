@@ -94,7 +94,6 @@ namespace GUI {
 		}
 
 		delete rect;
-		delete shad;
 	}
 
 	void Renderer::add(IElement* elem) {
@@ -114,8 +113,8 @@ namespace GUI {
 			e->y + e->h < 0)
 			return;
 
-		transform.scale.x = (double)e->w / d.getW();
-		transform.scale.y = (double)e->h / d.getH();
+		transform.scale.x = (float)e->w / d.getW();
+		transform.scale.y = (float)e->h / d.getH();
 
 		transform.pos.x = Util::pixelToGLCoord(d.getW(), e->x + e->w / 2);
 		transform.pos.y = Util::pixelToGLCoord(d.getH(), d.getH() - (e->y + e->h / 2));

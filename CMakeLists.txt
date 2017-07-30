@@ -2,7 +2,13 @@ cmake_minimum_required(VERSION 3.1.3)
 
 project("OpenGL")
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "./CMakeModules/")
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMakeModules/")
+
+if(WIN32)
+	list(APPEND CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/Dependencies/")
+endif()
+
+message("CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
 
 # This is useful for versioning. This declaration sets version 1.0.
 set(VERSION_MAJOR 0)
@@ -32,12 +38,17 @@ configure_file(
 	"${PROJECT_BINARY_DIR}/CMakeConfig.h"
 )
 
+if(WIN32)
+	include_directories("${PROJECT_SOURCE_DIR}/Dependencies/include/")
+	link_directories("${PROJECT_SOURCE_DIR}/Dependencies/lib/")
+
+	set(SDL2_PATH "${PROJECT_SOURCE_DIR}/Dependencies/SDL2-2.0.5/lib/x64")
+endif()
+
 find_package(OpenGL REQUIRED)
+find_package(SDL2 REQUIRED)
 find_package(GLEW REQUIRED)
 #find_package(Freetype REQUIRED)
-find_package(SDL2 REQUIRED)
-
-#link_directories("../Dependencies/lib/")
 
 set(LIBS
 	${OPENGL_LIBRARIES}
