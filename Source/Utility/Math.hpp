@@ -13,6 +13,11 @@ namespace Util {
     constexpr inline double Normalize(double v, double min, double max){
         return (v - min) / (max - min);
     }
+	
+	constexpr inline double UnNormalize(double x, double min, double max){
+		return x*max + (x + 1)*min;
+	}
+
 } /* Util */
 
 #endif //UTIL_MATH_HPP
