@@ -91,6 +91,9 @@ set(Sources
 
 	# GUI stuff
 	Source/GUI/GUI.cpp
+
+	# Physics code
+	Source/Physics/AABB.cpp
 )
 
 add_executable(${PROJECT_NAME} ${Sources})

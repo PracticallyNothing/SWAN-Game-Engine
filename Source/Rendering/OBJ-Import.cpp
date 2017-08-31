@@ -1,16 +1,16 @@
 #include "../Rendering/OBJ-Import.hpp"
 
-#include <algorithm> // For std::find(), std::distance()
-#include <fstream>   // For std::file
-#include <iostream>  // For std::cout
-#include <sstream>   // For std::stringstream
-#include <string>    // For std::string, std::stoi(), std::stof()
-#include <vector>    // For std::vector<T>
-#include <array> 	 // For std::array<T,N>
+#include <algorithm>  // For std::find(), std::distance()
+#include <array>      // For std::array<T,N>
+#include <fstream>    // For std::file
+#include <iostream>   // For std::cout
+#include <sstream>    // For std::stringstream
+#include <string>     // For std::string, std::stoi(), std::stof()
+#include <vector>     // For std::vector<T>
 
-#include "../Utility/Debug.hpp"   // For DEBUG_OUT()
-#include "../Utility/Collect.hpp" // For Util::CollectIterIf()
-#include "../Utility/Profile.hpp" // For UTIL_PROFILE()
+#include "../Utility/Collect.hpp"  // For Util::CollectIterIf()
+#include "../Utility/Debug.hpp"    // For DEBUG_OUT()
+#include "../Utility/Profile.hpp"  // For UTIL_PROFILE()
 #include "../Utility/StringUtil.hpp"
 
 #include <cctype>  // For std::isspace()
@@ -32,214 +32,239 @@ using std::unique_ptr;
 using std::make_unique;
 
 struct XVertex {
-	XVertex(glm::vec3 pos  = glm::vec3(),
-			glm::vec2 UV   = glm::vec2(),
-			glm::vec3 norm = glm::vec3(),
-			bool hasUV = true,
-			bool hasNorm = true)
-		: pos(pos), UV(UV), norm(norm), hasUV(hasUV), hasNorm(hasNorm){}
+    XVertex(glm::vec3 pos = glm::vec3(), glm::vec2 UV = glm::vec2(),
+            glm::vec3 norm = glm::vec3(), bool hasUV = true,
+            bool hasNorm = true)
+        : pos(pos), UV(UV), norm(norm), hasUV(hasUV), hasNorm(hasNorm) {}
 
-	glm::vec3 pos;
-	glm::vec2 UV;
-	glm::vec3 norm;
+    glm::vec3 pos;
+    glm::vec2 UV;
+    glm::vec3 norm;
 
-	bool hasUV = true;
-	bool hasNorm = true;
+    bool hasUV = true;
+    bool hasNorm = true;
 
-	operator Vertex(){
-		return  Vertex (pos,
-					   (hasUV   ? UV   : glm::vec2()),
-					   (hasNorm ? norm : glm::vec3()));
-	}
+    operator Vertex() {
+        return Vertex(pos, (hasUV ? UV : glm::vec2()),
+                      (hasNorm ? norm : glm::vec3()));
+    }
 };
 
-bool operator==(const Vertex& lhs, const XVertex& rhs){
-	return  lhs.pos  == rhs.pos   &&
-			lhs.UV   == rhs.UV    &&
-			lhs.norm == rhs.norm;
+bool operator==(const Vertex& lhs, const XVertex& rhs) {
+    return lhs.pos == rhs.pos && lhs.UV == rhs.UV && lhs.norm == rhs.norm;
 }
 
-bool operator==(const XVertex& lhs, const Vertex& rhs){
-	return lhs.pos  == rhs.pos   &&
-		lhs.UV   == rhs.UV    &&
-		lhs.norm == rhs.norm;
+bool operator==(const XVertex& lhs, const Vertex& rhs) {
+    return lhs.pos == rhs.pos && lhs.UV == rhs.UV && lhs.norm == rhs.norm;
 }
-struct Face  { vector<XVertex> verts; };
-struct Model { vector<Face>   faces; };
+struct Face {
+    vector<XVertex> verts;
+};
+struct Model {
+    vector<Face> faces;
+};
 
 enum ReadMode {
-	READ_NONE,
-	READ_POS,
-	READ_UV,
-	READ_NORM,
-	READ_FACE,
+    READ_NONE,
+    READ_POS,
+    READ_UV,
+    READ_NORM,
+    READ_FACE,
 };
 
 Model importOBJ(string filename) {
-	using Util::Trim;
-	using Util::ReadFace;
-	using Util::SplitOn;
+    using Util::Trim;
+    using Util::ReadFace;
+    using Util::SplitOn;
 
-	Model res;
+    Model res;
 
-	ifstream file(filename.c_str());
-	if (!file) {
-		// TODO: throw exception
-		return res;
-	}
+    ifstream file(filename.c_str());
+    if (!file) {
+        // TODO: throw exception
+        return res;
+    }
 
-	string line;
-	size_t linenum = 0;
-	ReadMode mode = READ_NONE;
+    string line;
+    size_t linenum = 0;
+    ReadMode mode = READ_NONE;
 
-	vector<glm::vec3> pos;
-	vector<glm::vec2> UVs;
-	vector<glm::vec3> norms;
+    vector<glm::vec3> pos;
+    vector<glm::vec2> UVs;
+    vector<glm::vec3> norms;
 
-	while (!file.eof()) {
-		std::getline(file, line);
+    while (!file.eof()) {
+        std::getline(file, line);
 
-		if (line[0] == '#' || line.length() < 2) {
-			// Skip the line, it's either a comment or an empty line.
-			continue;
-		}
+        if (line[0] == '#' || line.length() < 2) {
+            // Skip the line, it's either a comment or an empty line.
+            continue;
+        }
 
-		switch (line[0]) {
-			case 'f':
-				mode = READ_FACE;
-				break;
-			case 'v':
-				switch (line[1]) {
-					case ' ':
-						mode = READ_POS;
-						break;
-					case 't':
-						mode = READ_UV;
-						break;
-					case 'n':
-						mode = READ_NORM;
-						break;
-					default:
-						/*cout << "ERROR: Unknown or unsupported vertex spec 'v"
-							<< line[1] << "' on line " << linenum
-							<< ", skipping...\n";*/
-						break;
-				}
-				break;
-			default:
-				/*cout << "ERROR: Unknown or unsupported spec '" << line[0]
-					<< "' on line " << linenum << ",\n    " << line
-					<< "\nskipping...\n";*/
-				break;
-		}
+        switch (line[0]) {
+            case 'f':
+                mode = READ_FACE;
+                break;
+            case 'v':
+                switch (line[1]) {
+                    case ' ':
+                        mode = READ_POS;
+                        break;
+                    case 't':
+                        mode = READ_UV;
+                        break;
+                    case 'n':
+                        mode = READ_NORM;
+                        break;
+                    default:
+                        /*cout << "ERROR: Unknown or unsupported vertex spec 'v"
+                          << line[1] << "' on line " << linenum
+                          << ", skipping...\n";*/
+                        break;
+                }
+                break;
+            default:
+                /*cout << "ERROR: Unknown or unsupported spec '" << line[0]
+                  << "' on line " << linenum << ",\n    " << line
+                  << "\nskipping...\n";*/
+                break;
+        }
 
-		switch (mode) {
-			case READ_NONE:
-				break;
-			case READ_POS: {
-			   auto vec = SplitOn(line);
-			   pos.push_back(glm::vec3{stof(vec[1]),    // X
-					   stof(vec[2]),    // Y
-					   stof(vec[3])});  // Z
-			   break;
-			}
-			case READ_UV: {
-			  auto vec = SplitOn(line);
-			  UVs.push_back(glm::vec2{stof(vec[1]),    // X
-					  stof(vec[2])});  // Y
-			  break;
-			}
-			case READ_NORM: {
-				auto vec = SplitOn(line);
-				norms.push_back(glm::vec3{stof(vec[1]),    // X
-										  stof(vec[2]),    // Y
-										  stof(vec[3])});  // Z
-				break;
-			}
-			case READ_FACE: {
-				auto contents = SplitOn(line);
-				Face face;
+        switch (mode) {
+            case READ_NONE:
+                break;
+            case READ_POS: {
+                auto vec = SplitOn(line);
+                pos.push_back(glm::vec3{stof(vec[1]),    // X
+                                        stof(vec[2]),    // Y
+                                        stof(vec[3])});  // Z
+                break;
+            }
+            case READ_UV: {
+                auto vec = SplitOn(line);
+                UVs.push_back(glm::vec2{stof(vec[1]),    // X
+                                        stof(vec[2])});  // Y
+                break;
+            }
+            case READ_NORM: {
+                auto vec = SplitOn(line);
+                norms.push_back(glm::vec3{stof(vec[1]),    // X
+                                          stof(vec[2]),    // Y
+                                          stof(vec[3])});  // Z
+                break;
+            }
+            case READ_FACE: {
+                auto contents = SplitOn(line);
+                Face face;
 
-				for (size_t i = 1; i < contents.size(); i++) {
-					XVertex vert;
-					auto faceV = ReadFace(contents[i]);
+                for (size_t i = 1; i < contents.size(); i++) {
+                    XVertex vert;
+                    auto faceV = ReadFace(contents[i]);
 
-					vert.pos = pos.at(faceV[0] - 1);
+                    vert.pos = pos.at(faceV[0] - 1);
 
-					vert.hasUV = faceV[1];
-					if (vert.hasUV)
-						vert.UV = UVs.at(faceV[2] - 1);
+                    vert.hasUV = faceV[1];
+                    if (vert.hasUV) vert.UV = UVs.at(faceV[2] - 1);
 
-					vert.hasNorm = faceV[3];
-					if (vert.hasNorm)
-						vert.norm = norms.at(faceV[4] - 1);
+                    vert.hasNorm = faceV[3];
+                    if (vert.hasNorm) vert.norm = norms.at(faceV[4] - 1);
 
-					face.verts.push_back(vert);
-				}
+                    face.verts.push_back(vert);
+                }
 
-				res.faces.push_back(face);
+                res.faces.push_back(face);
 
-				break;
-			}
-		}
+                break;
+            }
+        }
 
-		linenum++;
-		mode = READ_NONE;
-	}
+        linenum++;
+        mode = READ_NONE;
+    }
 
-	return res;
+    return res;
 }
 
-unique_ptr<Mesh> Import::OBJ(std::string filename, Import::Settings s){
-	UTIL_PROFILE();
+unique_ptr<Mesh> Import::OBJ(std::string filename, Import::Settings s) {
+    UTIL_PROFILE();
 
-	Model m = importOBJ(filename);
+    Model m = importOBJ(filename);
 
-	vector<Vertex> rVerts;
-	vector<uint> rInds;
+    vector<Vertex> rVerts;
+    vector<uint> rInds;
 
-	int i = 0;
-	for(auto& face : m.faces){
-		for(auto& vert : face.verts){
-			auto it = find(rVerts.begin(), rVerts.end(), vert);
+    int i = 0;
+    for (auto& face : m.faces) {
+        for (auto& vert : face.verts) {
+            auto it = find(rVerts.begin(), rVerts.end(), vert);
 
-			if(it == rVerts.end()){
-				Vertex v(vert.pos,
-						(vert.hasUV   ? vert.UV   : glm::vec2()),
-						(vert.hasNorm ? vert.norm : glm::vec3()));
-				rVerts.push_back(v);
-				rInds.push_back(i++);
-			} else {
-				rInds.push_back(distance(rVerts.begin(), it));
-			}
-		}
-	}
+            if (it == rVerts.end()) {
+                Vertex v(vert.pos, (vert.hasUV ? vert.UV : glm::vec2()),
+                         (vert.hasNorm ? vert.norm : glm::vec3()));
+                rVerts.push_back(v);
+                rInds.push_back(i++);
+            } else {
+                rInds.push_back(distance(rVerts.begin(), it));
+            }
+        }
+    }
 
-	if(s.smoothNormals){
-		vector<bool> checked(rVerts.size());
+    if (s.smoothNormals) {
+        vector<bool> checked(rVerts.size());
 
-		fill(checked.begin(), checked.end(), false);
+        fill(checked.begin(), checked.end(), false);
 
-		for(unsigned i = 0; i < rVerts.size(); i++){
-			if(checked[i])
-				continue;
+        for (unsigned i = 0; i < rVerts.size(); i++) {
+            if (checked[i]) continue;
 
-			auto v = Util::CollectIterIf(rVerts.begin(), rVerts.end(), 
-							[&target = rVerts[i]](Vertex v) -> bool { return v.pos == target.pos; });
+            auto v =
+                Util::CollectIterIf(rVerts.begin(), rVerts.end(),
+                                    [& target = rVerts[i]](Vertex v)->bool {
+                                        return v.pos == target.pos;
+                                    });
 
-			glm::vec3 resNorm = glm::vec3(0, 0, 0);
-			for(auto it : v)
-				resNorm += it->norm;
+            glm::vec3 resNorm = glm::vec3(0, 0, 0);
+            for (auto it : v) resNorm += it->norm;
 
-			if(glm::length(resNorm) != 0.0)
-				resNorm = glm::normalize(resNorm);
+            if (glm::length(resNorm) != 0.0) resNorm = glm::normalize(resNorm);
 
-			for(auto it: v){
-				checked.at(distance(rVerts.begin(), it)) = true;
-				it->norm = resNorm;
-			}
-		}
-	}
+            for (auto it : v) {
+                checked.at(distance(rVerts.begin(), it)) = true;
+                it->norm = resNorm;
+            }
+        }
+    }
 
-	return make_unique<Mesh>(rVerts, rInds);
+    auto res = make_unique<Mesh>(rVerts, rInds);
+
+    if (s.createAABB) {
+        AABB aabbRes;
+
+        aabbRes.min = rVerts[0].pos;
+        aabbRes.max = rVerts[1].pos;
+
+        for (const auto& vert : rVerts) {
+            if (vert.pos.x < aabbRes.min.x) {
+                aabbRes.min.x = vert.pos.x;
+            } else if (vert.pos.x > aabbRes.max.x) {
+                aabbRes.max.x = vert.pos.x;
+            }
+
+            if (vert.pos.y < aabbRes.min.y) {
+                aabbRes.min.y = vert.pos.y;
+            } else if (vert.pos.y > aabbRes.max.y) {
+                aabbRes.max.y = vert.pos.y;
+            }
+
+            if (vert.pos.z < aabbRes.min.z) {
+                aabbRes.min.z = vert.pos.z;
+            } else if (vert.pos.z > aabbRes.max.z) {
+                aabbRes.max.z = vert.pos.z;
+            }
+        }
+
+        res->setAABB(aabbRes);
+    }
+
+    return res;
 }

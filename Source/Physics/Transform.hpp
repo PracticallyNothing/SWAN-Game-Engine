@@ -11,7 +11,7 @@ struct Transform {
 	Transform(glm::vec3  _pos    = glm::vec3(0),
 			glm::vec3  _rot    = glm::vec3(0),
 			glm::vec3  _scale  = glm::vec3(1),
-			Transform* _parent = NULL) 
+			Transform* _parent = NULL)
 		: pos(_pos), rot(_rot), scale(_scale), parent(_parent) {}
 	~Transform(){}
 
@@ -38,13 +38,13 @@ struct Transform {
 	inline glm::mat4 getModel_inv() const { return glm::inverse(getModel()); }
 
 	inline glm::mat4 getPosMat()   const { return glm::translate(pos); }
-	inline glm::mat4 getRotMat()   const { 
+	inline glm::mat4 getRotMat()   const {
 		glm::mat4 rotMatX = glm::rotate(rot.x, glm::vec3(1, 0, 0));
 		glm::mat4 rotMatY = glm::rotate(rot.y, glm::vec3(0, 1, 0));
 		glm::mat4 rotMatZ = glm::rotate(rot.z, glm::vec3(0, 0, 1));
 
-		return rotMatZ * 
-			   rotMatY * 
+		return rotMatZ *
+			   rotMatY *
 			   rotMatX;
 	}
 	inline glm::mat4 getScaleMat() const { return glm::scale(scale); }

@@ -6,6 +6,23 @@
 
 typedef unsigned int uint;
 
+/*
+namespace Display {
+    namespace detail {
+        SDL_Window* window;
+        SDL_GLContext glContext;
+
+        int width, height;
+    }
+
+    bool Init();
+    void Clear();
+    bool Close();
+
+
+}
+*/
+
 class Display{
     public:
         Display(int w, int h, const std::string& title);
@@ -28,5 +45,4 @@ class Display{
         static SDL_GLContext glContext;
         static uint numDisplays;
 };
-
 #endif // !DISPLAY_HPP

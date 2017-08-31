@@ -116,8 +116,8 @@ namespace GUI {
 		transform.scale.x = (float)e->w / d.getW();
 		transform.scale.y = (float)e->h / d.getH();
 
-		transform.pos.x = Util::pixelToGLCoord(d.getW(), e->x + e->w / 2);
-		transform.pos.y = Util::pixelToGLCoord(d.getH(), d.getH() - (e->y + e->h / 2));
+		transform.pos.x = Util::PixelToGLCoord(d.getW(), e->x + e->w / 2);
+		transform.pos.y = Util::PixelToGLCoord(d.getH(), d.getH() - (e->y + e->h / 2));
 
 		shad->setUniformData("transform", transform);
 
