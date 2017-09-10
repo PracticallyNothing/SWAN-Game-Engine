@@ -174,14 +174,14 @@ namespace GUI {
 
 			void add(IElement*);
 			void add(IElementContainer*);
-			void render(Display& d);
+			void render();
 			void update();
 
 			const std::vector<ElementType>& getElems() const;
 
 			ElementType& getElem(int index);
 		private:
-			void renderElement(IElement*, Display&);
+			void renderElement(IElement*);
 			Shader* shad;
 
 			std::vector<ElementType> elems;

@@ -1,6 +1,5 @@
 #include "../Build/Linux/CMakeConfig.h"
 
-// TODO: The Display class is just a singleton, turn it into a namespacce
 #include "Core/Display.hpp"    // For Display
 #include "Core/Input.hpp"      // For Input
 #include "Core/Resources.hpp"  // For Resources::LoadFromFile(), Resources::Get*()
@@ -17,13 +16,14 @@
 #include "Rendering/BitmapFont.hpp"  // For BitmapFont
 #include "Rendering/Camera.hpp"      // For Camera
 #include "Rendering/Light.hpp"       // For DirectionalLight, PointLight
-#include "Rendering/Mesh.hpp"	// For Mesh
+#include "Rendering/Mesh.hpp"	     // For Mesh
 #include "Rendering/OBJ-Import.hpp"  // For Import::OBJ()
 #include "Rendering/Shader.hpp"      // For Shader
-#include "Rendering/Text.hpp"	// For Text
+#include "Rendering/Text.hpp"	     // For Text
 #include "Rendering/Texture.hpp"     // For Texture
 
-#include "Physics/AABB.hpp"  // For AABB
+#include "Physics/AABB.hpp"           // For AABB
+#include "Physics/CheckCollision.hpp" // For CheckCollision()
 
 #define STBI_IMPLEMENTATION
 #include "External/stb_image.h"  // For stbi_set_flip_vertically_on_load()
@@ -45,21 +45,13 @@ using Clock = std::chrono::steady_clock;
 using std::chrono::operator""ms;
 using std::chrono::duration_cast;
 
-struct DisplayConfig {
-	int w, h;
-	std::string title;
-};
-
 // TODO: Remove this class, it's a disgusting god object
 class Game {
 	public:
-		explicit Game(std::string resourcesFile, DisplayConfig conf = {640, 480, "OpenGL-CPP-Engine"})
-		: display(conf.w, conf.h, conf.title), run(true) {
-			DEBUG_PRINT("    [Game::Game()] Display created.");
+		explicit Game(std::string resourcesFile) {
+			DEBUG_PRINT("    [Game::Game()] Display initialized.");
 
-			// UTIL_PROFILE();
-			Display::setClearColor(0.0f, 0.3f, 0.25f, 0.0f);
-			// SDL_SetRelativeMouseMode(SDL_TRUE);
+			Display::SetClearColor(0.0f, 0.3f, 0.25f, 0.0f);
 			Input_init();
 
 			DEBUG_PRINT("    [Game::Game()] Loading resources...");
@@ -75,8 +67,7 @@ class Game {
 			shader = Resources::GetShader("Proper");
 			textShader = Resources::GetShader("Text");
 
-			cam = make_unique<Camera>(display.getAspect(),
-					glm::vec3(0.0f, 0.0f, -1.0f));
+			cam = make_unique<Camera>(Display::GetAspectRatio(), glm::vec3(0.0f, 0.0f, -1.0f));
 
 			DirectionalLight dl0;
 			dl0.direction = glm::normalize(glm::vec3(1, 1, 1));
@@ -169,26 +160,18 @@ class Game {
 				std::cout << "Camera FOV: " << (cam->fov += glm::radians(1.0))
 					<< '\n';
 
-			auto mouseX = Util::PixelToGLCoord(display.getW(), Input.Mouse.x);
-			auto prevMouseX =
-				Util::PixelToGLCoord(display.getW(), PrevInput.Mouse.x);
+			auto mouseX     = Util::PixelToGLCoord(Display::GetWidth(), Input.Mouse.x);
+			auto prevMouseX = Util::PixelToGLCoord(Display::GetWidth(), PrevInput.Mouse.x);
 
 			cam->rotateByY(Util::Radians((mouseX - prevMouseX) * 2.0));
 
-			auto mouseY = Util::PixelToGLCoord(display.getH(), Input.Mouse.y);
-			auto prevMouseY =
-				Util::PixelToGLCoord(display.getH(), PrevInput.Mouse.y);
+			auto mouseY     = Util::PixelToGLCoord(Display::GetHeight(), Input.Mouse.y);
+			auto prevMouseY = Util::PixelToGLCoord(Display::GetHeight(), PrevInput.Mouse.y);
 
 			cam->rotateByX(Util::Radians((mouseY - prevMouseY) * 2.0));
 
-			// DEBUG_OUT(Util::Degrees::FromRadians(cam->getTransform_ref().rot.x));
-			// DEBUG_OUT(Util::Degrees::FromRadians(cam->getTransform_ref().rot.y));
-			// DEBUG_OUT(Util::Degrees::FromRadians(cam->getTransform_ref().rot.z));
-			// plane.getTransform_ref().rot.x += 0.01f;
-
 			plane.getTransform_ref().pos.x = std::sin(time) * 10;
-			plane.getTransform_ref().rot.y = std::cos(time) * 3;
-			plane.getTransform_ref().scale.z = std::sin(time) * std::cos(time) * 2;
+			plane.getTransform_ref().pos.z = std::sin(time) * 10;
 
 			time += 0.01f;
 
@@ -199,7 +182,7 @@ class Game {
 			tc.italics = true;
 			tc.text = std::string("time: ") + std::to_string(time) + "\n ";
 			tc.font = font;
-			txt.set(display, tc, false);
+			txt.set(tc, false);
 
 			guiRenderer->update();
 		}
@@ -232,27 +215,33 @@ class Game {
 			}
 			shader->unuse();
 
-			Render(ApplyTransform(shotgunMesh->getAABB(), shotgun.getTransform_ref()), cam.get());
-			Render(ApplyTransform(planeMesh->getAABB(), plane.getTransform_ref()), cam.get());
+			auto col = CheckCollision (
+				ApplyTransform(shotgunMesh->getColWrapper().aabb, shotgun.getTransform()),
+				ApplyTransform(planeMesh->getColWrapper().aabb,   plane.getTransform())
+			);
 
+			Render(ApplyTransform(shotgunMesh->getColWrapper().aabb, shotgun.getTransform()), cam.get(), col.happened);
+			Render(ApplyTransform(planeMesh->getColWrapper().aabb,   plane.getTransform()),   cam.get(), col.happened);
+
+			/*
 			TextConfig tc;
-			tc.text = std::string("shininess: ") + std::to_string(shininess);
+			tc.text = std::string("shotgun center: (") + std::to_string(SMSC.x) + ", " + std::to_string(SMSC.y) + ", " + std::to_string(SMSC.z) + ")";
 			tc.font = font;
 			tc.color = glm::vec3(0.3, 0.0, 0.7);
-			txt.set(display, tc, true);
+			txt.set(tc, true);
+			*/
 
 			glClear(GL_DEPTH_BUFFER_BIT);
-			// txt.render(textShader);
-			guiRenderer->render(display);
+			//txt.render(textShader);
+			guiRenderer->render();
 
 			glClear(GL_DEPTH_BUFFER_BIT);
-			display.clear();
+			Display::Clear();
 		}
 
 		bool running() { return run; }
 
 	private:
-		Display display;
 		bool run;
 
 		_input PrevInput;
@@ -329,21 +318,20 @@ int main(int argc, char** argv) {
 		strcpy(ConfigFile, "./Config.xml");
 	}
 
-	auto xml = Util::ReadXML(Util::Unquote(std::string(ConfigFile)));
+	auto xml = Util::ReadXML( Util::Unquote(ConfigFile) );
 	auto v = xml.findTagsWithName("Resolution");
-	auto resourcesFile =
-		xml.findTagsWithName("Resources").at(0)->getAttrib("file");
+	auto resourcesFile = xml.findTagsWithName("Resources").at(0)->getAttrib("file");
 
 	if (Util::IsRelativePath(resourcesFile))
-		resourcesFile =
-			Util::GetDirectory(std::string(ConfigFile), true) + resourcesFile;
+		resourcesFile = Util::GetDirectory(std::string(ConfigFile), true) + resourcesFile;
 
-	DEBUG_OUT(resourcesFile);
+	Display::Init(
+		std::stoi( v.front()->getAttrib("width")  ),
+		std::stoi( v.front()->getAttrib("height") ),
+		"OGL-Engine"
+	);
 
-	DEBUG_PRINT("Game::Game(): ");
-	Game game(resourcesFile,
-			{std::stoi(v.front()->getAttrib("width")),
-			std::stoi(v.front()->getAttrib("height")), "OGL-Engine"});
+	Game game(resourcesFile);
 
 	while (game.running()) {
 		game.update();

@@ -106,18 +106,18 @@ namespace GUI {
 		elems.push_back(Renderer::ElementType(elemCont));
 	}
 
-	void GUI::Renderer::renderElement(IElement* e, Display& d) {
-		if (e->x > d.getW() ||
-			e->y > d.getH() ||
+	void GUI::Renderer::renderElement(IElement* e) {
+		if (e->x > Display::GetWidth() ||
+			e->y > Display::GetHeight() ||
 			e->x + e->w < 0 ||
 			e->y + e->h < 0)
 			return;
 
-		transform.scale.x = (float)e->w / d.getW();
-		transform.scale.y = (float)e->h / d.getH();
+		transform.scale.x = (float)e->w / Display::GetWidth();
+		transform.scale.y = (float)e->h / Display::GetHeight();
 
-		transform.pos.x = Util::PixelToGLCoord(d.getW(), e->x + e->w / 2);
-		transform.pos.y = Util::PixelToGLCoord(d.getH(), d.getH() - (e->y + e->h / 2));
+		transform.pos.x = Util::PixelToGLCoord(Display::GetWidth(), e->x + e->w / 2);
+		transform.pos.y = Util::PixelToGLCoord(Display::GetHeight(), Display::GetHeight() - (e->y + e->h / 2));
 
 		shad->setUniformData("transform", transform);
 
@@ -127,7 +127,7 @@ namespace GUI {
 		e->postRender();
 	}
 
-	void GUI::Renderer::render(Display& d) {
+	void GUI::Renderer::render() {
 		if (!sortedByLayer) {
 			std::sort(elems.begin(), elems.end(), LayerSorter());
 			sortedByLayer = true;
@@ -137,11 +137,11 @@ namespace GUI {
 
 		for (GUI::Renderer::ElementType ei : elems) {
 			if (ei.hasFirst()) {
-				renderElement(ei.getFirst(), d);
+				renderElement(ei.getFirst());
 			} else {
 				ei.getSecond()->preGroupRender();
 				for (IElement* e : ei.getSecond()->getElements().elements) {
-					renderElement(e, d);
+					renderElement(e);
 				}
 				ei.getSecond()->postGroupRender();
 			}
@@ -168,7 +168,7 @@ namespace GUI {
 	Renderer::ElementType& Renderer::getElem(int index) { return elems[index]; }
 	// -----------------------------------------------------------
 	void Draggable::update() {
-		bool mousedOver = 
+		bool mousedOver =
 			Input.Mouse.x > x &&
 			Input.Mouse.y > y &&
 			Input.Mouse.x < x + w &&
@@ -177,8 +177,8 @@ namespace GUI {
 		if ((currFocused == this || noCurrFocused()) && mousedOver && Input.Mouse.lButton) {
 			setCurrentlyFocused(this);
 			moving = true;
-				
-			int relMouseX = Input.Mouse.x - x, 
+
+			int relMouseX = Input.Mouse.x - x,
 				relMouseY = Input.Mouse.y - y;
 
 			if (lastMouseX < 0)

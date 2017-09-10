@@ -30,7 +30,7 @@ void MakeMinMax(vec3& a, vec3& b) {
 	b.z = max(tmp1.z, tmp2.z);
 }
 
-AABB ApplyTransform(AABB box, const Transform& t) {
+AABB ApplyTransform(AABB box, Transform t) {
 	box.min = vec3(vec4(box.min, 1) * t.getRotMat());
 	box.max = vec3(vec4(box.max, 1) * t.getRotMat());
 
@@ -42,11 +42,10 @@ AABB ApplyTransform(AABB box, const Transform& t) {
 	return box;
 }
 
-void Render(AABB box, const Camera* cam) {
+void Render(AABB box, const Camera* cam, bool colliding) {
 	Transform t;
 
 	// Set the transform position to the center of the AABB
-
 	t.pos = box.max - (box.max - box.min) * 0.5f;
 
 	// Rotation is not set, the box is axis-aligned
@@ -65,7 +64,7 @@ void Render(AABB box, const Camera* cam) {
 		s->setUniformData("perspective", cam->getPerspective());
 		s->setUniformData("view", cam->getView());
 		s->setUniformData("transform", t);
-		//s->setUniformData("colliding", colliding);
+		s->setUniformData("colliding", colliding);
 
 		m->renderWireframe();
 	}

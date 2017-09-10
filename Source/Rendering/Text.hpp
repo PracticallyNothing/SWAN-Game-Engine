@@ -1,8 +1,6 @@
 #ifndef TEXT_HPP
 #define TEXT_HPP
 
-#include "../Core/Display.hpp" // For Display
-
 #include "Shader.hpp"      // For Shader
 #include "Texture.hpp"     // For Texture
 #include "Mesh.hpp"        // For Mesh
@@ -10,7 +8,7 @@
 
 #include "../Physics/Transform.hpp"
 
-#include "../Utility/Debug.hpp" // For DEBUG_DO()
+#include "../Utility/Debug.hpp" // For DEBUG_DO(), DEBUG_VAR
 
 #include <string> // For std::string
 
@@ -34,30 +32,25 @@ struct Character {
 
 class Text {
 	public:
-		Text(){
+		Text(){ initCharMesh(); }
+
+		Text(TextConfig tc) {
+			set(tc);
 			initCharMesh();
 		}
-		Text(const Display& d, TextConfig tc) {
-			set(d, tc);
-			initCharMesh();
-		}
+
 		~Text(){ delete charMesh; }
 
-		// TODO: WAY TOO MANY ARGUMENTS
-		void set(const Display& d,
-				 TextConfig tc,
-				 bool append = false);
-		
-		void render(Shader* shad) const;
-		
+		void set(TextConfig tc,	bool append = false);
 
+		void render(Shader* shad) const;
 	private:
 		const BitmapFont* font;
 		std::vector<Character> chars;
 		int lastX = 0, lastY = 0;
-		
+
 		void initCharMesh();
-		
+
 		Mesh* charMesh;
 };
 

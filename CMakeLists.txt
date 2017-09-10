@@ -94,6 +94,9 @@ set(Sources
 
 	# Physics code
 	Source/Physics/AABB.cpp
+	Source/Physics/ColWrapper.cpp
+	# Source/Physics/BoundingSphere.cpp # Deprecated due to no visible use
+	Source/Physics/CheckCollision.cpp
 )
 
 add_executable(${PROJECT_NAME} ${Sources})

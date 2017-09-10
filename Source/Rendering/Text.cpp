@@ -1,5 +1,7 @@
 #include "Text.hpp"
 
+#include "../Core/Display.hpp" // For Display::GetWidth(), Display::GetHeight()
+
 #include "../Utility/Math.hpp"  // For Util::GLToPixelCoord()
 
 /*
@@ -30,7 +32,7 @@ Mesh* genRect2D_ptr() {
 void Text::initCharMesh() { charMesh = genRect2D_ptr(); }
 
 // TODO: WAY TOO MANY ARGUMENTS
-void Text::set(const Display& d, TextConfig tc, bool append) {
+void Text::set(TextConfig tc, bool append) {
     if (!tc.font) {
         std::cout << "ERROR(Text::set()): No font was set\n";
         return;
@@ -74,14 +76,12 @@ void Text::set(const Display& d, TextConfig tc, bool append) {
         res.color = tc.color;
         res.transform = Transform(
             glm::vec3(
-                Util::PixelToGLCoord(d.getW(),
-                                     x + font->getGlyphWidth(c) / 2.0),
-                Util::PixelToGLCoord(
-                    d.getH(), d.getH() - y - font->getGlyphHeight() / 2.0),
+                Util::PixelToGLCoord(Display::GetWidth(), x + font->getGlyphWidth(c) / 2.0),
+                Util::PixelToGLCoord(Display::GetHeight(), Display::GetHeight() - y - font->getGlyphHeight() / 2.0),
                 0),
             glm::vec3(0, 0, 0),
-            glm::vec3((double)font->getGlyphWidth(c) / d.getW(),
-                      (double)font->getGlyphHeight() / d.getH(), 0));
+            glm::vec3((double)font->getGlyphWidth(c) / Display::GetWidth(),
+                      (double)font->getGlyphHeight() / Display::GetHeight(), 0));
 
         chars.push_back(res);
     }

@@ -6,43 +6,33 @@
 
 typedef unsigned int uint;
 
-/*
 namespace Display {
-    namespace detail {
-        SDL_Window* window;
-        SDL_GLContext glContext;
+	namespace detail {
+		extern SDL_Window* window;
+		extern SDL_GLContext glContext;
 
-        int width, height;
-    }
+		extern std::string title;
+		extern int width, height;
+		extern bool initialized;
 
-    bool Init();
-    void Clear();
-    bool Close();
+		extern float red, green, blue, alpha;
+	}
 
+	extern void Init   (int width, int height, const std::string& title);
+	extern void Clear  ();
+	extern void Clear  (float red, float green, float blue, float alpha);
+	extern void Close  ();
+	extern void Resize (int newWidth, int newHeight);
 
+	extern void SetClearColor (float red, float green, float blue, float alpha);
+
+	inline bool IsInitialized(){ return detail::initialized; }
+
+	inline double GetAspectRatio () {
+		return (double) detail::width / detail::height;
+	}
+
+	inline int GetWidth  () { return detail::width;  }
+	inline int GetHeight () { return detail::height; }
 }
-*/
-
-class Display{
-    public:
-        Display(int w, int h, const std::string& title);
-        ~Display();
-
-        void focus();
-        void resize(int w, int h);
-
-        void clear();
-        static void setClearColor(float r, float g, float b, float a);
-
-        inline int getW() const { return w; }
-        inline int getH() const { return h; }
-        inline float getAspect() const { return (float)w/h; }
-        inline static uint getNumDisplays() { return Display::numDisplays; }
-    private:
-        int w,h;
-        SDL_Window* win;
-
-        static SDL_GLContext glContext;
-        static uint numDisplays;
-};
 #endif // !DISPLAY_HPP
