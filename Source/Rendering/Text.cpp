@@ -31,7 +31,6 @@ Mesh* genRect2D_ptr() {
 
 void Text::initCharMesh() { charMesh = genRect2D_ptr(); }
 
-// TODO: WAY TOO MANY ARGUMENTS
 void Text::set(TextConfig tc, bool append) {
     if (!tc.font) {
         std::cout << "ERROR(Text::set()): No font was set\n";
@@ -110,3 +109,4 @@ void Text::render(Shader* shad) const {
 
     shad->unuse();
 }
+

@@ -216,20 +216,20 @@ class Game {
 			shader->unuse();
 
 			auto col = CheckCollision (
-				ApplyTransform(shotgunMesh->getColWrapper().aabb, shotgun.getTransform()),
-				ApplyTransform(planeMesh->getColWrapper().aabb,   plane.getTransform())
-			);
+					ApplyTransform(shotgunMesh->getColWrapper().aabb, shotgun.getTransform()),
+					ApplyTransform(planeMesh->getColWrapper().aabb,   plane.getTransform())
+					);
 
 			Render(ApplyTransform(shotgunMesh->getColWrapper().aabb, shotgun.getTransform()), cam.get(), col.happened);
 			Render(ApplyTransform(planeMesh->getColWrapper().aabb,   plane.getTransform()),   cam.get(), col.happened);
 
 			/*
-			TextConfig tc;
-			tc.text = std::string("shotgun center: (") + std::to_string(SMSC.x) + ", " + std::to_string(SMSC.y) + ", " + std::to_string(SMSC.z) + ")";
-			tc.font = font;
-			tc.color = glm::vec3(0.3, 0.0, 0.7);
-			txt.set(tc, true);
-			*/
+			   TextConfig tc;
+			   tc.text = std::string("shotgun center: (") + std::to_string(SMSC.x) + ", " + std::to_string(SMSC.y) + ", " + std::to_string(SMSC.z) + ")";
+			   tc.font = font;
+			   tc.color = glm::vec3(0.3, 0.0, 0.7);
+			   txt.set(tc, true);
+			   */
 
 			glClear(GL_DEPTH_BUFFER_BIT);
 			//txt.render(textShader);
@@ -326,10 +326,10 @@ int main(int argc, char** argv) {
 		resourcesFile = Util::GetDirectory(std::string(ConfigFile), true) + resourcesFile;
 
 	Display::Init(
-		std::stoi( v.front()->getAttrib("width")  ),
-		std::stoi( v.front()->getAttrib("height") ),
-		"OGL-Engine"
-	);
+			std::stoi( v.front()->getAttrib("width")  ),
+			std::stoi( v.front()->getAttrib("height") ),
+			"OGL-Engine"
+			);
 
 	Game game(resourcesFile);
 
