@@ -93,8 +93,8 @@ Model importOBJ(string filename) {
 	vector<glm::vec2> UVs;
 	vector<glm::vec3> norms;
 
-	while (!file.eof()) {
-		std::getline(file, line);
+	while (std::getline(file, line)) {
+		//std::getline(file, line);
 
 		if (line[0] == '#' || line.length() < 2) {
 			// Skip the line, it's either a comment or an empty line.

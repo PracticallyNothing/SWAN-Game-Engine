@@ -174,30 +174,27 @@ namespace GUI {
 			Input.Mouse.x < x + w &&
 			Input.Mouse.y < y + h;
 
-		if ((currFocused == this || noCurrFocused()) && mousedOver && Input.Mouse.lButton) {
-			setCurrentlyFocused(this);
-			moving = true;
+		if (currFocused == this) { // If being dragged ...
+			if (Input.Mouse.lButton) { // ... and the mouse is still being held
+				// Set position to mouse.xy - offset.xy
+				x = Input.Mouse.x + offsetX;
+				y = Input.Mouse.y + offsetY;
+			} else { // ... but LMB isn't being pressed anymore
+				// Reset the offset
+				offsetX = offsetY = 0;
 
-			int relMouseX = Input.Mouse.x - x,
-				relMouseY = Input.Mouse.y - y;
-
-			if (lastMouseX < 0)
-				lastMouseX = relMouseX;
-			if (lastMouseY < 0)
-				lastMouseY = relMouseY;
-
-			x += (relMouseX - lastMouseX) ;
-			y += (relMouseY - lastMouseY) ;
-
-			lastMouseX = relMouseX;
-			lastMouseY = relMouseY;
-		} else {
-			if (currFocused == this) {
-				setCurrentlyFocused(NULL);
+				// Change currFocused object to not be you
+				currFocused = nullptr;
 			}
+		} else if (noCurrFocused()) { // If not being dragged and there are no other active elements ...
+			if (mousedOver && Input.Mouse.lButton) { // ... and the mouse is on top of the element with LMB pressed
+				// Change currFocused to indicate you are being dragged
+				currFocused = this;
 
-			lastMouseX = -1;
-			lastMouseY = -1;
+				// Set offset to position.xy - mouse.xy
+				offsetX = x - Input.Mouse.x;
+				offsetY = y - Input.Mouse.y;
+			}
 		}
 	}
 }

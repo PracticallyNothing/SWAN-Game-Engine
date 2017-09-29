@@ -184,7 +184,7 @@ void Shader::setUniformData(const std::string& name, float data) {
 }
 
 void Shader::setUniformData(const std::string& name, double data) {
-	if(hasUniform(name)) glUniform1d(uniforms[name], data);
+	if(hasUniform(name)) glUniform1f(uniforms[name], data);
 }
 
 void Shader::setUniformData(const std::string& name, glm::vec2 data) {
@@ -307,4 +307,3 @@ void Shader::setUniformData(const std::string& name, Spotlight light){
 	setUniformData(name + ".linAtt",   light.linearAtt);
 	setUniformData(name + ".quadAtt",  light.quadraticAtt);
 }
-

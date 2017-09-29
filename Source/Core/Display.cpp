@@ -1,8 +1,9 @@
 #include "Display.hpp"
-
+#include "../Utility/Debug.hpp"
 #include <SDL2/SDL.h>
 
-#include <GL/glew.h>
+// #include <GL/glew.h>
+#include <glad/glad.h>
 
 namespace Display {
 	namespace detail {
@@ -21,9 +22,9 @@ namespace Display {
 		SDL_Init(SDL_INIT_VIDEO);
 
 		// Set the OpenGL versions to be used (in this case, 3.2)
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+		//SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+		//SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+		//SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
 
 		// Set in bits:
 		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);    // The amount of red.
@@ -44,10 +45,18 @@ namespace Display {
 				width, height,           // Window width and height
 				SDL_WINDOW_OPENGL);      // Flags for the window
 
+		SDL_assert(detail::window != nullptr);
+
 		detail::glContext = SDL_GL_CreateContext(detail::window);
-		//glewExperimental = true;
-		glewInit();
+		SDL_assert(gladLoadGL());
+
+		/*
+		glewExperimental = true;
+		auto i = glewInit();
+		DEBUG_OUT(i);
+		SDL_assert(i == GLEW_OK);
 		glGetError();
+		*/
 
 		detail::initialized = true;
 

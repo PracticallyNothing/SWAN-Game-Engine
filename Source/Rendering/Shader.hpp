@@ -5,7 +5,7 @@
 #include <string>
 #include <map>
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 
 #include "Light.hpp"
 #include "../Physics/Transform.hpp"
@@ -17,7 +17,7 @@ class Shader {
         Shader();
         ~Shader();
 
-        void compileShaders(const std::string& vertexShaderFilePath, 
+        void compileShaders(const std::string& vertexShaderFilePath,
 							const std::string& fragmentShaderFilepath);
         void linkShaders();
         void addAttrib(const std::string& attributeName);
@@ -30,7 +30,7 @@ class Shader {
         bool hasUniform(const std::string& name);
         bool hasUniformWarn(const std::string& name);
         void addUniform(const std::string& name);
-         
+
 		GLint getUniformID(const std::string& name);
 
         void setUniformData(const std::string& name, int    data);
@@ -51,13 +51,13 @@ class Shader {
         void setUniformData(const std::string& name, glm::mat4&& data, GLboolean transposed = GL_FALSE);
 
         void setUniformData(const std::string& name, Transform& data);
-		
+
 		void setUniformData(const std::string& name, DirectionalLight light);
 		void setUniformData(const std::string& name, PointLight light);
 		void setUniformData(const std::string& name, Spotlight light);
     private:
         int _numAttributes;
- 
+
 		void compileShader(const std::string& filePath, GLuint id);
 
         GLuint _programID;
@@ -66,4 +66,3 @@ class Shader {
 
         std::map<std::string,GLint> uniforms;
 };
-

@@ -115,7 +115,7 @@ namespace GUI {
 
 			const Texture* texture;
 		private:
-			int lastMouseX = -1, lastMouseY = -1;
+			int offsetX = 0, offsetY = 0;
 			bool moving = false;
 	};
 

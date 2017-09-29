@@ -1,3 +1,5 @@
+#define SDL_main_h_ // SDL_Main might be very useful, but I find it to be pesky.
+
 #include "../Build/Linux/CMakeConfig.h"
 
 #include "Core/Display.hpp"    // For Display
@@ -94,11 +96,8 @@ class Game {
 			shader->unuse();
 
 			guiRenderer = make_unique<GUI::Renderer>();
-			guiRenderer->add(
-					new GUI::Draggable(Resources::GetTexture("Flat Blue"),
-						// Resources::GetTexture("Flat Red"),
-						// Resources::GetTexture("Flat Cyan"),
-						100, 100));
+			guiRenderer->add( new GUI::Draggable(Resources::GetTexture("Flat Red"), 100, 100) );
+			guiRenderer->add( new GUI::Draggable(Resources::GetTexture("Flat Blue"), 100, 100) );
 
 			plane.getTransform_ref().pos = pl1.position;
 

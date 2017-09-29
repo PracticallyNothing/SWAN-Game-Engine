@@ -65,6 +65,7 @@ namespace Resources {
 		std::string dir = Util::GetDirectory(filename);
 		DEBUG_OUT(dir);
 
+		DEBUG_PRINT("Loading meshes...");
 		auto meshes = res.findTagsWithName("Mesh");
 		for (auto tag : meshes) {
 			auto fileIt = tag->attribs.find("file");
@@ -83,10 +84,14 @@ namespace Resources {
 
 			std::string name = nameIt->second;
 			std::string file = dir + fileIt->second;
+			DEBUG_OUT("-------------------------------------");
+			DEBUG_OUT(name);
+			DEBUG_OUT(file);
 
 			detail::meshes.emplace((name.length() ? name : file),
 					Import::OBJ(file, Import::Settings{true, false, ColWrapper::COL_AABB}));
 		}
+		DEBUG_PRINT("Loading meshes complete!");
 
 		auto textures = res.findTagsWithName("Texture");
 		for (auto tag : textures) {

@@ -43,23 +43,28 @@ if(WIN32)
 	link_directories("${PROJECT_SOURCE_DIR}/Dependencies/lib/")
 
 	set(SDL2_PATH "${PROJECT_SOURCE_DIR}/Dependencies/SDL2-2.0.5/lib/x64")
+
 endif()
 
 find_package(OpenGL REQUIRED)
 find_package(SDL2 REQUIRED)
-find_package(GLEW REQUIRED)
+#find_package(GLEW REQUIRED)
 #find_package(Freetype REQUIRED)
 
 set(LIBS
 	${OPENGL_LIBRARIES}
-	${GLEW_LIBRARIES}
+#	${GLEW_LIBRARIES}
 #	${FREETYPE_LIBRARIES}
 	${SDL2_LIBRARY}
 )
 
+if(WIN32)
+	list(APPEND LIBS "mingw32")
+endif()
+
 include_directories(
 	${OPENGL_INCLUDE_DIRS}
-	${GLEW_INCLUDE_DIRS}
+#	${GLEW_INCLUDE_DIRS}
 #	${FREETYPE_INCLUDE_DIRS}
 	${SDL2_INCLUDE_DIR}
 
@@ -70,6 +75,9 @@ include_directories(
 set(Sources
 	# Where the main() function is stored
 	Source/Main.cpp
+
+	# Replacement for GLEW
+	Source/External/glad/src/glad.c
 
 	# Core files for the engine
 	Source/Core/Display.cpp
@@ -101,5 +109,5 @@ set(Sources
 
 add_executable(${PROJECT_NAME} ${Sources})
 
-target_link_libraries(${PROJECT_NAME} ${LIBS})
+target_link_libraries(${PROJECT_NAME} ${LIBS} ${CMAKE_DL_LIBS})
 #End work here
