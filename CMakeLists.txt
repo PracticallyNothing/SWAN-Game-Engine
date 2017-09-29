@@ -98,7 +98,8 @@ set(Sources
 	Source/Rendering/OBJ-Import.cpp
 
 	# GUI stuff
-	Source/GUI/GUI.cpp
+	Source/GUI/GUIPrim.cpp
+	Source/GUI/GUIRenderer.cpp
 
 	# Physics code
 	Source/Physics/AABB.cpp

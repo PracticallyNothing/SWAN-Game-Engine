@@ -1,4 +1,4 @@
-#include "GUI.hpp"
+#include "GUIPrim.hpp"
 
 #include <algorithm>
 
@@ -7,7 +7,7 @@
 
 #include "../Utility/Math.hpp"
 
-namespace GUI {
+namespace GUIPrim {
 	IElement* currFocused;
 	void setCurrentlyFocused(IElement* el) { currFocused = el; }
 	bool noCurrFocused() { return currFocused == NULL; }
@@ -68,104 +68,6 @@ namespace GUI {
 			setCurrentlyFocused(NULL);
 		}
 	}
-	// -----------------------------------------------------------
-	Renderer::Renderer() {
-		shad = Resources::GetShader("GUI");
-
-		Vertex v0(glm::vec3(-1,  1, 0), glm::vec2(0, 1), glm::normalize(glm::vec3(-0.5, -0.5, 0.5)));
-		Vertex v1(glm::vec3( 1,  1, 0), glm::vec2(1, 1), glm::normalize(glm::vec3( 0.5,  0.5, 0.5)));
-		Vertex v2(glm::vec3(-1, -1, 0), glm::vec2(0, 0), glm::normalize(glm::vec3( 0.5, -0.5, 0.5)));
-		Vertex v3(glm::vec3( 1, -1, 0), glm::vec2(1, 0), glm::normalize(glm::vec3(-0.5,  0.5, 0.5)));
-
-		rect = new Mesh({v0, v1, v2, v3}, {0, 2, 1, 1, 2, 3});
-
-		sortedByLayer = true;
-	}
-
-	Renderer::~Renderer() {
-		for (Renderer::ElementType ei : elems) {
-			if (ei.hasFirst()) {
-				delete ei.getFirst();
-			} else {
-				for (IElement* e : ei.getSecond()->getElements().elements) {
-					delete e;
-				}
-			}
-		}
-
-		delete rect;
-	}
-
-	void Renderer::add(IElement* elem) {
-		sortedByLayer = false;
-		elems.push_back(Renderer::ElementType(elem));
-	}
-
-	void Renderer::add(IElementContainer* elemCont) {
-		sortedByLayer = false;
-		elems.push_back(Renderer::ElementType(elemCont));
-	}
-
-	void GUI::Renderer::renderElement(IElement* e) {
-		if (e->x > Display::GetWidth() ||
-			e->y > Display::GetHeight() ||
-			e->x + e->w < 0 ||
-			e->y + e->h < 0)
-			return;
-
-		transform.scale.x = (float)e->w / Display::GetWidth();
-		transform.scale.y = (float)e->h / Display::GetHeight();
-
-		transform.pos.x = Util::PixelToGLCoord(Display::GetWidth(), e->x + e->w / 2);
-		transform.pos.y = Util::PixelToGLCoord(Display::GetHeight(), Display::GetHeight() - (e->y + e->h / 2));
-
-		shad->setUniformData("transform", transform);
-
-		e->getTexture()->bind();
-		e->preRender();
-		rect->render();
-		e->postRender();
-	}
-
-	void GUI::Renderer::render() {
-		if (!sortedByLayer) {
-			std::sort(elems.begin(), elems.end(), LayerSorter());
-			sortedByLayer = true;
-		}
-
-		shad->use();
-
-		for (GUI::Renderer::ElementType ei : elems) {
-			if (ei.hasFirst()) {
-				renderElement(ei.getFirst());
-			} else {
-				ei.getSecond()->preGroupRender();
-				for (IElement* e : ei.getSecond()->getElements().elements) {
-					renderElement(e);
-				}
-				ei.getSecond()->postGroupRender();
-			}
-		}
-
-		shad->unuse();
-	}
-
-	void Renderer::update() {
-		for (auto ei : elems) {
-			if (ei.hasFirst()) {
-				ei.getFirst()->update();
-			} else {
-				for (IElement* e : ei.getSecond()->getElements().elements) {
-					e->update();
-				}
-			}
-		}
-	}
-	const std::vector<Renderer::ElementType>& Renderer::getElems() const {
-		return elems;
-	}
-
-	Renderer::ElementType& Renderer::getElem(int index) { return elems[index]; }
 	// -----------------------------------------------------------
 	void Draggable::update() {
 		bool mousedOver =

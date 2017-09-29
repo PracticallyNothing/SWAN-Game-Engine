@@ -6,7 +6,8 @@
 #include "Core/Input.hpp"      // For Input
 #include "Core/Resources.hpp"  // For Resources::LoadFromFile(), Resources::Get*()
 
-#include "GUI/GUI.hpp"  // For GUI::*
+#include "GUI/GUIPrim.hpp"     // For GUIPrim::*
+#include "GUI/GUIRenderer.hpp" // For GUIRenderer
 
 #include "Utility/StreamOps.hpp"  // For Util::StreamOps::*
 #include "Utility/Debug.hpp"      // For DEBUG_OUT()
@@ -95,9 +96,9 @@ class Game {
 			}
 			shader->unuse();
 
-			guiRenderer = make_unique<GUI::Renderer>();
-			guiRenderer->add( new GUI::Draggable(Resources::GetTexture("Flat Red"), 100, 100) );
-			guiRenderer->add( new GUI::Draggable(Resources::GetTexture("Flat Blue"), 100, 100) );
+			guiRenderer = make_unique<GUIRenderer>();
+			guiRenderer->add( new GUIPrim::Draggable(Resources::GetTexture("Flat Red"), 100, 100) );
+			guiRenderer->add( new GUIPrim::Draggable(Resources::GetTexture("Flat Blue"), 100, 100) );
 
 			plane.getTransform_ref().pos = pl1.position;
 
@@ -256,7 +257,7 @@ class Game {
 		Shader* textShader;
 		const BitmapFont* font;
 
-		unique_ptr<GUI::Renderer> guiRenderer;
+		unique_ptr<GUIRenderer> guiRenderer;
 
 		float shininess = 10.0f;
 		float time = 0;

@@ -3,19 +3,10 @@
 
 #include <algorithm> // For std::max()
 #include <vector>    // For std::vector<T>
-#include <utility>   // For std::pair<T, U>
 
-#include "../Core/Display.hpp" // For Display
-
-#include "../Rendering/Mesh.hpp"    // For Mesh
 #include "../Rendering/Texture.hpp" // For Texture
-#include "../Rendering/Shader.hpp"  // For Shader
 
-#include "../Physics/Transform.hpp" // For Transform
-
-#include "../Utility/Either.hpp" // For Util::Either
-
-namespace GUI {
+namespace GUIPrim {
 	//---Interfaces-----------------------//
 	struct IElement;
 	struct ElementGroup;
@@ -27,9 +18,6 @@ namespace GUI {
 	struct Draggable;
 	//---Derived from IElementContainer---//
 	class Window;
-	//---Other----------------------------//
-	struct LayerSorter;
-	class Renderer;
 	//------------------------------------//
 
 	struct IElement {
@@ -117,79 +105,6 @@ namespace GUI {
 		private:
 			int offsetX = 0, offsetY = 0;
 			bool moving = false;
-	};
-
-	struct LayerSorter {
-		typedef Util::Either<IElement*, IElementContainer*> ElemOrCont;
-
-		bool operator()(ElemOrCont a, ElemOrCont b){
-			if(a.hasFirst() && b.hasFirst())
-				return compare(a.getFirst(), b.getFirst());
-
-			else if(a.hasFirst() && !b.hasFirst())
-				return compare(a.getFirst(), b.getSecond()->getElements());
-
-			else if(!a.hasFirst() && b.hasFirst())
-				return compare(a.getSecond()->getElements(), b.getFirst());
-
-			else
-				return compare(a.getSecond()->getElements(), b.getSecond()->getElements());
-		}
-
-		inline bool compare(IElement* a, IElement* b){
-			return compare(a->layer, a->sublayer,
-					b->layer, b->sublayer);
-		}
-		inline bool compare(IElement* a, ElementGroup& b){
-			return compare(a->layer, a->sublayer,
-					b.layer, b.sublayer);
-		}
-		inline bool compare(ElementGroup& a, IElement* b){
-			return compare(a.layer, a.sublayer,
-					b->layer, b->sublayer);
-		}
-		inline bool compare(ElementGroup& a, ElementGroup& b){
-			return compare(a.layer, a.sublayer,
-					b.layer, b.sublayer);
-		}
-
-		bool compare(int aLayer, int aSublayer, int bLayer, int bSublayer){
-			if(aLayer != bLayer) {
-				return aLayer > bLayer;
-			} else {
-				if(aSublayer == bSublayer) {
-					return true;
-				} else {
-					return aSublayer > bSublayer;
-				}
-			}
-		}
-	};
-
-	class Renderer {
-		public:
-			using ElementType = Util::Either<IElement*, IElementContainer*>;
-			Renderer();
-			~Renderer();
-
-			void add(IElement*);
-			void add(IElementContainer*);
-			void render();
-			void update();
-
-			const std::vector<ElementType>& getElems() const;
-
-			ElementType& getElem(int index);
-		private:
-			void renderElement(IElement*);
-			Shader* shad;
-
-			std::vector<ElementType> elems;
-
-			Mesh* rect;
-			Transform transform;
-
-			bool sortedByLayer;
 	};
 
 	class Window : public IElement {
