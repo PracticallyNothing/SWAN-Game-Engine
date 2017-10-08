@@ -12,21 +12,22 @@ Coding style:
 ==========================
 For code, put the opening brackets for functions, ifs, else ifs, etc. on the same line, like so:
 ```cpp
-if(condition) {
+if (condition) {
     // Do something
-} else if(otherCondition) {
+} else if (otherCondition) {
     // Do something else
 } else {
     // Explode, crash, burn, die, etc.
 }  
 
-void foo(){
+void foo() {
     // Function body
 }
 ```
+
 **However**, if the statement can be a short one-liner, put everything on the same line, like so:
 ```cpp
-if(condition) foo();  
+if (condition) foo();  
 
 void bar() { return true; }
 ```
@@ -95,11 +96,10 @@ General tips:
 --------------------------
 * If a **function**, **variable** or **type** is to be used only for **debugging**, prefix it with `"dbg_"`.
 
-* Use `DEBUG_OUT()`, `DEBUG_VAR()`, etc. if the purpose of something is only for **debugging**.
+* Use `SWAN_DEBUG_OUT()`, `SWAN_DEBUG_VAR()`, etc. if the purpose of something is only for **debugging**.
 
-* When writing an **importer**, be it for a mesh, texture, sound, etc., prefer to write it as a free function.  
-***__DO NOT__*** give the resource class the ability to import itself, *that is not its job*.
+* When writing an **importer**, be it for a mesh, texture, sound, etc., prefer to write it as a free function. ***__DO NOT__*** give the resource class the ability to import itself, *that is not its job*.
 
-* If a class is going to be instantiated only once (i.e. it's a *singleton*), prefer to write it as a **namespace** instead.  
+* If a class is going to be instantiated only once (i.e. it's a *singleton*), prefer to write it as a **namespace** instead.
 Put any *private* functions inside of a nested `detail` namespace.
 --------------------------

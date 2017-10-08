@@ -1,7 +1,7 @@
 ---------------------------------------------
 
-Currently in SWAN, if a mesh has to be rendered, the following code has to be
-used:
+Currently in SWAN, if a mesh has to be rendered, something like the following
+has to be used:
 ```cpp
 SWAN::Mesh someMesh;
 SWAN::Shader someShader;
@@ -24,11 +24,11 @@ someShader.unuse(); // Disable the shader so that others can be used
 While the syntax is ok for a few uniforms, it quickly gets cumbersome.  
 There is the possibility of forgetting to write `shader.use()` and `shader.unuse()`.  
 The syntax also doesn't follow the coding conventions, since the mesh has
-a `render` function even though the shader is what is doing the rendering.
+a `render` function even though the shader is what is actually doing the rendering.
 
 ---------------------------------------------
 
-A preffered syntax for this would look like this:
+A preffered syntax for this would look something like this:
 ```cpp
 SWAN::Shader someShader;
 SWAN::Mesh someMesh;
