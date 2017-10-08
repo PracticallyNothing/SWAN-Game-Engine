@@ -26,13 +26,13 @@ set(CMAKE_CXX_STANDARD 14)
 message("CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 
 if(CMAKE_BUILD_TYPE MATCHES DEBUG)
-	add_definitions(-DSWAN_DEBUG -DSWAN_DEBUG_SHADER -DPROFILE)
+	add_definitions(-DSWAN_DEBUG -DSWAN_DEBUG_SHADER -DSWAN_PROFILE)
 elseif(CMAKE_BUILD_TYPE MATCHES PROFILE)
-	add_definitions(-DPROFILE)
+	add_definitions(-DSWAN_PROFILE)
 	list(APPEND CMAKE_CXX_FLAGS "-pg")
 	set(CMAKE_BUILD_TYPE RELEASE)
-elseif(CMAKE_BUILD_TYPE MATCHES FINAL_RELEASE) # Release: Clean up your shit edition
-	add_definitions(-DNO_PROFILE -DNO_DEBUG)
+elseif(CMAKE_BUILD_TYPE MATCHES FINAL_RELEASE) # Release: Clean up your stuff edition
+	add_definitions(-DSWAN_NO_PROFILE -DSWAN_NO_DEBUG)
 	set(CMAKE_BUILD_TYPE RELEASE)
 endif()
 

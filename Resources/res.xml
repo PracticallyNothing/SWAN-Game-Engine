@@ -7,7 +7,6 @@
 	<Mesh file="Meshes/SimplePlane.obj" name="Plane"        />
 	<Mesh file="Meshes/Torus.obj"       name="Torus"        />
 	<Mesh file="Meshes/airboat.obj"     name="Airboat"      />
-	<Mesh file="Meshes/test1.obj"       name="Cube"         />
 
 	<Texture file="Textures/BlackTexture.png"  name="Flat Black"/>
 	<Texture file="Textures/BlueTexture.png"   name="Flat Blue"/>
