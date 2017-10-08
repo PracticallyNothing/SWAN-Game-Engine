@@ -1,7 +1,7 @@
 #ifndef IMAGE_HPP
 #define IMAGE_HPP
 
-#include "../External/stb_image.h"
+#include "External/stb_image.h"
 
 #include <cstdint> // For std::uint8_t
 #include <iostream> // For std::ostream, std::operator<<()

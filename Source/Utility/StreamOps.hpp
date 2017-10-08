@@ -4,7 +4,7 @@
 #include <iostream> // For std::ostream
 
 #include <glm/fwd.hpp>              // For glm::vec*
-#include "../Physics/Transform.hpp" // For Transform
+#include "Physics/Transform.hpp" // For Transform
 
 namespace Util {
 namespace StreamOps {

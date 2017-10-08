@@ -2,7 +2,7 @@
 
 #include <GL/gl.h>
 
-#include "../Utility/Debug.hpp"
+#include "Utility/Debug.hpp"
 
 using std::vector;
 using std::initializer_list;

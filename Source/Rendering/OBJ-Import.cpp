@@ -1,4 +1,4 @@
-#include "../Rendering/OBJ-Import.hpp"
+#include "Rendering/OBJ-Import.hpp"
 
 #include <algorithm>  // For std::find(), std::distance()
 #include <array>      // For std::array<T,N>
@@ -8,10 +8,10 @@
 #include <string>     // For std::string, std::stoi(), std::stof()
 #include <vector>     // For std::vector<T>
 
-#include "../Utility/Collect.hpp"  // For Util::CollectIterIf()
-#include "../Utility/Debug.hpp"    // For DEBUG_OUT()
-#include "../Utility/Profile.hpp"  // For UTIL_PROFILE()
-#include "../Utility/StringUtil.hpp"
+#include "Utility/Collect.hpp"  // For Util::CollectIterIf()
+#include "Utility/Debug.hpp"    // For DEBUG_OUT()
+#include "Utility/Profile.hpp"  // For UTIL_PROFILE()
+#include "Utility/StringUtil.hpp"
 
 #include <cctype>  // For std::isspace()
 using std::isspace;

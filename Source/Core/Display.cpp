@@ -1,5 +1,5 @@
 #include "Display.hpp"
-#include "../Utility/Debug.hpp"
+#include "Utility/Debug.hpp"
 #include <SDL2/SDL.h>
 
 // #include <GL/glew.h>

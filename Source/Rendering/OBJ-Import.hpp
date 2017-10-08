@@ -4,7 +4,7 @@
 #include "Mesh.hpp" // For Mesh
 #include <string>   // For std::string
 #include <memory>   // For std::unique_ptr<T>, std::make_unique<T>()
-#include "../Physics/ColWrapper.hpp" // For ColWrapper::Type
+#include "Physics/ColWrapper.hpp" // For ColWrapper::Type
 
 namespace Import {
     struct Settings {

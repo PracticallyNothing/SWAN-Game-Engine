@@ -1,8 +1,8 @@
 #include "GUIRenderer.hpp"
 
-#include "../Core/Display.hpp"   // For Display
-#include "../Core/Resources.hpp" // For Resources::GetShader()
-#include "../Utility/Math.hpp"   // For Util::PixelToGLCoord
+#include "Core/Display.hpp"   // For Display
+#include "Core/Resources.hpp" // For Resources::GetShader()
+#include "Utility/Math.hpp"   // For Util::PixelToGLCoord
 
 GUIRenderer::GUIRenderer() {
 	shad = Resources::GetShader("GUI");

@@ -1,10 +1,10 @@
 #ifndef ENTITY_HPP
 #define ENTITY_HPP
 
-#include "../Rendering/Mesh.hpp"    // For Mesh
-#include "../Rendering/Texture.hpp" // For Texture
-#include "../Physics/Transform.hpp" // For Transform 
-#include "../Rendering/Shader.hpp"  // For Shaders
+#include "Rendering/Mesh.hpp"    // For Mesh
+#include "Rendering/Texture.hpp" // For Texture
+#include "Physics/Transform.hpp" // For Transform 
+#include "Rendering/Shader.hpp"  // For Shaders
 
 #include <cstdint> // For std::uint32_t
 

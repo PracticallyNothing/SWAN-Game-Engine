@@ -42,6 +42,8 @@ configure_file(
 	"${PROJECT_BINARY_DIR}/CMakeConfig.h"
 )
 
+include_directories("${PROJECT_SOURCE_DIR}/Source/")
+include_directories("${PROJECT_SOURCE_DIR}/Source/External/cpptoml/include/")
 include_directories("${PROJECT_SOURCE_DIR}/Dependencies/include/")
 
 if(WIN32)

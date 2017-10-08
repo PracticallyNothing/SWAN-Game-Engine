@@ -4,7 +4,7 @@
 #include <algorithm> // For std::max()
 #include <vector>    // For std::vector<T>
 
-#include "../Rendering/Texture.hpp" // For Texture
+#include "Rendering/Texture.hpp" // For Texture
 
 namespace GUIPrim {
 	//---Interfaces-----------------------//

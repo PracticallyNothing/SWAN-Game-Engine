@@ -1,7 +1,7 @@
 #include "Image.hpp"
 
 #define STBI_IMPLEMENTATION
-#include "../External/stb_image.h" // For stbi_load(), stbi_image_free()
+#include "External/stb_image.h" // For stbi_load(), stbi_image_free()
 
 #include <iostream>  // For std::cout
 #include <algorithm> // For std::copy()

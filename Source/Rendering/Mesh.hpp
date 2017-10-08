@@ -1,8 +1,8 @@
 #ifndef MESH_HPP
 #define MESH_HPP
 
-#include "../Physics/AABB.hpp"
-#include "../Physics/ColWrapper.hpp"
+#include "Physics/AABB.hpp"
+#include "Physics/ColWrapper.hpp"
 
 #include <initializer_list>
 #include <vector>

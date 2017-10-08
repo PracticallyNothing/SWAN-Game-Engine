@@ -6,10 +6,10 @@
 #include <memory>  // For std::unique_ptr<T>
 #include <string>  // For std::string
 
-#include "../Rendering/BitmapFont.hpp"  // For BitmapFont
-#include "../Rendering/Mesh.hpp"        // For Mesh
-#include "../Rendering/Shader.hpp"      // For Shader
-#include "../Rendering/Texture.hpp"     // For Texture
+#include "Rendering/BitmapFont.hpp"  // For BitmapFont
+#include "Rendering/Mesh.hpp"        // For Mesh
+#include "Rendering/Shader.hpp"      // For Shader
+#include "Rendering/Texture.hpp"     // For Texture
 
 namespace Resources {
     namespace detail {

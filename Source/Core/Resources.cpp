@@ -1,10 +1,10 @@
 #include "Resources.hpp"
 
-#include "../Utility/Debug.hpp"  // For DEBUG_OUT()
-#include "../Utility/StringUtil.hpp"  // For Util::GetDirectory(), Util::IsAbsolutePath()
-#include "../Utility/XML.hpp"  // For Util::XML, Util::ReadXML()
+#include "Utility/Debug.hpp"  // For DEBUG_OUT()
+#include "Utility/StringUtil.hpp"  // For Util::GetDirectory(), Util::IsAbsolutePath()
+#include "Utility/XML.hpp"  // For Util::XML, Util::ReadXML()
 
-#include "../Rendering/OBJ-Import.hpp"  // For Import::OBJ()
+#include "Rendering/OBJ-Import.hpp"  // For Import::OBJ()
 
 #include <iostream>  // For std::cout
 

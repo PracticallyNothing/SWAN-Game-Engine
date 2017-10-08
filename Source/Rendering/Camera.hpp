@@ -2,9 +2,9 @@
 #define CAMERA_HPP
 
 #include <glm/glm.hpp>				 // For glm::vec3, glm::radians
-#include "../Core/Display.hpp"		 // For Display::GetWidth(), Display::GetHeight()
-#include "../Physics/Transform.hpp"	 // For Transform
-#include "../Utility/AngleUnits.hpp" // For Util::Radians
+#include "Core/Display.hpp"		 // For Display::GetWidth(), Display::GetHeight()
+#include "Physics/Transform.hpp"	 // For Transform
+#include "Utility/AngleUnits.hpp" // For Util::Radians
 
 struct OrthographicT {};
 

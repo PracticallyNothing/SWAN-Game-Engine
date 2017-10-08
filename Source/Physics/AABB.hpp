@@ -2,7 +2,7 @@
 #define AABB_HPP
 
 #include "Transform.hpp"
-#include "../Rendering/Camera.hpp"
+#include "Rendering/Camera.hpp"
 
 #include <glm/glm.hpp>
 

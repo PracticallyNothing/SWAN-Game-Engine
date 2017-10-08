@@ -8,7 +8,7 @@
 #include "Image.hpp"   // For Image
 #include "Texture.hpp" // For Texture
 
-#include "../Utility/Debug.hpp" // For DEBUG_VAR(), DEBUG_DO()
+#include "Utility/Debug.hpp" // For DEBUG_VAR(), DEBUG_DO()
 
 #ifdef DEBUG
 struct dbg_TextureCoords { int x, y, width, height; };

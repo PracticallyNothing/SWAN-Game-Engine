@@ -1,6 +1,5 @@
 tags
 
-Dependencies/
 Misc/
 Build/
 
@@ -8,8 +7,6 @@ Build/
 test*
 
 *.exe
-*.dll
-*.xml
 *.tar*
 *.zip
 *.rar
@@ -20,7 +17,7 @@ OpenGL*
 SWAN_*
 
 !CMakeLists.txt
-!Config.xml
+!*log*[c|cpp|h|hpp|inl]
 
 Sources/OldMain.cpp
 *.swp

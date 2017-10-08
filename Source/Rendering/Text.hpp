@@ -6,9 +6,9 @@
 #include "Mesh.hpp"        // For Mesh
 #include "BitmapFont.hpp"  // For BitmapFont
 
-#include "../Physics/Transform.hpp"
+#include "Physics/Transform.hpp"
 
-#include "../Utility/Debug.hpp" // For DEBUG_DO(), DEBUG_VAR
+#include "Utility/Debug.hpp" // For DEBUG_DO(), DEBUG_VAR
 
 #include <string> // For std::string
 

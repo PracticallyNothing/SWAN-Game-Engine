@@ -1,8 +1,8 @@
 #include "Text.hpp"
 
-#include "../Core/Display.hpp" // For Display::GetWidth(), Display::GetHeight()
+#include "Core/Display.hpp" // For Display::GetWidth(), Display::GetHeight()
 
-#include "../Utility/Math.hpp"  // For Util::GLToPixelCoord()
+#include "Utility/Math.hpp"  // For Util::GLToPixelCoord()
 
 /*
  *  v0      v1

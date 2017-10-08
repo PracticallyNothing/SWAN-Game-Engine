@@ -325,11 +325,11 @@ int main(int argc, char** argv) {
 	if (Util::IsRelativePath(resourcesFile))
 		resourcesFile = Util::GetDirectory(std::string(ConfigFile), true) + resourcesFile;
 
-	Display::Init(
-			std::stoi( v.front()->getAttrib("width")  ),
-			std::stoi( v.front()->getAttrib("height") ),
-			"OGL-Engine"
-			);
+	Display::Init (
+		std::stoi( v.front()->getAttrib("width")  ),
+		std::stoi( v.front()->getAttrib("height") ),
+		"OGL-Engine"
+	);
 
 	Game game(resourcesFile);
 

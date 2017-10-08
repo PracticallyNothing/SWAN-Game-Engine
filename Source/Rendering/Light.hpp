@@ -2,7 +2,7 @@
 #define LIGHT_HPP
 
 #include <glm/glm.hpp>
-#include "../Utility/AngleUnits.hpp"
+#include "Utility/AngleUnits.hpp"
 
 enum LightType {
 	L_DIRECTIONAL = 0,

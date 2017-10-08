@@ -1,6 +1,6 @@
 #include "Shader.hpp"
 
-#include "../Utility/Debug.hpp"
+#include "Utility/Debug.hpp"
 
 #include <fstream>
 #include <iostream>

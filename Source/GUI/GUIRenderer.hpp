@@ -3,10 +3,10 @@
 
 #include "GUIPrim.hpp"             // For GUIPrim::*
 
-#include "../Rendering/Mesh.hpp"   // For Mesh
-#include "../Rendering/Shader.hpp" // For Shader
-#include "../Physics/Transform.hpp" // For Transform
-#include "../Utility/Either.hpp"   // For Util::Either<T, U>
+#include "Rendering/Mesh.hpp"   // For Mesh
+#include "Rendering/Shader.hpp" // For Shader
+#include "Physics/Transform.hpp" // For Transform
+#include "Utility/Either.hpp"   // For Util::Either<T, U>
 
 #include <vector>
 

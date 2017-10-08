@@ -2,10 +2,10 @@
 
 #include <algorithm>
 
-#include "../Core/Input.hpp"
-#include "../Core/Resources.hpp"
+#include "Core/Input.hpp"
+#include "Core/Resources.hpp"
 
-#include "../Utility/Math.hpp"
+#include "Utility/Math.hpp"
 
 namespace GUIPrim {
 	IElement* currFocused;

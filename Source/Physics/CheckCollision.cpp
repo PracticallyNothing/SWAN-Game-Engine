@@ -1,6 +1,6 @@
 #include "CheckCollision.hpp"
 
-#include "../Utility/Math.hpp"
+#include "Utility/Math.hpp"
 #include <algorithm> // For std::max<T>(), std::min<T>()
 #include <cmath> // For std::sqrt()
 

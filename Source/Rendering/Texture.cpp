@@ -3,9 +3,9 @@
 #include <utility>
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "../External/stb_image.h"
+#include "External/stb_image.h"
 
-#include "../Utility/Debug.hpp"
+#include "Utility/Debug.hpp"
 
 const Texture* Texture::currBoundTex = nullptr;
 

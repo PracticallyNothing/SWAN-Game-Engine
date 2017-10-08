@@ -7,7 +7,7 @@
 #include <iostream> // For std::ostream
 #include <utility>  // For std::move()
 
-#include "../Utility/Debug.hpp" // For DEBUG_PRINT()
+#include "Utility/Debug.hpp" // For DEBUG_PRINT()
 
 namespace Util {
     struct XML;

@@ -1,8 +1,8 @@
 #include "BitmapFont.hpp"
 
-#include "../Utility/StringUtil.hpp" // For Util::GetDirectory(), Util::IsAbsolutePath()
+#include "Utility/StringUtil.hpp" // For Util::GetDirectory(), Util::IsAbsolutePath()
 
-#include "../External/cpptoml/cpptoml.h" // For cpptoml::parse_file()
+#include <cpptoml.h> // For cpptoml::parse_file()
 #include <iostream> // For std::cout
 
 const std::string defSuppChars = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";

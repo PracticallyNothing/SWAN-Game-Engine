@@ -2,10 +2,10 @@
 
 #include <algorithm>  // For std::max(), std::min()
 
-#include "../Core/Resources.hpp"    // For Resources::GetMesh(), Resources::GetShader()
-#include "../Rendering/Mesh.hpp"    // For Mesh
-#include "../Utility/Debug.hpp"     // For DEBUG_OUT()
-#include "../Utility/StreamOps.hpp" // For Util::StreamOps::*
+#include "Core/Resources.hpp"    // For Resources::GetMesh(), Resources::GetShader()
+#include "Rendering/Mesh.hpp"    // For Mesh
+#include "Utility/Debug.hpp"     // For DEBUG_OUT()
+#include "Utility/StreamOps.hpp" // For Util::StreamOps::*
 
 using namespace Util::StreamOps;
 

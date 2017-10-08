@@ -1,6 +1,6 @@
 #include "StringUtil.hpp"
 
-#include "../Utility/Collect.hpp"  // For Util::CollectIter()
+#include "Utility/Collect.hpp"  // For Util::CollectIter()
 
 namespace Util {
 string Trim(const string& s) {

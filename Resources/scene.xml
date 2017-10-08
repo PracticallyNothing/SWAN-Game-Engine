@@ -1,0 +1,67 @@
+<Scene>
+	<Resources> res.xml </Resources>
+
+	<StaticGeometry mesh="" texture=""/>
+	<StaticGeometry mesh="" texture=""/>
+	<StaticGeometry mesh="" texture=""/>
+	
+	<PointLight name="">
+		<Position>
+			<x> 0.0 </x>
+			<y> 0.0 </y>
+			<z> 0.0 </z>
+		</Position>
+
+		<Ambient>
+			<r> 0.0 </r>
+			<g> 0.0 </g>
+			<b> 0.0 </b>
+		</Ambient>
+		
+		<Diffuse>
+			<r> 0.0 </r>
+			<g> 0.0 </g>
+			<b> 0.0 </b>
+		</Diffuse>
+		
+		<Specular>
+			<r> 0.0 </r>
+			<g> 0.0 </g>
+			<b> 0.0 </b>
+		</Specular>
+
+		<ConstAtt> 1.0 </ConstAtt>
+		<LinearAtt> 0.1 </LinearAtt>
+		<QuadAtt> 0.01 </QuadAtt>
+	</PointLight>
+	
+	<DirectionalLight name="">
+		<Direction>
+			<x> 10.0 </x>
+			<y> 7.0 </y>
+			<z> 0.3 </z>
+		</Direction>
+
+		<Ambient>
+			<r> 0.0 </r>
+			<g> 0.0 </g>
+			<b> 0.0 </b>
+		</Ambient>
+		
+		<Diffuse>
+			<r> 0.0 </r>
+			<g> 0.0 </g>
+			<b> 0.0 </b>
+		</Diffuse>
+		
+		<Specular>
+			<r> 0.0 </r>
+			<g> 0.0 </g>
+			<b> 0.0 </b>
+		</Specular>
+
+		<ConstAtt> 1.0 </ConstAtt>
+		<LinearAtt> 0.1 </LinearAtt>
+		<QuadAtt> 0.01 </QuadAtt>
+	</DirectionalLight>
+</Scene>

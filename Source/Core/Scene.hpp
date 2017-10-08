@@ -3,7 +3,7 @@
 
 #include <glm/fwd.hpp> // For glm::vec3
 
-#include "../Physics/AABB.hpp" // For AABB
+#include "Physics/AABB.hpp" // For AABB
 
 struct Octree {
 
