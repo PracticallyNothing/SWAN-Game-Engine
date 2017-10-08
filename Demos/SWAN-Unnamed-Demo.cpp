@@ -9,12 +9,12 @@
 #include "GUI/GUIPrim.hpp"     // For GUIPrim::*
 #include "GUI/GUIRenderer.hpp" // For GUIRenderer
 
-#include "Utility/StreamOps.hpp"  // For Util::StreamOps::*
-#include "Utility/Debug.hpp"      // For DEBUG_OUT()
-#include "Utility/Math.hpp"       // For Util::pixelToGLCoord()
-#include "Utility/Profile.hpp"    // For Util::CurrentProfile, UTIL_PROFILE()
-#include "Utility/StringUtil.hpp" // For Util::GetDirectory(), Util::IsAbsolutePath()
-#include "Utility/XML.hpp"	      // For Util::ReadXML(), Util::XML
+#include "Utility/StreamOps.hpp"  // For SWAN::Util::StreamOps::*
+#include "Utility/Debug.hpp"      // For SWAN_DEBUG_OUT()
+#include "Utility/Math.hpp"       // For SWAN::Util::pixelToGLCoord()
+#include "Utility/Profile.hpp"    // For SWAN::Util::CurrentProfile, UTIL_PROFILE()
+#include "Utility/StringUtil.hpp" // For SWAN::Util::GetDirectory(), SWAN::Util::IsAbsolutePath()
+#include "Utility/XML.hpp"	      // For SWAN::Util::ReadXML(), SWAN::Util::XML
 
 #include "Rendering/BitmapFont.hpp"  // For BitmapFont
 #include "Rendering/Camera.hpp"      // For Camera
@@ -39,7 +39,7 @@
 #include <iostream>  // For std::cout
 #include <memory>    // For std::unique_ptr<T>, std::make_unique<T>()
 
-using namespace Util::StreamOps;
+using namespace SWAN::Util::StreamOps;
 using std::unique_ptr;
 using std::make_unique;
 
@@ -160,13 +160,13 @@ class Game {
 				std::cout << "Camera FOV: " << (cam->fov += glm::radians(1.0))
 					<< '\n';
 
-			auto mouseX     = Util::PixelToGLCoord(Display::GetWidth(), Input.Mouse.x);
-			auto prevMouseX = Util::PixelToGLCoord(Display::GetWidth(), PrevInput.Mouse.x);
+			auto mouseX     = SWAN::Util::PixelToGLCoord(Display::GetWidth(), Input.Mouse.x);
+			auto prevMouseX = SWAN::Util::PixelToGLCoord(Display::GetWidth(), PrevInput.Mouse.x);
 
 			cam->rotateByY(Util::Radians((mouseX - prevMouseX) * 2.0));
 
-			auto mouseY     = Util::PixelToGLCoord(Display::GetHeight(), Input.Mouse.y);
-			auto prevMouseY = Util::PixelToGLCoord(Display::GetHeight(), PrevInput.Mouse.y);
+			auto mouseY     = SWAN::Util::PixelToGLCoord(Display::GetHeight(), Input.Mouse.y);
+			auto prevMouseY = SWAN::Util::PixelToGLCoord(Display::GetHeight(), PrevInput.Mouse.y);
 
 			cam->rotateByX(Util::Radians((mouseY - prevMouseY) * 2.0));
 
@@ -216,9 +216,9 @@ class Game {
 			shader->unuse();
 
 			auto col = CheckCollision (
-					ApplyTransform(shotgunMesh->getColWrapper().aabb, shotgun.getTransform()),
-					ApplyTransform(planeMesh->getColWrapper().aabb,   plane.getTransform())
-					);
+				ApplyTransform(shotgunMesh->getColWrapper().aabb, shotgun.getTransform()),
+				ApplyTransform(planeMesh->getColWrapper().aabb,   plane.getTransform())
+			);
 
 			Render(ApplyTransform(shotgunMesh->getColWrapper().aabb, shotgun.getTransform()), cam.get(), col.happened);
 			Render(ApplyTransform(planeMesh->getColWrapper().aabb,   plane.getTransform()),   cam.get(), col.happened);
@@ -264,18 +264,17 @@ class Game {
 };
 
 void Version() {
-	std::cout << PROJECT_NAME << " version " << VERSION_STRING
-		<< " (Build type: " << BUILD_TYPE << ")\n";
+	std::cout << "SWAN-Unnamed-Demo with SWAN version " << SWAN_VERSION_STRING
+		<< " (SWAN Build type: " << SWAN_BUILD_TYPE << ")\n";
 }
 
 void Usage() {
-	std::cout << "Usage: " << PROJECT_NAME << " [options]\n"
+	std::cout << "Usage: SWAN-Unnamed-Demo [options]\n"
 		<< '\n'
 		<< "Available options:\n"
 		<< "    -h, --help         Show this help\n"
 		<< "    -v, --version      Display version\n"
-		<< "    --config=<config>  Use custom configuration file, "
-		"default is ./Config.xml\n";
+		<< "    --config=<config>  Use custom configuration file, default is ./Config.xml\n";
 }
 
 char ConfigFile[256] = {0};
@@ -285,22 +284,18 @@ void ProcessArgs(int argc, char** argv) {
 		if (!std::strcmp(argv[i], "-h") || !std::strcmp(argv[i], "--help")) {
 			Usage();
 			exit(EXIT_SUCCESS);
-		} else if (!std::strcmp(argv[i], "-v") ||
-				!std::strcmp(argv[i], "--version")) {
+		} else if (!std::strcmp(argv[i], "-v") || !std::strcmp(argv[i], "--version")) {
 			Version();
 			exit(EXIT_SUCCESS);
 		} else if (!std::strncmp(argv[i], "--config=", 9)) {
 			if (strlen(argv[i]) <= 9) {
-				std::cout << "ERROR: \"--config=\" flag was passed, but no "
-					"file was set, the flag will be ignored.\n";
+				std::cout << "ERROR: \"--config=\" flag was passed, but no file was set, the flag will be ignored.\n";
 				continue;
 			}
 			strcpy(ConfigFile, argv[i] + 9);
 		} else {
-			std::cout << "ERROR: Unknown or unsupported flag \"" << argv[i]
-				<< "\" was passed.\n"
-				<< "-----------------------------------------------------"
-				"--------------------\n";
+			std::cout << "ERROR: Unknown or unsupported flag \"" << argv[i] << "\" was passed.\n"
+			          << "-------------------------------------------------------------------------\n";
 			Usage();
 			exit(EXIT_FAILURE);
 		}
@@ -318,12 +313,12 @@ int main(int argc, char** argv) {
 		strcpy(ConfigFile, "./Config.xml");
 	}
 
-	auto xml = Util::ReadXML( Util::Unquote(ConfigFile) );
+	auto xml = SWAN::Util::ReadXML( SWAN::Util::Unquote(ConfigFile) );
 	auto v = xml.findTagsWithName("Resolution");
 	auto resourcesFile = xml.findTagsWithName("Resources").at(0)->getAttrib("file");
 
 	if (Util::IsRelativePath(resourcesFile))
-		resourcesFile = Util::GetDirectory(std::string(ConfigFile), true) + resourcesFile;
+		resourcesFile = SWAN::Util::GetDirectory(std::string(ConfigFile), true) + resourcesFile;
 
 	Display::Init (
 		std::stoi( v.front()->getAttrib("width")  ),

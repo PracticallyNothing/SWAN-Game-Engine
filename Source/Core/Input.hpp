@@ -9,7 +9,7 @@ typedef unsigned char bool;
 #endif // __cplusplus
 typedef struct _input _input;
 
-void Input_init();
+void SWAN_Input_Init();
 
 struct _input{
     struct _keyboard{
@@ -48,6 +48,6 @@ struct _input{
     handleEvents_func handleEvents;
 };
 
-extern _input Input;
+extern _input SWAN_Input;
 
 #endif // INPUT_H

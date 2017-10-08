@@ -1,0 +1,56 @@
+Legend: [ ] => Unimplemented
+        [o] => Current
+		[>] => Next
+		[x] => Finished
+        [?] => On halt
+
+Rendering:
+	-> [x] Shaders
+		-> [x] Loading
+		-> [x] Compiling
+		-> [x] Using
+	-> [x] Textures
+		-> [x] Importing
+		-> [x] Rendering
+	-> [x] Meshes
+		-> [x] Importing (Wavefront OBJ)
+		-> [x] Rendering
+	-> [x] Camera
+	-> [?] Lighting
+		-> [x] Ambient light
+		-> [x] Point light
+		-> [x] Spotlight
+		-> [x] Directional light (Sun)
+		-> [ ] Shadows
+	-> [?] Text
+		-> [x] Bitmap font
+		-> [ ] Vector font (extra)
+	-> [?] GUI
+		-> [x] Image
+		-> [ ] TextBox
+		-> [x] Button
+		-> [x] Draggable
+	-> [ ] Lightmapping (Possibly using https://github.com/ands/lightmapper)
+	-> [ ] COLLADA support (Using the XML parser)
+
+Physics:
+	-> [x] Axis Aligned Bounding Box + AABB x AABB collision
+	-> [ ] Oriented Bounding Box     + OBB  x OBB  collision
+	-> [ ] AABB x OBB collision
+
+Sound:
+	-> [ ] Basic sound
+	-> [ ] Sound triggers
+
+Management:
+	-> [x] Resource Management
+	-> [x] Resource Loading
+	-> [o] Scene Management
+	-> [>] Scene Loading
+
+Debugging:
+	-> [ ] Add grid rendering
+
+Extras (nice to have, but not crucial):
+	-> [ ] GLSL tokenizer
+	-> [ ] A Renderer class

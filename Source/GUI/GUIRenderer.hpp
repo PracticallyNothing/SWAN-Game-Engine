@@ -1,17 +1,17 @@
-#ifndef GUIRENDERER_HPP
-#define GUIRENDERER_HPP
+#ifndef SWAN_GUIRENDERER_HPP
+#define SWAN_GUIRENDERER_HPP
 
 #include "GUIPrim.hpp"             // For GUIPrim::*
 
 #include "Rendering/Mesh.hpp"   // For Mesh
 #include "Rendering/Shader.hpp" // For Shader
 #include "Physics/Transform.hpp" // For Transform
-#include "Utility/Either.hpp"   // For Util::Either<T, U>
+#include "Utility/Either.hpp"   // For SWAN::Util::Either<T, U>
 
 #include <vector>
 
 struct LayerSorter {
-	typedef Util::Either<GUIPrim::IElement*, GUIPrim::IElementContainer*> ElemOrCont;
+	typedef SWAN::Util::Either<GUIPrim::IElement*, GUIPrim::IElementContainer*> ElemOrCont;
 
 	bool operator()(ElemOrCont a, ElemOrCont b){
 		if(a.hasFirst() && b.hasFirst())
@@ -59,7 +59,7 @@ struct LayerSorter {
 
 class GUIRenderer {
 	public:
-		using ElementType = Util::Either<GUIPrim::IElement*, GUIPrim::IElementContainer*>;
+		using ElementType = SWAN::Util::Either<GUIPrim::IElement*, GUIPrim::IElementContainer*>;
 		GUIRenderer();
 		~GUIRenderer();
 

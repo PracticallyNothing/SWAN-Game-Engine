@@ -10,59 +10,64 @@
 #include "Light.hpp"
 #include "Physics/Transform.hpp"
 
-//This class handles the compilation, linking, and usage of a GLSL shader program.
-//Reference: http://www.opengl.org/wiki/Shader_Compilation
-class Shader {
-    public:
-        Shader();
-        ~Shader();
 
-        void compileShaders(const std::string& vertexShaderFilePath,
-							const std::string& fragmentShaderFilepath);
-        void linkShaders();
-        void addAttrib(const std::string& attributeName);
+namespace SWAN {
+	//TODO: Rewrite Shader class
 
-        void use();
-        void unuse();
+	//This class handles the compilation, linking, and usage of a GLSL shader program.
+	//Reference: http://www.opengl.org/wiki/Shader_Compilation
+	class Shader {
+	    public:
+	        Shader();
+	        ~Shader();
 
-        GLuint getID(){ return _programID; }
+	        void compileShaders(const std::string& vertexShaderFilePath,
+								const std::string& fragmentShaderFilepath);
+	        void linkShaders();
+	        void addAttrib(const std::string& attributeName);
 
-        bool hasUniform(const std::string& name);
-        bool hasUniformWarn(const std::string& name);
-        void addUniform(const std::string& name);
+	        void use();
+	        void unuse();
 
-		GLint getUniformID(const std::string& name);
+	        GLuint getID(){ return _programID; }
 
-        void setUniformData(const std::string& name, int    data);
-        void setUniformData(const std::string& name, bool   data);
-        void setUniformData(const std::string& name, float  data);
-        void setUniformData(const std::string& name, double data);
+	        bool hasUniform(const std::string& name);
+	        bool hasUniformWarn(const std::string& name);
+	        void addUniform(const std::string& name);
 
-        void setUniformData(const std::string& name, glm::vec2 data);
-        void setUniformData(const std::string& name, glm::vec3 data);
-        void setUniformData(const std::string& name, glm::vec4 data);
+			GLint getUniformID(const std::string& name);
 
-        void setUniformData(const std::string& name, glm::mat2& data, GLboolean transposed = GL_FALSE);
-        void setUniformData(const std::string& name, glm::mat3& data, GLboolean transposed = GL_FALSE);
-        void setUniformData(const std::string& name, glm::mat4& data, GLboolean transposed = GL_FALSE);
+	        void setUniformData(const std::string& name, int    data);
+	        void setUniformData(const std::string& name, bool   data);
+	        void setUniformData(const std::string& name, float  data);
+	        void setUniformData(const std::string& name, double data);
 
-        void setUniformData(const std::string& name, glm::mat2&& data, GLboolean transposed = GL_FALSE);
-        void setUniformData(const std::string& name, glm::mat3&& data, GLboolean transposed = GL_FALSE);
-        void setUniformData(const std::string& name, glm::mat4&& data, GLboolean transposed = GL_FALSE);
+	        void setUniformData(const std::string& name, glm::vec2 data);
+	        void setUniformData(const std::string& name, glm::vec3 data);
+	        void setUniformData(const std::string& name, glm::vec4 data);
 
-        void setUniformData(const std::string& name, Transform& data);
+	        void setUniformData(const std::string& name, glm::mat2& data, GLboolean transposed = GL_FALSE);
+	        void setUniformData(const std::string& name, glm::mat3& data, GLboolean transposed = GL_FALSE);
+	        void setUniformData(const std::string& name, glm::mat4& data, GLboolean transposed = GL_FALSE);
 
-		void setUniformData(const std::string& name, DirectionalLight light);
-		void setUniformData(const std::string& name, PointLight light);
-		void setUniformData(const std::string& name, Spotlight light);
-    private:
-        int _numAttributes;
+	        void setUniformData(const std::string& name, glm::mat2&& data, GLboolean transposed = GL_FALSE);
+	        void setUniformData(const std::string& name, glm::mat3&& data, GLboolean transposed = GL_FALSE);
+	        void setUniformData(const std::string& name, glm::mat4&& data, GLboolean transposed = GL_FALSE);
 
-		void compileShader(const std::string& filePath, GLuint id);
+	        void setUniformData(const std::string& name, Transform& data);
 
-        GLuint _programID;
-        GLuint _vertexShaderID;
-        GLuint _fragmentShaderID;
+			void setUniformData(const std::string& name, DirectionalLight light);
+			void setUniformData(const std::string& name, PointLight light);
+			void setUniformData(const std::string& name, Spotlight light);
+	    private:
+	        int _numAttributes;
 
-        std::map<std::string,GLint> uniforms;
-};
+			void compileShader(const std::string& filePath, GLuint id);
+
+	        GLuint _programID;
+	        GLuint _vertexShaderID;
+	        GLuint _fragmentShaderID;
+
+	        std::map<std::string,GLint> uniforms;
+	};
+}

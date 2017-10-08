@@ -1,5 +1,5 @@
-#ifndef UTIL_ALL_HPP
-#define UTIL_ALL_HPP
+#ifndef SWAN_UTIL_ALL_HPP
+#define SWAN_UTIL_ALL_HPP
 
 #include "AngleUnits.hpp"
 #include "Collect.hpp"

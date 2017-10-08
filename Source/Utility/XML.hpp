@@ -1,5 +1,5 @@
-#ifndef UTIL_XML_HPP
-#define UTIL_XML_HPP
+#ifndef SWAN_UTIL_XML_HPP
+#define SWAN_UTIL_XML_HPP
 
 #include <vector>   // For std::vector<T>
 #include <string>   // For std::string
@@ -7,9 +7,9 @@
 #include <iostream> // For std::ostream
 #include <utility>  // For std::move()
 
-#include "Utility/Debug.hpp" // For DEBUG_PRINT()
+#include "Utility/Debug.hpp" // For SWAN_DEBUG_PRINT()
 
-namespace Util {
+namespace SWAN { namespace Util {
     struct XML;
     class XMLTag;
 
@@ -107,6 +107,6 @@ namespace Util {
             return os;
         }
     }
-}
+} }
 
 #endif

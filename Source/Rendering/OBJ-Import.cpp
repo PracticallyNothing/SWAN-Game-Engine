@@ -8,8 +8,8 @@
 #include <string>     // For std::string, std::stoi(), std::stof()
 #include <vector>     // For std::vector<T>
 
-#include "Utility/Collect.hpp"  // For Util::CollectIterIf()
-#include "Utility/Debug.hpp"    // For DEBUG_OUT()
+#include "Utility/Collect.hpp"  // For SWAN::Util::CollectIterIf()
+#include "Utility/Debug.hpp"    // For SWAN_DEBUG_OUT()
 #include "Utility/Profile.hpp"  // For UTIL_PROFILE()
 #include "Utility/StringUtil.hpp"
 
@@ -73,9 +73,9 @@ enum ReadMode {
 };
 
 Model importOBJ(string filename) {
-	using Util::Trim;
-	using Util::ReadFace;
-	using Util::SplitOn;
+	using SWAN::Util::Trim;
+	using SWAN::Util::ReadFace;
+	using SWAN::Util::SplitOn;
 
 	Model res;
 
@@ -189,108 +189,110 @@ Model importOBJ(string filename) {
 	return res;
 }
 
-unique_ptr<Mesh> Import::OBJ(std::string filename, Import::Settings s) {
-	UTIL_PROFILE();
-
-	Model m = importOBJ(filename);
-
-	vector<Vertex> rVerts;
-	vector<uint> rInds;
-
-	int i = 0;
-	for (auto& face : m.faces) {
-		for (auto& vert : face.verts) {
-			auto it = find(rVerts.begin(), rVerts.end(), vert);
-
-			if (it == rVerts.end()) {
-				Vertex v(vert.pos, (vert.hasUV ? vert.UV : glm::vec2()),
-						(vert.hasNorm ? vert.norm : glm::vec3()));
-				rVerts.push_back(v);
-				rInds.push_back(i++);
-			} else {
-				rInds.push_back(distance(rVerts.begin(), it));
-			}
-		}
-	}
-
-	if (s.smoothNormals) {
-		vector<bool> checked(rVerts.size());
-
-		fill(checked.begin(), checked.end(), false);
-
-		for (unsigned i = 0; i < rVerts.size(); i++) {
-			if (checked[i]) continue;
-
-			auto v = Util::CollectIterIf(rVerts.begin(), rVerts.end(),
-					[& target = rVerts[i]](Vertex v)->bool {
-					return v.pos == target.pos;
-					}
-					);
-
-			glm::vec3 resNorm = glm::vec3(0, 0, 0);
-			for (auto it : v) resNorm += it->norm;
-
-			if (glm::length(resNorm) != 0.0) resNorm = glm::normalize(resNorm);
-
-			for (auto it : v) {
-				checked.at(distance(rVerts.begin(), it)) = true;
-				it->norm = resNorm;
-			}
-		}
-	}
-
-	auto res = make_unique<Mesh>(rVerts, rInds);
-
-	auto genAABB = [](vector<Vertex> v) -> AABB {
+namespace SWAN {
+	unique_ptr<Mesh> Import::OBJ(std::string filename, Import::Settings s) {
 		UTIL_PROFILE();
-		AABB res;
 
-		res.min = v[0].pos;
-		res.max = v[1].pos;
+		Model m = importOBJ(filename);
 
-		for (const auto& vert : v) {
-			if (vert.pos.x < res.min.x) {
-				res.min.x = vert.pos.x;
-			} else if (vert.pos.x > res.max.x) {
-				res.max.x = vert.pos.x;
-			}
+		vector<Vertex> rVerts;
+		vector<uint> rInds;
 
-			if (vert.pos.y < res.min.y) {
-				res.min.y = vert.pos.y;
-			} else if (vert.pos.y > res.max.y) {
-				res.max.y = vert.pos.y;
-			}
+		int i = 0;
+		for (auto& face : m.faces) {
+			for (auto& vert : face.verts) {
+				auto it = find(rVerts.begin(), rVerts.end(), vert);
 
-			if (vert.pos.z < res.min.z) {
-				res.min.z = vert.pos.z;
-			} else if (vert.pos.z > res.max.z) {
-				res.max.z = vert.pos.z;
+				if (it == rVerts.end()) {
+					Vertex v(vert.pos, (vert.hasUV ? vert.UV : glm::vec2()),
+							(vert.hasNorm ? vert.norm : glm::vec3()));
+					rVerts.push_back(v);
+					rInds.push_back(i++);
+				} else {
+					rInds.push_back(distance(rVerts.begin(), it));
+				}
 			}
 		}
 
-		res.min -= glm::vec3(0.002, 0.002, 0.002);
-		res.max += glm::vec3(0.002, 0.002, 0.002);
+		if (s.smoothNormals) {
+			vector<bool> checked(rVerts.size());
+
+			fill(checked.begin(), checked.end(), false);
+
+			for (unsigned i = 0; i < rVerts.size(); i++) {
+				if (checked[i]) continue;
+
+				auto v = SWAN::Util::CollectIterIf(rVerts.begin(), rVerts.end(),
+						[& target = rVerts[i]](Vertex v)->bool {
+						return v.pos == target.pos;
+						}
+						);
+
+				glm::vec3 resNorm = glm::vec3(0, 0, 0);
+				for (auto it : v) resNorm += it->norm;
+
+				if (glm::length(resNorm) != 0.0) resNorm = glm::normalize(resNorm);
+
+				for (auto it : v) {
+					checked.at(distance(rVerts.begin(), it)) = true;
+					it->norm = resNorm;
+				}
+			}
+		}
+
+		auto res = make_unique<Mesh>(rVerts, rInds);
+
+		auto genAABB = [](vector<Vertex> v) -> AABB {
+			UTIL_PROFILE();
+			AABB res;
+
+			res.min = v[0].pos;
+			res.max = v[1].pos;
+
+			for (const auto& vert : v) {
+				if (vert.pos.x < res.min.x) {
+					res.min.x = vert.pos.x;
+				} else if (vert.pos.x > res.max.x) {
+					res.max.x = vert.pos.x;
+				}
+
+				if (vert.pos.y < res.min.y) {
+					res.min.y = vert.pos.y;
+				} else if (vert.pos.y > res.max.y) {
+					res.max.y = vert.pos.y;
+				}
+
+				if (vert.pos.z < res.min.z) {
+					res.min.z = vert.pos.z;
+				} else if (vert.pos.z > res.max.z) {
+					res.max.z = vert.pos.z;
+				}
+			}
+
+			res.min -= glm::vec3(0.002, 0.002, 0.002);
+			res.max += glm::vec3(0.002, 0.002, 0.002);
+
+			return res;
+		};
+
+		if (s.createAABB || s.colType == ColWrapper::COL_AABB) {
+			res->setAABB(genAABB(rVerts));
+			res->setColWrapper(ColWrapper(res->getAABB()));
+		} /*else if (s.colType == ColWrapper::COL_SPHERE) {
+			BoundingSphere sphere;
+
+			// Really ugly (and probably slow) method, but gives good results.
+			// To find the proper center of the mesh, we create its AABB and use
+			// its center as the sphere's.
+			auto box = genAABB(rVerts);
+			sphere.center = (box.max - box.min) / 2.0f;
+
+			sphere.radius = std::max(box.max.x - box.min.x, std::max(box.max.y - box.min.y, box.max.z - box.min.z)) / 2.0f;
+
+			res->setColWrapper(ColWrapper(sphere));
+		}
+		*/
 
 		return res;
-	};
-
-	if (s.createAABB || s.colType == ColWrapper::COL_AABB) {
-		res->setAABB(genAABB(rVerts));
-		res->setColWrapper(ColWrapper(res->getAABB()));
-	} /*else if (s.colType == ColWrapper::COL_SPHERE) {
-		BoundingSphere sphere;
-
-		// Really ugly (and probably slow) method, but gives good results.
-		// To find the proper center of the mesh, we create its AABB and use
-		// its center as the sphere's.
-		auto box = genAABB(rVerts);
-		sphere.center = (box.max - box.min) / 2.0f;
-
-		sphere.radius = std::max(box.max.x - box.min.x, std::max(box.max.y - box.min.y, box.max.z - box.min.z)) / 2.0f;
-
-		res->setColWrapper(ColWrapper(sphere));
 	}
-	*/
-
-	return res;
 }

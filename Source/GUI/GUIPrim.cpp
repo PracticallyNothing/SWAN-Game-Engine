@@ -7,7 +7,8 @@
 
 #include "Utility/Math.hpp"
 
-namespace GUIPrim {
+namespace SWAN {
+namespace GUIP {
 	IElement* currFocused;
 	void setCurrentlyFocused(IElement* el) { currFocused = el; }
 	bool noCurrFocused() { return currFocused == NULL; }
@@ -81,14 +82,14 @@ namespace GUIPrim {
 				// Set position to mouse.xy - offset.xy
 				if (!_lockX) {
 					if (minX >= 0 && maxX >= 0 && maxX > minX)
-						x = Util::Clamp(Input.Mouse.x + offsetX, minX, maxX);
+						x = SWAN::Util::Clamp(Input.Mouse.x + offsetX, minX, maxX);
 					else
 						x = Input.Mouse.x + offsetX;
 				}
 
 				if(!_lockY) {
 					if (minY >= 0 && maxY >= 0 && maxY > minY)
-						y = Util::Clamp(Input.Mouse.y + offsetY, minY, maxY);
+						y = SWAN::Util::Clamp(Input.Mouse.y + offsetY, minY, maxY);
 					else
 						y = Input.Mouse.y + offsetY;
 				}
@@ -110,4 +111,5 @@ namespace GUIPrim {
 			}
 		}
 	}
+}
 }

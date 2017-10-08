@@ -1,11 +1,12 @@
-#ifndef DISPLAY_HPP
-#define DISPLAY_HPP
+#ifndef SWAN_DISPLAY_HPP
+#define SWAN_DISPLAY_HPP
 
 #include <SDL2/SDL.h>
 #include <string>
 
 typedef unsigned int uint;
 
+namespace SWAN {
 namespace Display {
 	namespace detail {
 		extern SDL_Window* window;
@@ -35,4 +36,6 @@ namespace Display {
 	inline int GetWidth  () { return detail::width;  }
 	inline int GetHeight () { return detail::height; }
 }
+}
+
 #endif // !DISPLAY_HPP

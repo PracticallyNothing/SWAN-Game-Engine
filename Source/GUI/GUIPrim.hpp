@@ -1,12 +1,13 @@
-#ifndef GUI_HPP
-#define GUI_HPP
+#ifndef SWAN_GUI_HPP
+#define SWAN_GUI_HPP
 
 #include <algorithm> // For std::max()
 #include <vector>    // For std::vector<T>
 
 #include "Rendering/Texture.hpp" // For Texture
 
-namespace GUIPrim {
+namespace SWAN {
+namespace GUIP {
 	//---Interfaces-----------------------//
 	struct IElement;
 	struct ElementGroup;
@@ -148,6 +149,7 @@ namespace GUIPrim {
 	extern IElement* currFocused;
 	extern void setCurrentlyFocused(IElement* el);
 	extern bool noCurrFocused();
+}
 }
 
 #endif

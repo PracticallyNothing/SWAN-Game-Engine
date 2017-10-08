@@ -1,13 +1,14 @@
-#ifndef ENTITY_HPP
-#define ENTITY_HPP
+#ifndef SWAN_ENTITY_HPP
+#define SWAN_ENTITY_HPP
 
 #include "Rendering/Mesh.hpp"    // For Mesh
 #include "Rendering/Texture.hpp" // For Texture
-#include "Physics/Transform.hpp" // For Transform 
+#include "Physics/Transform.hpp" // For Transform
 #include "Rendering/Shader.hpp"  // For Shaders
 
 #include <cstdint> // For std::uint32_t
 
+namespace SWAN {
 float Interpolate(float current, float goal, uint32_t deltaTimeMs) {
 	float diff = goal - current;
 	float dt = (float)deltaTimeMs / 1000;
@@ -108,5 +109,6 @@ class Entity {
 
 		glm::vec3 currVel, targetVel, currAngVel, targetAngVel;
 };
+}
 
 #endif

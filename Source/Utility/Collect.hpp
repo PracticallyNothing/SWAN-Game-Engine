@@ -1,9 +1,9 @@
-#ifndef UTILITY_COLLECT_HPP
-#define UTILITY_COLLECT_HPP
+#ifndef SWAN_UTILITY_COLLECT_HPP
+#define SWAN_UTILITY_COLLECT_HPP
 
 #include <vector> // For std::vector<T>
 
-namespace Util {
+namespace SWAN { namespace Util {
     template<typename IterT, typename EqComp>
     std::vector<EqComp> Collect(IterT begin, IterT end, EqComp value){
         std::vector<EqComp> result;
@@ -52,6 +52,6 @@ namespace Util {
         return result;
     }
 
-} /* Util */
+} }
 
 #endif

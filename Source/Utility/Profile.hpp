@@ -1,37 +1,37 @@
-#ifndef UTILITY_PROFILE_HPP
-#define UTILITY_PROFILE_HPP
+#ifndef SWAN_UTILITY_PROFILE_HPP
+#define SWAN_UTILITY_PROFILE_HPP
 
 #include <cstdint> 	  // For std::uint32_t
 #include <string>  	  // For std::string
 #include <SDL2/SDL.h> // For SDL_GetTicks()
 
-#include "OnScopeExit.hpp" // For Util::OnScopeExit
+#include "OnScopeExit.hpp" // For SWAN::Util::OnScopeExit
 
-#define UTIL_GET_PROFILE() Util::CurrentProfile
+#define SWAN_UTIL_GET_PROFILE() SWAN::Util::CurrentProfile
 
-# ifdef NO_PROFILE
+# ifdef SWAN_NO_PROFILE
 # error \
-	Header "Utility/Profile.hpp" included, but NO_PROFILE is defined. \
-	[Triggered by NO_PROFILE]
+	Header "Utility/Profile.hpp" included, but SWAN_NO_PROFILE is defined. \
+	[Triggered by SWAN_NO_PROFILE]
 # endif
 
-# if defined(PROFILE) && !defined(NO_PROFILE)
-#	define UTIL_PROFILE() \
-			Util::CurrentProfile = Util::Profile{ __FUNCTION__, SDL_GetTicks() }; \
-			Util::OnScopeExit _([]{ std::cout << Util::CurrentProfile.funcName << ": " << SDL_GetTicks() - Util::CurrentProfile.durationMs << '\n'; }); \
+# if defined(SWAN_PROFILE) && !defined(SWAN_NO_PROFILE)
+#	define SWAN_UTIL_PROFILE() \
+			SWAN::Util::CurrentProfile = SWAN::Util::Profile{ __FUNCTION__, SDL_GetTicks() }; \
+			SWAN::Util::OnScopeExit _([]{ std::cout << SWAN::Util::CurrentProfile.funcName << ": " << SDL_GetTicks() - SWAN::Util::CurrentProfile.durationMs << '\n'; }); \
 			do {} while(0)
 # else
-# 	define UTIL_PROFILE() (void)0
-# 	warning Header "Utility/Profile.hpp" included, but PROFILE isn't defined.
+# 	define SWAN_UTIL_PROFILE() (void)0
+# 	warning Header "Utility/Profile.hpp" included, but SWAN_PROFILE isnt defined.
 # endif
 
-namespace Util {
+namespace SWAN { namespace Util {
 	struct Profile {
 		const char* funcName;
 		std::uint32_t durationMs;
 	};
 
 	static Profile CurrentProfile = Profile{"", 0};
-}
+} }
 
 #endif

@@ -1,9 +1,9 @@
-#ifndef UTIL_NOT_NULL_HPP
-#define UTIL_NOT_NULL_HPP
+#ifndef SWAN_UTIL_NOT_NULL_HPP
+#define SWAN_UTIL_NOT_NULL_HPP
 
 #include <stdexcept>  //For std::invalid_argument, std::logic_error
 
-namespace Util {
+namespace SWAN { namespace Util {
     template <typename T>
     class NotNull;
 
@@ -34,6 +34,6 @@ namespace Util {
         private:
             T* m_ptr;
     };
-}
+} }
 
 #endif

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.1.3)
 
-project("OpenGL")
+project("SWAN")
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMakeModules/")
 
@@ -10,7 +10,7 @@ endif()
 
 message("CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
 
-# This is useful for versioning. This declaration sets version 1.0.
+# Versioning
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 1)
 set(VERSION_PATCH 0)
@@ -18,7 +18,7 @@ set(VERSION_PATCH 0)
 set(VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
 if(NOT CMAKE_BUILD_TYPE)
-	set(CMAKE_BUILD_TYPE DEBUG)
+	set(CMAKE_BUILD_TYPE SWAN_DEBUG)
 endif()
 
 set(CMAKE_CXX_STANDARD 14)
@@ -26,7 +26,7 @@ set(CMAKE_CXX_STANDARD 14)
 message("CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 
 if(CMAKE_BUILD_TYPE MATCHES DEBUG)
-	add_definitions(-DDEBUG -DDEBUG_SHADER -DPROFILE)
+	add_definitions(-DSWAN_DEBUG -DSWAN_DEBUG_SHADER -DPROFILE)
 elseif(CMAKE_BUILD_TYPE MATCHES PROFILE)
 	add_definitions(-DPROFILE)
 	list(APPEND CMAKE_CXX_FLAGS "-pg")
@@ -71,6 +71,16 @@ include_directories(
 	${PROJECT_BINARY_DIR}
 )
 
+set(Headers
+	Source/Core/*.hpp
+	Source/GUI/*.hpp
+	Source/Logic/*.hpp
+	Source/Physics/*.hpp
+	Source/Rendering/*.hpp
+	Source/Utility/*.hpp
+	"${PROJECT_BINARY_DIR}/CMakeConfig.h"
+)
+
 set(Sources
 	# Replacement for GLEW
 	Source/External/glad/src/glad.c
@@ -100,17 +110,18 @@ set(Sources
 	# Physics code
 	Source/Physics/AABB.cpp
 	Source/Physics/ColWrapper.cpp
-	# Source/Physics/BoundingSphere.cpp # Deprecated due to no visible use
+	# Source/Physics/BoundingSphere.cpp
 	Source/Physics/CheckCollision.cpp
 )
 
 add_library(SWAN STATIC ${Sources})
 target_link_libraries(SWAN ${LIBS} ${CMAKE_DL_LIBS})
 
-add_executable(${PROJECT_NAME} Source/Main.cpp)
-target_link_libraries(${PROJECT_NAME} SWAN)
+add_executable(SWAN-Unnamed-Demo Source/SWAN-Unnamed-Demo.cpp)
+target_link_libraries(SWAN-Unnamed-Demo SWAN)
 
-add_executable(SWAN_GUI_Demo Source/GUI-Demo.cpp)
-target_link_libraries(SWAN_GUI_Demo SWAN)
+add_executable(SWAN-GUI-Demo Demos/SWAN-GUI-Demo.cpp)
+target_link_libraries(SWAN-GUI-Demo SWAN)
 
-#End work here
+install(FILES ${Headers} DESTINATION include)
+install(TARGETS SWAN LIBRARY DESTINATION lib)

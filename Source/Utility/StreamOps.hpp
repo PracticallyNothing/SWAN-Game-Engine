@@ -1,12 +1,12 @@
-#ifndef UTIL_STREAM_OPS_HPP
-#define UTIL_STREAM_OPS_HPP
+#ifndef SWAN_UTIL_STREAM_OPS_HPP
+#define SWAN_UTIL_STREAM_OPS_HPP
 
 #include <iostream> // For std::ostream
 
 #include <glm/fwd.hpp>              // For glm::vec*
 #include "Physics/Transform.hpp" // For Transform
 
-namespace Util {
+namespace SWAN { namespace Util {
 namespace StreamOps {
 	using std::ostream;
 
@@ -39,6 +39,6 @@ namespace StreamOps {
 		return os;
 	}
 }
-}
+} }
 
 #endif

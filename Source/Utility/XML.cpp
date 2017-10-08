@@ -26,9 +26,9 @@ using std::find;
 using std::find_if;
 using std::prev;
 
-using Util::XML;
-using Util::XMLTag;
-using Util::Stringify;
+using SWAN::Util::XML;
+using SWAN::Util::XMLTag;
+using SWAN::Util::Stringify;
 
 string Trim(string s) {
 	if (find_if(s.begin(), s.end(),
@@ -110,7 +110,7 @@ XMLTag parseTag(const string& line) {
 	return res;
 }
 
-XML Util::ReadXML(string filename) {
+XML SWAN::Util::ReadXML(string filename) {
 	XML res;
 	res.filename = filename;
 
@@ -198,7 +198,7 @@ void XMLTag::findTagsWithName(const string& name,
 	}
 }
 
-std::string Util::Stringify(const XML& xml) {
+std::string SWAN::Util::Stringify(const XML& xml) {
 	stringstream ss;
 	ss << std::boolalpha;
 
@@ -220,7 +220,7 @@ std::string Util::Stringify(const XML& xml) {
 
 	return ss.str();
 }
-std::string Util::Stringify(const XMLTag& tag, int indent) {
+std::string SWAN::Util::Stringify(const XMLTag& tag, int indent) {
 	stringstream ss;
 	string i = string(indent, ' ');
 

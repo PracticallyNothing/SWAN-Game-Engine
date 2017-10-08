@@ -5,6 +5,7 @@
 // #include <GL/glew.h>
 #include <glad/glad.h>
 
+namespace SWAN {
 namespace Display {
 	namespace detail {
 		SDL_Window* window;
@@ -98,4 +99,5 @@ namespace Display {
 
 		SDL_SetWindowSize(detail::window, newWidth, newHeight);
 	}
+}
 }

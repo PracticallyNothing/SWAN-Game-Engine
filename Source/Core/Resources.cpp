@@ -1,14 +1,15 @@
 #include "Resources.hpp"
 
-#include "Utility/Debug.hpp"  // For DEBUG_OUT()
-#include "Utility/StringUtil.hpp"  // For Util::GetDirectory(), Util::IsAbsolutePath()
-#include "Utility/XML.hpp"  // For Util::XML, Util::ReadXML()
+#include "Utility/Debug.hpp"  // For SWAN_DEBUG_OUT()
+#include "Utility/StringUtil.hpp"  // For SWAN::Util::GetDirectory(), SWAN::Util::IsAbsolutePath()
+#include "Utility/XML.hpp"  // For SWAN::Util::XML, SWAN::Util::ReadXML()
 
 #include "Rendering/OBJ-Import.hpp"  // For Import::OBJ()
 
 #include <iostream>  // For std::cout
 
-namespace Resources {
+namespace SWAN {
+namespace Res {
 	namespace detail {
 		Map<String, Pointer<Mesh>> meshes;
 		Map<String, Pointer<Texture>> textures;
@@ -53,7 +54,7 @@ namespace Resources {
 	}
 
 	bool LoadFromFile(const std::string& filename) {
-		Util::XML res = Util::ReadXML(filename);
+		Util::XML res = SWAN::Util::ReadXML(filename);
 		if (res.root.name != "Resources") {
 			std::cout << "ERROR: Attempted to load resources from file \""
 				<< filename << "\", but file has incorrect root tag.\n"
@@ -62,7 +63,7 @@ namespace Resources {
 			return false;
 		}
 
-		std::string dir = Util::GetDirectory(filename);
+		std::string dir = SWAN::Util::GetDirectory(filename);
 		DEBUG_OUT(dir);
 
 		DEBUG_PRINT("Loading meshes...");
@@ -181,4 +182,5 @@ namespace Resources {
 
 		return true;
 	}
+}
 }

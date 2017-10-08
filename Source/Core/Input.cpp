@@ -6,7 +6,7 @@
 #define false 0
 #endif  // __cplusplus
 
-_input Input;
+_input SWAN_Input;
 
 void _handleEvents() {
     SDL_Event e;
@@ -139,4 +139,4 @@ void _handleEvents() {
     }
 }
 
-void Input_init() { Input.handleEvents = _handleEvents; }
+void SWAN_Input_Init() { Input.handleEvents = _handleEvents; }

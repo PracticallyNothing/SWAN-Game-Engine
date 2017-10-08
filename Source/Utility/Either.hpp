@@ -1,9 +1,9 @@
-#ifndef UTIL_EITHER_HPP
-#define UTIL_EITHER_HPP
+#ifndef SWAN_UTIL_EITHER_HPP
+#define SWAN_UTIL_EITHER_HPP
 
 #include <utility>  // For std::move
 
-namespace Util {
+namespace SWAN { namespace Util {
 
 // Lousy implementation of std::variant<T1, T2>
 template <typename T1, typename T2>
@@ -41,7 +41,7 @@ class Either {
         }
         return *this;
     }
-    
+
 	Either& operator=(Either&& other) {
         _hasFirst = std::move(other._hasFirst);
 
@@ -70,6 +70,6 @@ class Either {
         T2 second;
     };
 };
-}
+}}
 
 #endif

@@ -1,11 +1,11 @@
-#ifndef UTIL_ANGLE_UNITS_HPP
-#define UTIL_ANGLE_UNITS_HPP
+#ifndef SWAN_UTIL_ANGLE_UNITS_HPP
+#define SWAN_UTIL_ANGLE_UNITS_HPP
 
 #define _USE_MATH_DEFINES
 #include <math.h> // For M_PI
 #include <iostream> // For std::ostream
 
-namespace Util {
+namespace SWAN { namespace Util {
 	class Radians;
 	class Degrees;
 
@@ -88,6 +88,7 @@ namespace Util {
 			return os;
 		}
 	}
+}
 }
 
 #endif

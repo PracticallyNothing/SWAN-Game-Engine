@@ -2,7 +2,7 @@
 
 #include "Core/Display.hpp"   // For Display
 #include "Core/Resources.hpp" // For Resources::GetShader()
-#include "Utility/Math.hpp"   // For Util::PixelToGLCoord
+#include "Utility/Math.hpp"   // For SWAN::Util::PixelToGLCoord
 
 GUIRenderer::GUIRenderer() {
 	shad = Resources::GetShader("GUI");
@@ -53,8 +53,8 @@ void GUIRenderer::renderElement(GUIPrim::IElement* e) {
 	transform.scale.x = (float)e->w / Display::GetWidth();
 	transform.scale.y = (float)e->h / Display::GetHeight();
 
-	transform.pos.x = Util::PixelToGLCoord(Display::GetWidth(), e->x + e->w / 2);
-	transform.pos.y = Util::PixelToGLCoord(Display::GetHeight(), Display::GetHeight() - (e->y + e->h / 2));
+	transform.pos.x = SWAN::Util::PixelToGLCoord(Display::GetWidth(), e->x + e->w / 2);
+	transform.pos.y = SWAN::Util::PixelToGLCoord(Display::GetHeight(), Display::GetHeight() - (e->y + e->h / 2));
 
 	shad->setUniformData("transform", transform);
 

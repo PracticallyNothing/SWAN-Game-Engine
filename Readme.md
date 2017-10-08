@@ -1,9 +1,10 @@
-# <center> WARNING: </center>
+# <center> :warning: WARNING :warning: </center>
 <center>///////////////////////////////////////////////////////////////////////////////////////////</center>  
 <center>SWAN is still in a _very_ early stage of development.</center>  
 <center>It lacks many of the core elements needed to make it a game engine.</center>
 <center>(Physics, support for skinned meshes, etc.)</center>  
-<center>If you decide to use this project, be ready for lots of missing features, low framerates and weird, nonsensical behaviour. </center>  
+<center>If you decide to use this project, be ready for lots of missing features,  
+low framerates and weird, nonsensical behaviour. </center>  
 <center>///////////////////////////////////////////////////////////////////////////////////////////</center>
 
 -----

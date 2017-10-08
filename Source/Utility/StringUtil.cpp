@@ -1,8 +1,8 @@
 #include "StringUtil.hpp"
 
-#include "Utility/Collect.hpp"  // For Util::CollectIter()
+#include "Utility/Collect.hpp"  // For SWAN::Util::CollectIter()
 
-namespace Util {
+namespace SWAN { namespace Util {
 string Trim(const string& s) {
     string res(s);
 
@@ -101,4 +101,4 @@ string GetDirectory(const string& location, bool withSlash) {
         return location.substr(0, i + (withSlash ? 1 : 0));
     }
 }
-}
+} }

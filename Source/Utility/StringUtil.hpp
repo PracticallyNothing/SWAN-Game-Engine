@@ -1,11 +1,11 @@
-#ifndef UTIL_STRING_UTIL_HPP
-#define UTIL_STRING_UTIL_HPP
+#ifndef SWAN_UTIL_STRING_UTIL_HPP
+#define SWAN_UTIL_STRING_UTIL_HPP
 
 #include <array>  // For std::array<T,N>
 #include <string> // For std::string
 #include <vector> // For std::vector<T>
 
-namespace Util {
+namespace SWAN { namespace Util {
 	using std::array;
 	using std::string;
 	using std::vector;
@@ -24,6 +24,6 @@ namespace Util {
 
 	inline bool IsAbsolutePath(const string& path){	return path[0] == '/'; }
 	inline bool IsRelativePath(const string& path){	return path[0] != '/'; }
-}
+} }
 
 #endif

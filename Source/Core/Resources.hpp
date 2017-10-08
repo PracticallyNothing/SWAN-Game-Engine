@@ -1,5 +1,5 @@
-#ifndef RESOURCES_HPP
-#define RESOURCES_HPP
+#ifndef SWAN_RESOURCES_HPP
+#define SWAN_RESOURCES_HPP
 
 //#include <unordered_map> // For std::unordered_map<K, V>
 #include <map>     // For std::map<K, V>
@@ -11,7 +11,8 @@
 #include "Rendering/Shader.hpp"      // For Shader
 #include "Rendering/Texture.hpp"     // For Texture
 
-namespace Resources {
+namespace SWAN {
+namespace Res {
     namespace detail {
         using String = std::string;
 
@@ -26,18 +27,19 @@ namespace Resources {
         extern Map<String, Pointer<BitmapFont>> bitmapFonts;
         extern Map<String, Pointer<Shader>> shaders;
     }
-    
+
     bool LoadShader(const std::string& filename);
     bool LoadBitmapFont(const std::string& filename);
     bool LoadMesh(const std::string& filename);
     bool LoadTexture(const std::string& filename, bool pixelated = false);
-    
+
     bool LoadFromFile(const std::string& filename);
 
     const Mesh* GetMesh(const std::string& name);
     const Texture* GetTexture(const std::string& name);
     const BitmapFont* GetBitmapFont(const std::string& name);
     Shader* GetShader(const std::string& name);
+}
 }
 
 #endif
