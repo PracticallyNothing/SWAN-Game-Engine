@@ -2,12 +2,12 @@
 
 #include "CMakeConfig.h"
 
-#include "Core/Display.hpp"    // For Display
-#include "Core/Input.hpp"      // For Input
-#include "Core/Resources.hpp"  // For Resources::LoadFromFile(), Resources::Get*()
+#include "Core/Display.hpp"    // For SWAN::Display
+#include "Core/Input.hpp"      // For SWAN_Input
+#include "Core/Resources.hpp"  // For SWAN::Res::LoadFromFile(), SWAN::Res::Get*()
 
-#include "GUI/GUIPrim.hpp"     // For GUIPrim::*
-#include "GUI/GUIRenderer.hpp" // For GUIRenderer
+#include "GUI/GUIPrim.hpp"     // For SWAN::GUIP::*
+#include "GUI/GUIRenderer.hpp" // For SWAN::GUIRenderer
 
 #include "Utility/StreamOps.hpp"  // For SWAN::Util::StreamOps::*
 #include "Utility/Debug.hpp"      // For SWAN_DEBUG_OUT()
@@ -16,23 +16,23 @@
 #include "Utility/StringUtil.hpp" // For SWAN::Util::GetDirectory(), SWAN::Util::IsAbsolutePath()
 #include "Utility/XML.hpp"	      // For SWAN::Util::ReadXML(), SWAN::Util::XML
 
-#include "Rendering/BitmapFont.hpp"  // For BitmapFont
-#include "Rendering/Camera.hpp"      // For Camera
-#include "Rendering/Light.hpp"       // For DirectionalLight, PointLight
-#include "Rendering/Mesh.hpp"	     // For Mesh
-#include "Rendering/OBJ-Import.hpp"  // For Import::OBJ()
-#include "Rendering/Shader.hpp"      // For Shader
-#include "Rendering/Text.hpp"	     // For Text
-#include "Rendering/Texture.hpp"     // For Texture
+#include "Rendering/BitmapFont.hpp"  // For SWAN::BitmapFont
+#include "Rendering/Camera.hpp"      // For SWAN::Camera
+#include "Rendering/Light.hpp"       // For SWAN::DirectionalLight, SWAN::PointLight
+#include "Rendering/Mesh.hpp"	     // For SWAN::Mesh
+#include "Rendering/OBJ-Import.hpp"  // For SWAN::Import::OBJ()
+#include "Rendering/Shader.hpp"      // For SWAN::Shader
+#include "Rendering/Text.hpp"	     // For SWAN::Text
+#include "Rendering/Texture.hpp"     // For SWAN::Texture
 
-#include "Physics/AABB.hpp"           // For AABB
-#include "Physics/CheckCollision.hpp" // For CheckCollision()
+#include "Physics/AABB.hpp"           // For SWAN::AABB
+#include "Physics/CheckCollision.hpp" // For SWAN::CheckCollision()
 
 #define STBI_IMPLEMENTATION
 #include "External/stb_image.h"  // For stbi_set_flip_vertically_on_load()
 #undef STBI_IMPLEMENTATION
 
-#include "Logic/Entity.hpp"  // For Entity
+#include "Logic/Entity.hpp"  // For SWAN::Entity
 
 #include <chrono>    // For std::chrono::*
 #include <cstring>   // For std::strcmp(), std::strncmp(), strcpy()
@@ -43,42 +43,40 @@ using namespace SWAN::Util::StreamOps;
 using std::unique_ptr;
 using std::make_unique;
 
-using Ms = std::chrono::milliseconds;
+using namespace std::chrono;
 using Clock = std::chrono::steady_clock;
-using std::chrono::operator""ms;
-using std::chrono::duration_cast;
 
 // TODO: Remove this class, it's a disgusting god object
 class Game {
 	public:
 		explicit Game(std::string resourcesFile) {
-			DEBUG_PRINT("    [Game::Game()] Display initialized.");
+			SWAN_DEBUG_PRINT("    [Game::Game()] Display initialized.");
 
-			Display::SetClearColor(0.0f, 0.3f, 0.25f, 0.0f);
-			Input_init();
+			SWAN::Display::SetClearColor(0.0f, 0.3f, 0.25f, 0.0f);
+			SWAN_Input_Init();
 
-			DEBUG_PRINT("    [Game::Game()] Loading resources...");
-			Resources::LoadFromFile(resourcesFile);
-			DEBUG_PRINT("    [Game::Game()] Resources loaded...");
+			SWAN_DEBUG_PRINT("    [Game::Game()] Loading resources...");
+			SWAN::Res::LoadFromFile(resourcesFile);
+			SWAN_DEBUG_PRINT("    [Game::Game()] Resources loaded...");
 
-			tex = Resources::GetTexture("Monkey Head Texture");
-			planeMesh = Resources::GetMesh("Plane");
-			shotgunMesh = Resources::GetMesh("SPAS 12");
-			torusMesh = Resources::GetMesh("Torus");
-			font = Resources::GetBitmapFont("Monospace 16");
+			tex = SWAN::Res::GetTexture("Monkey Head Texture");
+			planeMesh = SWAN::Res::GetMesh("Plane");
+			shotgunMesh = SWAN::Res::GetMesh("SPAS 12");
+			torusMesh = SWAN::Res::GetMesh("Torus");
+			font = SWAN::Res::GetBitmapFont("Monospace 16");
 
-			shader = Resources::GetShader("Proper");
-			textShader = Resources::GetShader("Text");
+			shader = SWAN::Res::GetShader("Proper");
+			textShader = SWAN::Res::GetShader("Text");
 
-			cam = make_unique<Camera>(Display::GetAspectRatio(), glm::vec3(0.0f, 0.0f, -1.0f));
+			cam = make_unique<SWAN::Camera>(SWAN::Display::GetAspectRatio(), glm::vec3(0.0f, 0.0f, -1.0f));
 
-			DirectionalLight dl0;
+			SWAN::DirectionalLight dl0;
 			dl0.direction = glm::normalize(glm::vec3(1, 1, 1));
 			dl0.ambient = glm::vec3(0.003, 0.0, 0.003);
 			dl0.diffuse = glm::vec3(0.0, 0.0, 0.3);
 			dl0.specular = glm::vec3(1, 1, 1);
 
-			PointLight pl1;
+			SWAN::PointLight pl1;
 			pl1.position = glm::vec3(1, 7, 15);
 			pl1.ambient = glm::vec3(0.05, 0.0005, 0.0);
 			pl1.diffuse = glm::vec3(0.5, 0.005, 0.0);
@@ -96,9 +94,9 @@ class Game {
 			}
 			shader->unuse();
 
-			guiRenderer = make_unique<GUIRenderer>();
-			guiRenderer->add( new GUIPrim::Draggable(Resources::GetTexture("Flat Red"), 100, 100) );
-			guiRenderer->add( new GUIPrim::Draggable(Resources::GetTexture("Flat Blue"), 100, 100) );
+			guiRenderer = make_unique<SWAN::GUIRenderer>();
+			guiRenderer->add( new SWAN::GUIP::Draggable(SWAN::Res::GetTexture("Flat Red"), 100, 100) );
+			guiRenderer->add( new SWAN::GUIP::Draggable(SWAN::Res::GetTexture("Flat Blue"), 100, 100) );
 
 			plane.getTransform_ref().pos = pl1.position;
 
@@ -117,67 +115,69 @@ class Game {
 
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+			run = true;
 		}
 
 		~Game() {}
 
 		void update() {
-			Input.handleEvents();
-			if (Input.Window.exitRequest || Input.Keyboard.escapeKey) run = false;
+			if (SWAN_Input.Window.exitRequest || SWAN_Input.Keyboard.escapeKey)
+				run = false;
 
 			float moveSpeed = 0.1;
-			Util::Radians rotSpeed(.05);
+			SWAN::Util::Radians rotSpeed(.05);
 
-			if (Input.Keyboard.letterKeys['a' - 'a'])
+			if (SWAN_Input.Keyboard.letterKeys['a' - 'a'])
 				cam->moveRight(-moveSpeed);
-			else if (Input.Keyboard.letterKeys['d' - 'a'])
+			else if (SWAN_Input.Keyboard.letterKeys['d' - 'a'])
 				cam->moveRight(moveSpeed);
 
-			if (Input.Keyboard.letterKeys['w' - 'a'])
+			if (SWAN_Input.Keyboard.letterKeys['w' - 'a'])
 				cam->moveForw(moveSpeed);
-			else if (Input.Keyboard.letterKeys['s' - 'a'])
+			else if (SWAN_Input.Keyboard.letterKeys['s' - 'a'])
 				cam->moveForw(-moveSpeed);
 
-			if (Input.Keyboard.letterKeys['q' - 'a'])
+			if (SWAN_Input.Keyboard.letterKeys['q' - 'a'])
 				cam->rotateByZ(rotSpeed);
-			else if (Input.Keyboard.letterKeys['e' - 'a'])
+			else if (SWAN_Input.Keyboard.letterKeys['e' - 'a'])
 				cam->rotateByZ(-rotSpeed);
 
-			if (Input.Keyboard.spaceKey)
+			if (SWAN_Input.Keyboard.spaceKey)
 				cam->moveUp(moveSpeed);
-			else if (Input.Keyboard.LShiftKey)
+			else if (SWAN_Input.Keyboard.LShiftKey)
 				cam->moveUp(-moveSpeed);
 
-			if (Input.Keyboard.letterKeys['z' - 'a'])
-				cam->rotateByX(Util::Radians::FromDegrees(-45.0f));
-			else if (Input.Keyboard.letterKeys['c' - 'a'])
-				cam->rotateByX(Util::Radians::FromDegrees(45.0f));
+			if (SWAN_Input.Keyboard.letterKeys['z' - 'a'])
+				cam->rotateByX(SWAN::Util::Radians::FromDegrees(-45.0f));
+			else if (SWAN_Input.Keyboard.letterKeys['c' - 'a'])
+				cam->rotateByX(SWAN::Util::Radians::FromDegrees(45.0f));
 
-			if (Input.Keyboard.letterKeys['y' - 'a'])
+			if (SWAN_Input.Keyboard.letterKeys['y' - 'a'])
 				std::cout << "Camera FOV: " << (cam->fov -= glm::radians(1.0))
 					<< '\n';
-			if (Input.Keyboard.letterKeys['h' - 'a'])
+			if (SWAN_Input.Keyboard.letterKeys['h' - 'a'])
 				std::cout << "Camera FOV: " << (cam->fov += glm::radians(1.0))
 					<< '\n';
 
-			auto mouseX     = SWAN::Util::PixelToGLCoord(Display::GetWidth(), Input.Mouse.x);
-			auto prevMouseX = SWAN::Util::PixelToGLCoord(Display::GetWidth(), PrevInput.Mouse.x);
+			auto mouseX     = SWAN::Util::PixelToGLCoord(SWAN::Display::GetWidth(), SWAN_Input.Mouse.x);
+			auto prevMouseX = SWAN::Util::PixelToGLCoord(SWAN::Display::GetWidth(), PrevInput.Mouse.x);
 
-			cam->rotateByY(Util::Radians((mouseX - prevMouseX) * 2.0));
+			cam->rotateByY(SWAN::Util::Radians((mouseX - prevMouseX) * 2.0));
 
-			auto mouseY     = SWAN::Util::PixelToGLCoord(Display::GetHeight(), Input.Mouse.y);
-			auto prevMouseY = SWAN::Util::PixelToGLCoord(Display::GetHeight(), PrevInput.Mouse.y);
+			auto mouseY     = SWAN::Util::PixelToGLCoord(SWAN::Display::GetHeight(), SWAN_Input.Mouse.y);
+			auto prevMouseY = SWAN::Util::PixelToGLCoord(SWAN::Display::GetHeight(), PrevInput.Mouse.y);
 
-			cam->rotateByX(Util::Radians((mouseY - prevMouseY) * 2.0));
+			cam->rotateByX(SWAN::Util::Radians((mouseY - prevMouseY) * 2.0));
 
 			plane.getTransform_ref().pos.x = std::sin(time) * 10;
 			plane.getTransform_ref().pos.z = std::sin(time) * 10;
 
 			time += 0.01f;
 
-			PrevInput = Input;
+			PrevInput = SWAN_Input;
 
-			TextConfig tc;
+			SWAN::TextConfig tc;
 			// tc.bold = true;
 			tc.italics = true;
 			tc.text = std::string("time: ") + std::to_string(time) + "\n ";
@@ -191,9 +191,9 @@ class Game {
 			shader->use();
 			{
 				const float shininessD = 0.5;
-				if (Input.Keyboard.letterKeys['p' - 'a']) {
+				if (SWAN_Input.Keyboard.letterKeys['p' - 'a']) {
 					shininess += shininessD;
-				} else if (Input.Keyboard.letterKeys['o' - 'a']) {
+				} else if (SWAN_Input.Keyboard.letterKeys['o' - 'a']) {
 					shininess -= shininessD;
 				}
 
@@ -215,13 +215,13 @@ class Game {
 			}
 			shader->unuse();
 
-			auto col = CheckCollision (
-				ApplyTransform(shotgunMesh->getColWrapper().aabb, shotgun.getTransform()),
-				ApplyTransform(planeMesh->getColWrapper().aabb,   plane.getTransform())
+			auto col = SWAN::CheckCollision (
+				SWAN::ApplyTransform(shotgunMesh->getColWrapper().aabb, shotgun.getTransform()),
+				SWAN::ApplyTransform(planeMesh->getColWrapper().aabb,   plane.getTransform())
 			);
 
-			Render(ApplyTransform(shotgunMesh->getColWrapper().aabb, shotgun.getTransform()), cam.get(), col.happened);
-			Render(ApplyTransform(planeMesh->getColWrapper().aabb,   plane.getTransform()),   cam.get(), col.happened);
+			SWAN::Render(SWAN::ApplyTransform(shotgunMesh->getColWrapper().aabb, shotgun.getTransform()), cam.get(), col.happened);
+			SWAN::Render(SWAN::ApplyTransform(planeMesh->getColWrapper().aabb,   plane.getTransform()),   cam.get(), col.happened);
 
 			/*
 			   TextConfig tc;
@@ -236,7 +236,7 @@ class Game {
 			guiRenderer->render();
 
 			glClear(GL_DEPTH_BUFFER_BIT);
-			Display::Clear();
+			SWAN::Display::Clear();
 		}
 
 		bool running() { return run; }
@@ -246,18 +246,18 @@ class Game {
 
 		_input PrevInput;
 
-		Shader* shader;
-		Entity plane, shotgun, xTorus, yTorus, zTorus;
+		SWAN::Shader* shader;
+		SWAN::Entity plane, shotgun, xTorus, yTorus, zTorus;
 
-		const Mesh *planeMesh, *shotgunMesh, *torusMesh;
-		const Texture* tex;
-		unique_ptr<Camera> cam;
+		const SWAN::Mesh *planeMesh, *shotgunMesh, *torusMesh;
+		const SWAN::Texture* tex;
+		unique_ptr<SWAN::Camera> cam;
 
-		Text txt;
-		Shader* textShader;
-		const BitmapFont* font;
+		SWAN::Text txt;
+		SWAN::Shader* textShader;
+		const SWAN::BitmapFont* font;
 
-		unique_ptr<GUIRenderer> guiRenderer;
+		unique_ptr<SWAN::GUIRenderer> guiRenderer;
 
 		float shininess = 10.0f;
 		float time = 0;
@@ -317,10 +317,10 @@ int main(int argc, char** argv) {
 	auto v = xml.findTagsWithName("Resolution");
 	auto resourcesFile = xml.findTagsWithName("Resources").at(0)->getAttrib("file");
 
-	if (Util::IsRelativePath(resourcesFile))
+	if (SWAN::Util::IsRelativePath(resourcesFile))
 		resourcesFile = SWAN::Util::GetDirectory(std::string(ConfigFile), true) + resourcesFile;
 
-	Display::Init (
+	SWAN::Display::Init (
 		std::stoi( v.front()->getAttrib("width")  ),
 		std::stoi( v.front()->getAttrib("height") ),
 		"OGL-Engine"
@@ -328,10 +328,23 @@ int main(int argc, char** argv) {
 
 	Game game(resourcesFile);
 
+	Clock::time_point prevTime = Clock::now();
+	Clock::time_point now;
+
 	while (game.running()) {
-		game.update();
-		game.render();
+		now = Clock::now();
+
+		SWAN_Input.handleEvents();
+
+		if (now - prevTime > 16ms) {
+			game.update();
+			game.render();
+
+			prevTime = Clock::now();
+		}
 	}
+
+	SWAN_DEBUG_PRINT("Exiting...");
 
 	return 0;
 }

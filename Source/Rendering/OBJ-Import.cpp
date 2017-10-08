@@ -44,25 +44,22 @@ struct XVertex {
 	bool hasUV = true;
 	bool hasNorm = true;
 
-	operator Vertex() {
-		return Vertex(pos, (hasUV ? UV : glm::vec2()),
+	operator SWAN::Vertex() {
+		return SWAN::Vertex(pos, (hasUV ? UV : glm::vec2()),
 				(hasNorm ? norm : glm::vec3()));
 	}
 };
 
-bool operator==(const Vertex& lhs, const XVertex& rhs) {
+bool operator==(const SWAN::Vertex& lhs, const XVertex& rhs) {
 	return lhs.pos == rhs.pos && lhs.UV == rhs.UV && lhs.norm == rhs.norm;
 }
 
-bool operator==(const XVertex& lhs, const Vertex& rhs) {
+bool operator==(const XVertex& lhs, const SWAN::Vertex& rhs) {
 	return lhs.pos == rhs.pos && lhs.UV == rhs.UV && lhs.norm == rhs.norm;
 }
-struct Face {
-	vector<XVertex> verts;
-};
-struct Model {
-	vector<Face> faces;
-};
+
+struct Face { vector<XVertex> verts; };
+struct Model { vector<Face> faces; };
 
 enum ReadMode {
 	READ_NONE,
@@ -191,7 +188,7 @@ Model importOBJ(string filename) {
 
 namespace SWAN {
 	unique_ptr<Mesh> Import::OBJ(std::string filename, Import::Settings s) {
-		UTIL_PROFILE();
+		SWAN_UTIL_PROFILE();
 
 		Model m = importOBJ(filename);
 
@@ -243,7 +240,7 @@ namespace SWAN {
 		auto res = make_unique<Mesh>(rVerts, rInds);
 
 		auto genAABB = [](vector<Vertex> v) -> AABB {
-			UTIL_PROFILE();
+			SWAN_UTIL_PROFILE();
 			AABB res;
 
 			res.min = v[0].pos;

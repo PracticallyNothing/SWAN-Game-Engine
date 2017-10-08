@@ -2,7 +2,7 @@
 
 #include <algorithm>  // For std::max(), std::min()
 
-#include "Core/Resources.hpp"    // For Resources::GetMesh(), Resources::GetShader()
+#include "Core/Resources.hpp"    // For SWAN::Res::GetMesh(), SWAN::Res::GetShader()
 #include "Rendering/Mesh.hpp"    // For Mesh
 #include "Utility/Debug.hpp"     // For SWAN_DEBUG_OUT()
 #include "Utility/StreamOps.hpp" // For SWAN::Util::StreamOps::*
@@ -57,8 +57,8 @@ namespace SWAN {
 		t.scale.y = box.max.y - box.min.y;
 		t.scale.z = box.max.z - box.min.z;
 
-		Shader* s = Resources::GetShader("Physics");
-		auto m = Resources::GetMesh("1x1 Cube");
+		Shader* s = SWAN::Res::GetShader("Physics");
+		auto m = SWAN::Res::GetMesh("1x1 Cube");
 
 		s->use();
 		{

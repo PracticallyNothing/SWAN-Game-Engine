@@ -64,9 +64,9 @@ namespace Res {
 		}
 
 		std::string dir = SWAN::Util::GetDirectory(filename);
-		DEBUG_OUT(dir);
+		SWAN_DEBUG_OUT(dir);
 
-		DEBUG_PRINT("Loading meshes...");
+		SWAN_DEBUG_PRINT("Loading meshes...");
 		auto meshes = res.findTagsWithName("Mesh");
 		for (auto tag : meshes) {
 			auto fileIt = tag->attribs.find("file");
@@ -85,14 +85,14 @@ namespace Res {
 
 			std::string name = nameIt->second;
 			std::string file = dir + fileIt->second;
-			DEBUG_OUT("-------------------------------------");
-			DEBUG_OUT(name);
-			DEBUG_OUT(file);
+			SWAN_DEBUG_OUT("-------------------------------------");
+			SWAN_DEBUG_OUT(name);
+			SWAN_DEBUG_OUT(file);
 
 			detail::meshes.emplace((name.length() ? name : file),
 					Import::OBJ(file, Import::Settings{true, false, ColWrapper::COL_AABB}));
 		}
-		DEBUG_PRINT("Loading meshes complete!");
+		SWAN_DEBUG_PRINT("Loading meshes complete!");
 
 		auto textures = res.findTagsWithName("Texture");
 		for (auto tag : textures) {

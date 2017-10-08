@@ -107,7 +107,7 @@ namespace SWAN {
 				int xx = x * glyphWidth;
 				int yy = y * glyphHeight;
 
-				DEBUG_DO(dbg_coords.push_back({xx, yy, glyphWidth, glyphHeight}));
+				SWAN_DEBUG_DO(dbg_coords.push_back({xx, yy, glyphWidth, glyphHeight}));
 
 				glyphs.push_back(Texture(img->subImg(xx, yy, glyphWidth, glyphHeight)));
 
@@ -123,11 +123,11 @@ namespace SWAN {
 				c++;
 			}
 		}
-		DEBUG_DO(dbg_tex = new Texture(*img));
+		SWAN_DEBUG_DO(dbg_tex = new Texture(*img));
 	}
 
 	BitmapFont::~BitmapFont(){
-		DEBUG_DO(delete dbg_tex);
+		SWAN_DEBUG_DO(delete dbg_tex);
 		delete img;
 	}
 }

@@ -21,7 +21,7 @@ namespace SWAN {
 	};
 
 	struct Character {
-		DEBUG_VAR(char, c);
+		SWAN_DEBUG_VAR(char, c);
 		bool isSpace = false;
 
 		const Texture* tex = nullptr;

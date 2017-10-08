@@ -16,7 +16,7 @@ void Usage     ();
 void Version   ();
 
 struct GUISkin {
-	const Texture
+	const SWAN::Texture
 		*sliderBGTex = nullptr,
 		*sliderHandleTex = nullptr;
 	// What percentage of the width should the slider handle take up?
@@ -25,11 +25,11 @@ struct GUISkin {
 	float sliderBGHeightPart;
 };
 
-class Slider : public GUIPrim::IElement {
+class Slider : public SWAN::GUIP::IElement {
 	public:
 		Slider(GUISkin skin) {
-			bg     = new GUIPrim::Image     (skin.sliderBGTex);
-			handle = new GUIPrim::Draggable (skin.sliderHandleTex, false, true);
+			bg     = new SWAN::GUIP::Image     (skin.sliderBGTex);
+			handle = new SWAN::GUIP::Draggable (skin.sliderHandleTex, false, true);
 			this->skin = skin;
 		}
 
@@ -45,41 +45,41 @@ class Slider : public GUIPrim::IElement {
 
 	private:
 		GUISkin skin;
-		GUIPrim::Image* bg;
-		GUIPrim::Draggable* handle;
+		SWAN::GUIP::Image* bg;
+		SWAN::GUIP::Draggable* handle;
 		float min, max;
 };
 
 int main (int argc, const char** argv) {
-	Display::Init(1280, 720, "SWAN GUI Demo");
-	Input_init();
-	Display::SetClearColor(0.1f, 0.3f, 0.3f, 0.0f);
+	SWAN::Display::Init(1280, 720, "SWAN GUI Demo");
+	SWAN_Input_Init();
+	SWAN::Display::SetClearColor(0.1f, 0.3f, 0.3f, 0.0f);
 
-	Resources::LoadFromFile("Resources/res.xml");
-	GUIRenderer guiRenderer;
+	SWAN::Res::LoadFromFile("Resources/res.xml");
+	SWAN::GUIRenderer guiRenderer;
 
-	guiRenderer.add(new GUIPrim::Button(
-		Resources::GetTexture("Flat Blue"),
-		Resources::GetTexture("Flat Red"),
-		Resources::GetTexture("Flat Green")
+	guiRenderer.add(new SWAN::GUIP::Button(
+		SWAN::Res::GetTexture("Flat Blue"),
+		SWAN::Res::GetTexture("Flat Red"),
+		SWAN::Res::GetTexture("Flat Green")
 	)) -> moveTo(500, 500) -> resizeTo(200, 125);
 
-	guiRenderer.add(new GUIPrim::Button(
-		Resources::GetTexture("Flat Blue"),
-		Resources::GetTexture("Flat Red"),
-		Resources::GetTexture("Flat Green")
+	guiRenderer.add(new SWAN::GUIP::Button(
+		SWAN::Res::GetTexture("Flat Blue"),
+		SWAN::Res::GetTexture("Flat Red"),
+		SWAN::Res::GetTexture("Flat Green")
 	)) -> moveTo(250, 500) -> resizeTo(200, 125);
 
-	guiRenderer.add(new GUIPrim::Button(
-		Resources::GetTexture("Flat Blue"),
-		Resources::GetTexture("Flat Red"),
-		Resources::GetTexture("Flat Green")
+	guiRenderer.add(new SWAN::GUIP::Button(
+		SWAN::Res::GetTexture("Flat Blue"),
+		SWAN::Res::GetTexture("Flat Red"),
+		SWAN::Res::GetTexture("Flat Green")
 	)) -> moveTo(750, 500) -> resizeTo(200, 125);
 
-	GUIPrim::Draggable* dr =
-		(GUIPrim::Draggable*) guiRenderer.add(
-				new GUIPrim::Draggable(
-					Resources::GetTexture("Flat Cyan"),
+	SWAN::GUIP::Draggable* dr =
+		(SWAN::GUIP::Draggable*) guiRenderer.add(
+				new SWAN::GUIP::Draggable(
+					SWAN::Res::GetTexture("Flat Cyan"),
 					false,
 					true
 				)
@@ -88,22 +88,22 @@ int main (int argc, const char** argv) {
 	Clock::time_point prevTime = Clock::now();
 	Clock::time_point now;
 
-	while(!(Input.Keyboard.escapeKey || Input.Window.exitRequest)){
+	while(!(SWAN_Input.Keyboard.escapeKey || SWAN_Input.Window.exitRequest)){
 		now = Clock::now();
 
-		Input.handleEvents();
+		SWAN_Input.handleEvents();
 
 		if (now - prevTime > 16ms) {
 			guiRenderer.update();
 			guiRenderer.render();
 
-			Display::Clear();
+			SWAN::Display::Clear();
 
 			prevTime = Clock::now();
 		}
 	}
 
-	Display::Close();
+	SWAN::Display::Close();
 
 	return 0;
 }

@@ -18,8 +18,8 @@ namespace SWAN {
 
 	Shader::~Shader() {}
 
-	DEBUG_VAR(std::string, dbg_vertexShader);
-	DEBUG_VAR(std::string, dbg_fragmentShader);
+	SWAN_DEBUG_VAR(std::string, dbg_vertexShader);
+	SWAN_DEBUG_VAR(std::string, dbg_fragmentShader);
 
 	// Compiles the shaders into a form that your GPU can understand
 	void Shader::compileShaders(const std::string& vertexShaderFilePath,
@@ -40,8 +40,8 @@ namespace SWAN {
 		compileShader(vertexShaderFilePath, _vertexShaderID);
 		compileShader(fragmentShaderFilePath, _fragmentShaderID);
 
-		DEBUG_DO(dbg_vertexShader = vertexShaderFilePath);
-		DEBUG_DO(dbg_fragmentShader = fragmentShaderFilePath);
+		SWAN_DEBUG_DO(dbg_vertexShader = vertexShaderFilePath);
+		SWAN_DEBUG_DO(dbg_fragmentShader = fragmentShaderFilePath);
 	}
 
 	void Shader::linkShaders() {
@@ -77,8 +77,8 @@ namespace SWAN {
 			// print the error log and quit
 			std::printf("%s\n", &(errorLog[0]));
 			std::cerr << "Shaders failed to link!" << std::endl;
-			DEBUG_OUT(dbg_vertexShader);
-			DEBUG_OUT(dbg_fragmentShader);
+			SWAN_DEBUG_OUT(dbg_vertexShader);
+			SWAN_DEBUG_OUT(dbg_fragmentShader);
 		}
 
 		// Always detach shaders after a successful link.

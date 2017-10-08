@@ -26,7 +26,7 @@ namespace SWAN {
 
 	// SUPPORTS ONLY MONOSPACE FONTS
 	class BitmapFont {
-		DEBUG_USING(dbg_TexCoordsVec, std::vector<dbg_TextureCoords>);
+		SWAN_DEBUG_USING(dbg_TexCoordsVec, std::vector<dbg_TextureCoords>);
 
 		public:
 			explicit BitmapFont(const std::string& confFilename);
@@ -54,8 +54,8 @@ namespace SWAN {
 
 			int tabWidth;
 
-			DEBUG_VAR(Texture*, dbg_tex);
-			DEBUG_VAR(dbg_TexCoordsVec, dbg_coords);
+			SWAN_DEBUG_VAR(Texture*, dbg_tex);
+			SWAN_DEBUG_VAR(dbg_TexCoordsVec, dbg_coords);
 		private:
 			void genGlyphs();
 

@@ -51,12 +51,12 @@ namespace GUIP {
 	}
 
 	void Button::update() {
-		bool mousedOver = Input.Mouse.x > x && Input.Mouse.y > y &&
-			Input.Mouse.x < x + w && Input.Mouse.y < y + h;
+		bool mousedOver = SWAN_Input.Mouse.x > x && SWAN_Input.Mouse.y > y &&
+			SWAN_Input.Mouse.x < x + w && SWAN_Input.Mouse.y < y + h;
 		bool focused = (currFocused == this);
 		bool noneFocused = noCurrFocused();
 
-		if ((noneFocused || focused) &&	(mousedOver || currState == State::PRESSED) && Input.Mouse.lButton) {
+		if ((noneFocused || focused) &&	(mousedOver || currState == State::PRESSED) && SWAN_Input.Mouse.lButton) {
 			currState = State::PRESSED;
 			setCurrentlyFocused(this);
 		} else if (noneFocused && mousedOver) {
@@ -72,26 +72,26 @@ namespace GUIP {
 	// -----------------------------------------------------------
 	void Draggable::update() {
 		bool mousedOver =
-			Input.Mouse.x > x &&
-			Input.Mouse.y > y &&
-			Input.Mouse.x < x + w &&
-			Input.Mouse.y < y + h;
+			SWAN_Input.Mouse.x > x &&
+			SWAN_Input.Mouse.y > y &&
+			SWAN_Input.Mouse.x < x + w &&
+			SWAN_Input.Mouse.y < y + h;
 
 		if (currFocused == this) { // If being dragged ...
-			if (Input.Mouse.lButton) { // ... and the mouse is still being held
+			if (SWAN_Input.Mouse.lButton) { // ... and the mouse is still being held
 				// Set position to mouse.xy - offset.xy
 				if (!_lockX) {
 					if (minX >= 0 && maxX >= 0 && maxX > minX)
-						x = SWAN::Util::Clamp(Input.Mouse.x + offsetX, minX, maxX);
+						x = SWAN::Util::Clamp(SWAN_Input.Mouse.x + offsetX, minX, maxX);
 					else
-						x = Input.Mouse.x + offsetX;
+						x = SWAN_Input.Mouse.x + offsetX;
 				}
 
 				if(!_lockY) {
 					if (minY >= 0 && maxY >= 0 && maxY > minY)
-						y = SWAN::Util::Clamp(Input.Mouse.y + offsetY, minY, maxY);
+						y = SWAN::Util::Clamp(SWAN_Input.Mouse.y + offsetY, minY, maxY);
 					else
-						y = Input.Mouse.y + offsetY;
+						y = SWAN_Input.Mouse.y + offsetY;
 				}
 			} else { // ... but LMB isn't being pressed anymore
 				// Reset the offset
@@ -101,13 +101,13 @@ namespace GUIP {
 				currFocused = nullptr;
 			}
 		} else if (noCurrFocused()) { // If not being dragged and there are no other active elements ...
-			if (mousedOver && Input.Mouse.lButton) { // ... and the mouse is on top of the element with LMB pressed
+			if (mousedOver && SWAN_Input.Mouse.lButton) { // ... and the mouse is on top of the element with LMB pressed
 				// Change currFocused to indicate you are being dragged
 				currFocused = this;
 
 				// Set offset to position.xy - mouse.xy
-				offsetX = x - Input.Mouse.x;
-				offsetY = y - Input.Mouse.y;
+				offsetX = x - SWAN_Input.Mouse.x;
+				offsetY = y - SWAN_Input.Mouse.y;
 			}
 		}
 	}

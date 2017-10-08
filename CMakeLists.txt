@@ -117,11 +117,11 @@ set(Sources
 add_library(SWAN STATIC ${Sources})
 target_link_libraries(SWAN ${LIBS} ${CMAKE_DL_LIBS})
 
-add_executable(SWAN-Unnamed-Demo Source/SWAN-Unnamed-Demo.cpp)
+add_executable(SWAN-Unnamed-Demo Demos/SWAN-Unnamed-Demo.cpp)
 target_link_libraries(SWAN-Unnamed-Demo SWAN)
 
 add_executable(SWAN-GUI-Demo Demos/SWAN-GUI-Demo.cpp)
 target_link_libraries(SWAN-GUI-Demo SWAN)
 
 install(FILES ${Headers} DESTINATION include)
-install(TARGETS SWAN LIBRARY DESTINATION lib)
+install(TARGETS SWAN ARCHIVE DESTINATION lib)
