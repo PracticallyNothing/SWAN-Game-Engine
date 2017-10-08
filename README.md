@@ -12,7 +12,7 @@ low framerates and weird, nonsensical behaviour. </center>
 <center>SWAN: Something we all need</center>
 ===========================
 ---------------------------
-**SWAN** aspires to be a game engine able to do simple games *quickly* and *efficiently*.
+**SWAN** aspires to be a game engine that enables developers to create simple games *quickly* and *efficiently*.
 
 SWAN is programmed in `C++`.
 
