@@ -1,0 +1,75 @@
+Stage 0: The Engine
+Stage 1: The Mechanics
+Stage 2: The Finishing Touches
+
+Legend: [ ] => Unimplemented
+        [o] => Current
+		[>] => Next
+		[x] => Finished
+        [?] => On halt
+
+Stage 0 Goals:
+	Rendering:
+		-> [x] Shaders
+			-> [x] Loading
+			-> [x] Compiling
+			-> [x] Using
+		-> [x] Textures
+			-> [x] Importing
+			-> [x] Rendering
+		-> [x] Meshes
+			-> [x] Importing (Wavefront OBJ)
+			-> [x] Rendering
+		-> [x] Camera
+		-> [?] Lighting
+			-> [x] Ambient light
+			-> [x] Point light
+			-> [x] Spotlight
+			-> [x] Directional light (Sun)
+			-> [ ] Shadows
+		-> [?] Text
+			-> [x] Bitmap font
+			-> [ ] Vector font (extra)
+		-> [?] GUI
+			-> [x] Image
+			-> [ ] TextBox
+			-> [x] Button
+			-> [ ] Draggable
+		-> [ ] Lightmapping
+			-> [ ] https://github.com/ands/lightmapper
+		-> [ ] COLLADA support (Using the XML parser)
+
+	Physics:
+		-> [x] Axis Aligned Bounding Box + AABB x AABB collision
+		-> [ ] Oriented Bounding Box     + OBB  x OBB  collision
+		-> [ ] AABB x OBB collision
+
+	Sound:
+		-> [ ] Basic sound
+		-> [ ] Sound triggers
+
+	Management:
+		-> [x] Resource Management
+		-> [x] Resource Loading
+		-> [o] Scene Management
+		-> [>] Scene Loading
+
+	Debugging:
+		-> [ ] Add grid rendering
+
+	Extras (nice to have, but not crucial):
+		-> [ ] GLSL tokenizer (extra)
+		-> [ ] A Renderer class
+
+Stage 1 Goals:
+	Mechanics:
+		-- WIP --
+	Art:
+		-- WIP --
+	More complex features:
+		-> [ ] Mesh skinning
+		-> [ ] AI players
+		-- WIP --
+
+Stage 2 Goals:
+	-- WIP --

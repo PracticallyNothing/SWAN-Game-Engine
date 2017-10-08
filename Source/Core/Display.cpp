@@ -1,38 +1,30 @@
 #include "Display.hpp"
-
+#include "../Utility/Debug.hpp"
 #include <SDL2/SDL.h>
 
-#include <GL/glew.h>
+// #include <GL/glew.h>
+#include <glad/glad.h>
 
-uint Display::numDisplays = 0;
-SDL_GLContext Display::glContext = 0;
+namespace Display {
+	namespace detail {
+		SDL_Window* window;
+		SDL_GLContext glContext;
 
-void Display::clear() {
-	SDL_GL_SwapWindow(win);
-	glClear(GL_COLOR_BUFFER_BIT);
-}
+		std::string title;
+		int width = -1, height = -1;
+		bool initialized = false;
 
-void Display::setClearColor(float r, float g, float b, float a) {
-	glClearColor(r, g, b, a);
-}
+		float red, green, blue, alpha;
+	}
 
-void Display::focus() {
-	glViewport(0, 0, w, h);
-	SDL_GL_MakeCurrent(win, Display::glContext);
-}
-
-Display::Display(int w, int h, const std::string& title) : w(w), h(h) {
-	// If this is the first display initialize all attributes
-	// needed for the proper functioning
-	// of OpenGL inside the SDL_GLContext.
-	if (!Display::numDisplays) {
+	void Init (int width, int height, const std::string& title) {
 		// Initialize SDL for the first display only
 		SDL_Init(SDL_INIT_VIDEO);
 
 		// Set the OpenGL versions to be used (in this case, 3.2)
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
 		// Set in bits:
 		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);    // The amount of red.
@@ -44,41 +36,66 @@ Display::Display(int w, int h, const std::string& title) : w(w), h(h) {
 		// screen as it is cleared.
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-		// SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-		// SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
-	}
+		// Create the window
+		detail::window = SDL_CreateWindow(
+				title.c_str(),  // Window title. NOTE: It must be a C-style string
+				// (char*) so it must be converted with a call to "c_str()".
+				SDL_WINDOWPOS_CENTERED,
+				SDL_WINDOWPOS_CENTERED,  // Window position according to the screen
+				width, height,           // Window width and height
+				SDL_WINDOW_OPENGL);      // Flags for the window
 
-	// Create the window
-	win = SDL_CreateWindow(
-		title.c_str(),  // Window title. NOTE: It must be a C-style string
-						// (char*) so it must be converted with a call to
-						// "c_str()".
-		SDL_WINDOWPOS_CENTERED,
-		SDL_WINDOWPOS_CENTERED,  // Window position according to the screen
-		w, h,                    // Window width and height
-		SDL_WINDOW_OPENGL);      // Flags for the window
+		SDL_assert(detail::window != nullptr);
 
-	if (!Display::numDisplays) {
-		Display::glContext = SDL_GL_CreateContext(win);
-		//glewExperimental = true;
-		glewInit();
+		detail::glContext = SDL_GL_CreateContext(detail::window);
+		SDL_assert(gladLoadGL());
+
+		/*
+		glewExperimental = true;
+		auto i = glewInit();
+		DEBUG_OUT(i);
+		SDL_assert(i == GLEW_OK);
 		glGetError();
+		*/
+
+		detail::initialized = true;
+
+		detail::width = width;
+		detail::height = height;
+		detail::title = title;
 	}
 
-	Display::numDisplays++;
-}
+	void Clear (float red, float green, float blue, float alpha){
+		SetClearColor(red, green, blue, alpha);
+		Clear();
+	}
 
-Display::~Display() {
-	// Destroy the window of the current display
-	SDL_DestroyWindow(win);
-	// Lower the number of displays left
-	Display::numDisplays--;
+	void SetClearColor (float red, float green, float blue, float alpha){
+		glClearColor(red, green, blue, alpha);
 
-	// If this was the last display (if numDisplays is 0)
-	// delete the SDL_GLContext we were using
-	// because we don't need it any more.
-	if (!Display::numDisplays) {
-		SDL_GL_DeleteContext(Display::glContext);
+		detail::red = red;
+		detail::green = green;
+		detail::blue = blue;
+		detail::alpha = alpha;
+	}
+
+	void Clear () {
+		SDL_GL_SwapWindow(detail::window);
+		glClear(GL_COLOR_BUFFER_BIT);
+	}
+
+	void Close () {
+		// Destroy the window of the current display
+		SDL_DestroyWindow(detail::window);
+
+		SDL_GL_DeleteContext(detail::glContext);
 		SDL_Quit();
+	}
+
+	void Resize(int newWidth, int newHeight){
+		detail::width = newWidth;
+		detail::height = newHeight;
+
+		SDL_SetWindowSize(detail::window, newWidth, newHeight);
 	}
 }

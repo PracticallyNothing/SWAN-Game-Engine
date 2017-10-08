@@ -1,0 +1,10 @@
+<Config>
+	<Display>
+		<Resolution width="1280" height="720"/>
+		<Fullscreen on="false"/>
+	</Display>
+
+	<Resources file="Resources/res.xml"/>
+
+	<Scene file="scene.xml"/>
+</Config>

@@ -6,27 +6,33 @@
 
 typedef unsigned int uint;
 
-class Display{
-    public:
-        Display(int w, int h, const std::string& title);
-        ~Display();
+namespace Display {
+	namespace detail {
+		extern SDL_Window* window;
+		extern SDL_GLContext glContext;
 
-        void focus();
-        void resize(int w, int h);
+		extern std::string title;
+		extern int width, height;
+		extern bool initialized;
 
-        void clear();
-        static void setClearColor(float r, float g, float b, float a);
+		extern float red, green, blue, alpha;
+	}
 
-        inline int getW() const { return w; }
-        inline int getH() const { return h; }
-        inline float getAspect() const { return (float)w/h; }
-        inline static uint getNumDisplays() { return Display::numDisplays; }
-    private:
-        int w,h;
-        SDL_Window* win;
+	extern void Init   (int width, int height, const std::string& title);
+	extern void Clear  ();
+	extern void Clear  (float red, float green, float blue, float alpha);
+	extern void Close  ();
+	extern void Resize (int newWidth, int newHeight);
 
-        static SDL_GLContext glContext;
-        static uint numDisplays;
-};
+	extern void SetClearColor (float red, float green, float blue, float alpha);
 
+	inline bool IsInitialized(){ return detail::initialized; }
+
+	inline double GetAspectRatio () {
+		return (double) detail::width / detail::height;
+	}
+
+	inline int GetWidth  () { return detail::width;  }
+	inline int GetHeight () { return detail::height; }
+}
 #endif // !DISPLAY_HPP

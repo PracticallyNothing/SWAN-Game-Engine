@@ -14,11 +14,10 @@
 
 # if defined(DEBUG) && !defined(NO_DEBUG)
 #include <iostream>
-const std::ostream& dbg_OStream = std::cout;
-#	 define DEBUG_PRINT(str)            do { dbg_OStream << "DEBUG: " << (str) << '\n'; } while(0)
-#	 define DEBUG_OUT(function)   	    do { dbg_OStream << STRINGIFY(function) << ": " << (function) << '\n'; } while(0)
-#    define DEBUG_PRINT_CONTEXT() 	    do { dbg_OStream << "Context: " << __FUNCTION__ << '\n'; } while(0)
-#    define DEBUG_PRINT_CONTEXTUAL(str) do { dbg_OStream << "[" << __FUNCTION__ << "()]: " << (str) << '\n'; } while(0)
+#	 define DEBUG_PRINT(str)            do { std::cout << "DEBUG: " << (str) << '\n'; } while(0)
+#	 define DEBUG_OUT(function)   	    do { std::cout << STRINGIFY(function) << ": " << (function) << '\n'; } while(0)
+#    define DEBUG_PRINT_CONTEXT() 	    do { std::cout << "Context: " << __FUNCTION__ << '\n'; } while(0)
+#    define DEBUG_PRINT_CONTEXTUAL(str) do { std::cout << "[" << __FUNCTION__ << "()]: " << (str) << '\n'; } while(0)
 #    define DEBUG_VAR(type, name) 	    type name
 #    define DEBUG_USING(as, type) 	    using as = type
 #	 define DEBUG_DO(expr)		  	    do { (expr); } while(0)
