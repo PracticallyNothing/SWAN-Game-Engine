@@ -62,11 +62,6 @@ set(LIBS
 	${SDL2_LIBRARY}
 )
 
-if(WIN32)
-	list(APPEND LIBS "mingw32")
-endif()
-
-
 include_directories(
 	${OPENGL_INCLUDE_DIRS}
 #	${FREETYPE_INCLUDE_DIRS}
