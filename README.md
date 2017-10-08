@@ -40,7 +40,6 @@ Future plans:
 To compile SWAN and its demos, you will need a few tools:
 - CMake
 - A compiler with support for the C++14 standard
-------
 
 After you have obtained said tools, do the following:
 
