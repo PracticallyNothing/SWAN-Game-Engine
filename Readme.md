@@ -1,16 +1,17 @@
-# :warning: WARNING :warning:  
+# :warning: WARNING :warning:
 ///////////////////////////////////////////////////////////////////////////////////////////  
-SWAN is still in a _very_ early stage of development.  
+
+SWAN is still in a *very* early stage of development.  
 It lacks many of the core elements needed to make it a game engine.  
 (Physics, support for skinned meshes, etc.)  
 If you decide to use this project, be ready for lots of missing features,  
-low framerates and weird, nonsensical behaviour.   
+low framerates and weird, nonsensical behaviour.  
+
 ///////////////////////////////////////////////////////////////////////////////////////////  
 
------
+-----------------------------------
 
-SWAN: Something we all need
-===========================
+## SWAN: Something we all need
 ---------------------------
 **SWAN** aspires to be a game engine that enables developers to create simple games *quickly* and *efficiently*.
 
