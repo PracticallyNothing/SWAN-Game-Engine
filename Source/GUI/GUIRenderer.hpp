@@ -63,8 +63,8 @@ class GUIRenderer {
 		GUIRenderer();
 		~GUIRenderer();
 
-		void add(GUIPrim::IElement*);
-		void add(GUIPrim::IElementContainer*);
+		GUIPrim::IElement*          add(GUIPrim::IElement*);
+		GUIPrim::IElementContainer* add(GUIPrim::IElementContainer*);
 		void render();
 		void update();
 

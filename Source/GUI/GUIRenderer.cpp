@@ -31,14 +31,16 @@ GUIRenderer::~GUIRenderer() {
 	delete rect;
 }
 
-void GUIRenderer::add(GUIPrim::IElement* elem) {
+GUIPrim::IElement* GUIRenderer::add(GUIPrim::IElement* elem) {
 	sortedByLayer = false;
 	elems.push_back(GUIRenderer::ElementType(elem));
-
+	return elem;
 }
-void GUIRenderer::add(GUIPrim::IElementContainer* elemCont) {
+
+GUIPrim::IElementContainer* GUIRenderer::add(GUIPrim::IElementContainer* elemCont) {
 	sortedByLayer = false;
 	elems.push_back(GUIRenderer::ElementType(elemCont));
+	return elemCont;
 }
 
 void GUIRenderer::renderElement(GUIPrim::IElement* e) {

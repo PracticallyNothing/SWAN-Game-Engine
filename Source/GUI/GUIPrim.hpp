@@ -22,10 +22,22 @@ namespace GUIPrim {
 
 	struct IElement {
 		int x, y, w, h;
+		int minX = -1, minY = -1, maxX = -1, maxY = -1;
 		int layer = 0, sublayer = 0;
 
 		IElement(int x = 0, int y = 0, int w = 0, int h = 0, int layer = 0, int sublayer = 0)
 			: x(x), y(y), w(w), h(h), layer(layer), sublayer(sublayer){}
+
+		virtual IElement* moveTo (int newX, int newY)   { x = newX;  y = newY;  return this; }
+		virtual IElement* moveBy (int relX, int relY)   { x += relX; y += relY; return this; }
+		virtual IElement* resizeTo (int newW, int newH) { w = newW;  h = newH;  return this; }
+		virtual IElement* resizeBy (int relW, int relH) { w += relW; h += relH; return this; }
+
+		virtual IElement* setMinX (int x) { minX = x; return this; }
+		virtual IElement* setMinY (int y) { minY = y; return this; }
+		virtual IElement* setMaxX (int x) { maxX = x; return this; }
+		virtual IElement* setMaxY (int y) { maxY = y; return this; }
+
 		virtual ~IElement(){}
 		virtual const Texture* getTexture() = 0;
 		virtual void update(){}
@@ -91,18 +103,24 @@ namespace GUIPrim {
 
 	struct Draggable : public IElement {
 		public:
-			Draggable(const Texture* tex)
-				: IElement(0, 0, tex->getW(), tex->getH()), texture(tex) {}
+			Draggable(const Texture* tex, bool lockX = false, bool lockY = false)
+				: IElement(0, 0, tex->getW(), tex->getH()), texture(tex), _lockX(lockX), _lockY(lockY){}
 
-			Draggable(const Texture* tex, int w, int h)
-				: IElement(0, 0, w, h), texture(tex) {}
+			Draggable(const Texture* tex, int w, int h, bool lockX = false, bool lockY = false)
+				: IElement(0, 0, w, h), texture(tex), _lockX(lockX), _lockY(lockY){}
 
 			void update();
 
 			const Texture* getTexture(){ return texture; }
-
 			const Texture* texture;
+
+			void lockX()   { _lockX = true;  }
+			void lockY()   { _lockY = true;  }
+			void unlockX() { _lockX = false; }
+			void unlockY() { _lockY = false; }
 		private:
+			bool _lockX = false, _lockY = false;
+
 			int offsetX = 0, offsetY = 0;
 			bool moving = false;
 	};

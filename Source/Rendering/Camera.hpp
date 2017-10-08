@@ -21,7 +21,7 @@ class Camera {
 		explicit Camera (OrthographicT)
 			: aspect(0), fov(0), zNear(0), zFar(0),
 			ortho(true), transform(glm::vec3(0.0f)),
-			perspective(perspective = glm::ortho(0, Display::GetWidth(), Display::GetHeight(), 0))
+			perspective(glm::ortho(0, Display::GetWidth(), Display::GetHeight(), 0))
 		{}
 
 		inline glm::vec3 getForw() const { return transform.getForw(); }

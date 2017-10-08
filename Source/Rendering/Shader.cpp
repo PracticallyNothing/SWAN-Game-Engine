@@ -1,5 +1,7 @@
 #include "Shader.hpp"
 
+#include "../Utility/Debug.hpp"
+
 #include <fstream>
 #include <iostream>
 #include <vector>
@@ -15,9 +17,12 @@ Shader::Shader()
 
 Shader::~Shader() {}
 
+DEBUG_VAR(std::string, dbg_vertexShader);
+DEBUG_VAR(std::string, dbg_fragmentShader);
+
 // Compiles the shaders into a form that your GPU can understand
 void Shader::compileShaders(const std::string& vertexShaderFilePath,
-		const std::string& fragmentShaderFilepath) {
+		const std::string& fragmentShaderFilePath) {
 	// Create the vertex shader object, and store its ID
 	_vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 	if (_vertexShaderID == 0) {
@@ -32,7 +37,10 @@ void Shader::compileShaders(const std::string& vertexShaderFilePath,
 
 	// Compile each shader
 	compileShader(vertexShaderFilePath, _vertexShaderID);
-	compileShader(fragmentShaderFilepath, _fragmentShaderID);
+	compileShader(fragmentShaderFilePath, _fragmentShaderID);
+
+	DEBUG_DO(dbg_vertexShader = vertexShaderFilePath);
+	DEBUG_DO(dbg_fragmentShader = fragmentShaderFilePath);
 }
 
 void Shader::linkShaders() {
@@ -68,6 +76,8 @@ void Shader::linkShaders() {
 		// print the error log and quit
 		std::printf("%s\n", &(errorLog[0]));
 		std::cerr << "Shaders failed to link!" << std::endl;
+		DEBUG_OUT(dbg_vertexShader);
+		DEBUG_OUT(dbg_fragmentShader);
 	}
 
 	// Always detach shaders after a successful link.

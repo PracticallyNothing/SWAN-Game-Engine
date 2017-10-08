@@ -52,13 +52,13 @@ namespace GUIPrim {
 	void Button::update() {
 		bool mousedOver = Input.Mouse.x > x && Input.Mouse.y > y &&
 			Input.Mouse.x < x + w && Input.Mouse.y < y + h;
-		bool focused = currFocused == this;
+		bool focused = (currFocused == this);
 		bool noneFocused = noCurrFocused();
 
 		if ((noneFocused || focused) &&	(mousedOver || currState == State::PRESSED) && Input.Mouse.lButton) {
 			currState = State::PRESSED;
 			setCurrentlyFocused(this);
-		} else if (mousedOver) {
+		} else if (noneFocused && mousedOver) {
 			currState = State::ACTIVE;
 		} else {
 			currState = State::INACTIVE;
@@ -79,8 +79,19 @@ namespace GUIPrim {
 		if (currFocused == this) { // If being dragged ...
 			if (Input.Mouse.lButton) { // ... and the mouse is still being held
 				// Set position to mouse.xy - offset.xy
-				x = Input.Mouse.x + offsetX;
-				y = Input.Mouse.y + offsetY;
+				if (!_lockX) {
+					if (minX >= 0 && maxX >= 0 && maxX > minX)
+						x = Util::Clamp(Input.Mouse.x + offsetX, minX, maxX);
+					else
+						x = Input.Mouse.x + offsetX;
+				}
+
+				if(!_lockY) {
+					if (minY >= 0 && maxY >= 0 && maxY > minY)
+						y = Util::Clamp(Input.Mouse.y + offsetY, minY, maxY);
+					else
+						y = Input.Mouse.y + offsetY;
+				}
 			} else { // ... but LMB isn't being pressed anymore
 				// Reset the offset
 				offsetX = offsetY = 0;

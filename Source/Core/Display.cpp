@@ -22,9 +22,9 @@ namespace Display {
 		SDL_Init(SDL_INIT_VIDEO);
 
 		// Set the OpenGL versions to be used (in this case, 3.2)
-		//SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-		//SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
-		//SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
 		// Set in bits:
 		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);    // The amount of red.

@@ -3,6 +3,16 @@
 
 namespace Util {
 	template<typename T>
+	constexpr inline T Clamp(T val, T min, T max){
+		if (val < min)
+			return min;
+		else if (val > max)
+			return max;
+		else
+			return val;
+	}
+
+	template<typename T>
 	constexpr inline bool InRange(T val, T min, T max){
 		return 
 			val > min && 

@@ -1,6 +1,6 @@
 #define SDL_main_h_ // SDL_Main might be very useful, but I find it to be pesky.
 
-#include "../Build/Linux/CMakeConfig.h"
+#include "CMakeConfig.h"
 
 #include "Core/Display.hpp"    // For Display
 #include "Core/Input.hpp"      // For Input
