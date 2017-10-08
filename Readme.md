@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # :warning: WARNING :warning:
 ///////////////////////////////////////////////////////////////////////////////////////////  
 
@@ -10,6 +11,19 @@ low framerates and weird, nonsensical behaviour.
 ///////////////////////////////////////////////////////////////////////////////////////////  
 
 -----------------------------------
+=======
+<p align="center">
+<h1> WARNING </h1><br/>
+///////////////////////////////////////////////////////////////////////////////////////////<br/><br/>
+SWAN is still in a _very_ early stage of development.<br/>
+It lacks many of the core elements needed to make it a game engine.<br/>
+(Physics, support for skinned meshes, etc.)<br/>
+If you decide to use this project, be ready for lots of missing features,<br/>
+low framerates and weird, nonsensical behaviour.<br/><br/>
+///////////////////////////////////////////////////////////////////////////////////////////<br/>
+</p>
+-----
+>>>>>>> 974da9bc82fcaec3712106dedf2331c14e2a5ce6
 
 ## SWAN: Something we all need
 ---------------------------
