@@ -95,18 +95,17 @@ namespace SWAN {
 	}
 
 	void Text::render(Shader* shad) const {
-	    shad->use();
-
-	    for (unsigned i = 0; i < chars.size(); i++) {
+		for (unsigned i = 0; i < chars.size(); i++) {
 	        if (chars[i].isSpace) continue;
 
-	        shad->setUniformData("model", chars[i].transform.getModel());
-	        shad->setUniformData("color", chars[i].color);
+			std::vector<ShaderUniform> uniforms = {
+				{ "model", chars[i].transform.getModel() },
+				{ "color", chars[i].color }
+			};
 
+			shad->setUniforms(uniforms);
 	        chars[i].tex->bind();
-	        chars[i].mesh->render();
+	        shad->renderMesh(*chars[i].mesh);
 	    }
-
-	    shad->unuse();
 	}
 }

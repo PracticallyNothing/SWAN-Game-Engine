@@ -15,41 +15,6 @@ void ParseArgv (int argc, const char** argv);
 void Usage     ();
 void Version   ();
 
-struct GUISkin {
-	const SWAN::Texture
-		*sliderBGTex = nullptr,
-		*sliderHandleTex = nullptr;
-	// What percentage of the width should the slider handle take up?
-	float sliderHandleWidthPart;
-	// What percentage of the height should the background image take up?
-	float sliderBGHeightPart;
-};
-
-class Slider : public SWAN::GUIP::IElement {
-	public:
-		Slider(GUISkin skin) {
-			bg     = new SWAN::GUIP::Image     (skin.sliderBGTex);
-			handle = new SWAN::GUIP::Draggable (skin.sliderHandleTex, false, true);
-			this->skin = skin;
-		}
-
-		IElement* resizeTo(int w, int h){
-			this->w = w;
-			this->h = h;
-
-			bg->resizeTo(w, h * skin.sliderBGHeightPart);
-			handle->resizeTo(w * skin.sliderHandleWidthPart, h);
-
-			return this;
-		}
-
-	private:
-		GUISkin skin;
-		SWAN::GUIP::Image* bg;
-		SWAN::GUIP::Draggable* handle;
-		float min, max;
-};
-
 int main (int argc, const char** argv) {
 	SWAN::Display::Init(1280, 720, "SWAN GUI Demo");
 	SWAN_Input_Init();
@@ -87,6 +52,8 @@ int main (int argc, const char** argv) {
 
 	Clock::time_point prevTime = Clock::now();
 	Clock::time_point now;
+
+	SWAN::Display::SetClearColor(0.0f, 0.3f, 0.25f, 0.0f);
 
 	while(!(SWAN_Input.Keyboard.escapeKey || SWAN_Input.Window.exitRequest)){
 		now = Clock::now();

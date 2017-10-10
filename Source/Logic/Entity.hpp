@@ -28,10 +28,6 @@ class Entity {
 
 		~Entity() {}
 
-		void useTransform(Shader* s, std::string transformName = "transform") {
-			s->setUniformData(transformName, transform);
-		}
-
 		virtual void update(clock_t dt) {
 			currVel.x = Interpolate(currVel.x, targetVel.x, dt);
 			currVel.y = Interpolate(currVel.y, targetVel.y, dt);
@@ -48,9 +44,10 @@ class Entity {
 			transform.rot.z += currAngVel.z;
 		}
 
-		virtual void render() {
+		virtual void render(Shader* s) {
+			s->setUniform({"transform", transform});
 			tex->bind();
-			mesh->render();
+			s->renderMesh(*mesh);
 		}
 
 		void setCurrVelX(float val) { currVel.x = val; }

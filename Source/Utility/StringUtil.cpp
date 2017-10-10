@@ -27,8 +27,7 @@ string Trim(const string& s) {
 
 vector<string> SplitOn(const string& str, char c) {
     vector<string> res;
-
-    int prevI = 0;
+int prevI = 0;
     for (int i = 0; prevI + i < str.length(); i++) {
         if (c == str[prevI + i]) {
             if (i == 0) {

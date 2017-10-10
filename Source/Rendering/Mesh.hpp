@@ -11,6 +11,8 @@
 #include <glm/glm.hpp>
 
 namespace SWAN {
+	class Shader;
+
 	struct Vertex {
 		glm::vec3 pos;
 		glm::vec2 UV;
@@ -27,6 +29,7 @@ namespace SWAN {
 		template <typename T> using Vector = std::vector<T>;
 		template <typename T> using InitList = std::initializer_list<T>;
 
+		friend class Shader;
 		public:
 			Mesh(uint numVerts, Vertex* verts, uint numInds, uint* inds);
 
@@ -36,10 +39,6 @@ namespace SWAN {
 			Mesh(InitList<Vertex> verts, InitList<uint> inds);
 
 			~Mesh();
-
-			void render() const;
-			void renderWireframe() const;
-			void renderVerts() const;
 
 			// TODO: Deprecate in favour of ColWrappers
 			inline bool hasAABB() const { return _hasAABB; }
@@ -57,6 +56,10 @@ namespace SWAN {
 			}
 
 		private:
+			void render() const;
+			void renderWireframe() const;
+			void renderVerts() const;
+
 			void init(Vertex* verts, uint* inds);
 
 			uint vertCount;

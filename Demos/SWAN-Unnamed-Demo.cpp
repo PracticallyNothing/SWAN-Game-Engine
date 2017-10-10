@@ -84,15 +84,15 @@ class Game {
 			pl1.linearAtt = 0.045;
 			pl1.quadraticAtt = 0.0075;
 
-			shader->use();
-			{
-				shader->setUniformData("matSpecular", glm::vec3(0.5, 0.5, 0.5));
-				shader->setUniformData("matShininess", 2.0f);
-				shader->setUniformData("lights[0]", dl0);
-				shader->setUniformData("lights[1]", pl1);
-				shader->setUniformData("activeLights", 2);
-			}
-			shader->unuse();
+			std::vector<SWAN::ShaderUniform> uniforms = {
+				{ "matSpecular",  glm::vec3(0.5, 0.5, 0.5) },
+				{ "matShininess", 2.0f },
+				{ "lights[0]",    dl0 },
+				{ "lights[1]",    pl1 },
+				{ "activeLights", 2   },
+			};
+
+			shader->setUniforms(uniforms);
 
 			guiRenderer = make_unique<SWAN::GUIRenderer>();
 			guiRenderer->add( new SWAN::GUIP::Draggable(SWAN::Res::GetTexture("Flat Red"), 100, 100) );
@@ -188,6 +188,8 @@ class Game {
 		}
 
 		void render() {
+			shader->setUniform({"matShininess", shininess});
+
 			shader->use();
 			{
 				const float shininessD = 0.5;
@@ -199,19 +201,12 @@ class Game {
 
 				if (shininess < 0) shininess = 0;
 
-				shader->setUniformData("matShininess", shininess);
-
 				shader->setUniformData("camPos", cam->getPos());
 				shader->setUniformData("view", cam->getView());
 				shader->setUniformData("perspective", cam->getPerspective());
 
-				shotgun.useTransform(shader);
-				shotgun.render();
-
-				plane.useTransform(shader);
-				plane.render();
-				plane.getMesh()->renderWireframe();
-				plane.getMesh()->renderVerts();
+				shotgun.render(shader);
+				plane.render(shader);
 			}
 			shader->unuse();
 

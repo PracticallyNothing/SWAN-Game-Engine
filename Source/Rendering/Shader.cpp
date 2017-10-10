@@ -1,13 +1,13 @@
 #include "Shader.hpp"
 
 #include "Utility/Debug.hpp"
+#include "Utility/Group.hpp"
 
 #include <fstream>
 #include <iostream>
 #include <vector>
 
-namespace SWAN {
-	// The : _numAttributes(0) ect. is an initialization list. It is a better way to
+namespace SWAN { // The : _numAttributes(0) ect. is an initialization list. It is a better way to
 	// initialize variables, since it avoids an extra copy.
 	Shader::Shader()
 		: _numAttributes(0),
@@ -96,18 +96,24 @@ namespace SWAN {
 
 	// enable the shader, and all its attributes
 	void Shader::use() {
-		glUseProgram(_programID);
-		// enable all the attributes we added with addAttribute
-		for (int i = 0; i < _numAttributes; i++) {
-			glEnableVertexAttribArray(i);
+		if(!used) {
+			glUseProgram(_programID);
+			// enable all the attributes we added with addAttribute
+			for (int i = 0; i < _numAttributes; i++) {
+				glEnableVertexAttribArray(i);
+			}
+			used = true;
 		}
 	}
 
 	// disable the shader
 	void Shader::unuse() {
-		glUseProgram(0);
-		for (int i = 0; i < _numAttributes; i++) {
-			glDisableVertexAttribArray(i);
+		if (used) {
+			glUseProgram(0);
+			for (int i = 0; i < _numAttributes; i++) {
+				glDisableVertexAttribArray(i);
+			}
+			used = false;
 		}
 	}
 
@@ -194,8 +200,7 @@ namespace SWAN {
 		if(hasUniform(name)) glUniform1f(uniforms[name], data);
 	}
 
-	void Shader::setUniformData(const std::string& name, double data) {
-		if(hasUniform(name)) glUniform1f(uniforms[name], data);
+	void Shader::setUniformData(const std::string& name, double data) { if(hasUniform(name)) glUniform1f(uniforms[name], data);
 	}
 
 	void Shader::setUniformData(const std::string& name, glm::vec2 data) {
@@ -318,4 +323,49 @@ namespace SWAN {
 		setUniformData(name + ".linAtt",   light.linearAtt);
 		setUniformData(name + ".quadAtt",  light.quadraticAtt);
 	}
+
+	void Shader::setUniform(ShaderUniform su){
+		if(!used && !lockUse) use();
+
+		const std::array<ShaderUniform::Type, 3> ComposedTypes = {
+			ShaderUniform::T_POINTLIGHT,
+			ShaderUniform::T_SPOTLIGHT,
+			ShaderUniform::T_DIRLIGHT
+		};
+
+		if(!Util::IsOneOf(su.type, ComposedTypes.begin(), ComposedTypes.end()) && !hasUniform(su.name)) {
+			addUniform(su.name);
+			if (!hasUniform(su.name)){ // If the uniform STILL doesn't exist...
+				// TODO: Log error/warning here
+				return;
+			}
+		}
+
+		switch (su.type) {
+			case ShaderUniform::T_INT: setUniformData(su.name, su.data.i); break;
+			case ShaderUniform::T_BOOL: setUniformData(su.name, su.data.b); break;
+			case ShaderUniform::T_FLOAT: setUniformData(su.name, su.data.f); break;
+			case ShaderUniform::T_DOUBLE: setUniformData(su.name, su.data.d); break;
+
+			case ShaderUniform::T_VEC2: setUniformData(su.name, su.data.v2); break;
+			case ShaderUniform::T_VEC3: setUniformData(su.name, su.data.v3); break;
+			case ShaderUniform::T_VEC4: setUniformData(su.name, su.data.v4); break;
+
+			case ShaderUniform::T_MAT2: setUniformData(su.name, su.data.m2); break;
+			case ShaderUniform::T_MAT3: setUniformData(su.name, su.data.m3); break;
+			case ShaderUniform::T_MAT4: setUniformData(su.name, su.data.m4); break;
+
+			case ShaderUniform::T_TRANSFORM: setUniformData(su.name, su.data.transf); break;
+
+			case ShaderUniform::T_POINTLIGHT: setUniformData(su.name, su.data.plight); break;
+			case ShaderUniform::T_DIRLIGHT:   setUniformData(su.name, su.data.dlight); break;
+			case ShaderUniform::T_SPOTLIGHT:  setUniformData(su.name, su.data.slight); break;
+
+			default:
+				break;
+		}
+
+		if(!lockUse) unuse();
+	}
+
 }

@@ -57,11 +57,11 @@ void GUIRenderer::renderElement(GUIP::IElement* e) {
 	transform.pos.x = SWAN::Util::PixelToGLCoord(Display::GetWidth(), e->x + e->w / 2);
 	transform.pos.y = SWAN::Util::PixelToGLCoord(Display::GetHeight(), Display::GetHeight() - (e->y + e->h / 2));
 
-	shad->setUniformData("transform", transform);
+	shad->setUniform({"transform", transform});
 
 	e->getTexture()->bind();
 	e->preRender();
-	rect->render();
+	shad->renderMesh(*rect);
 	e->postRender();
 }
 
@@ -70,8 +70,6 @@ void GUIRenderer::render() {
 		std::sort(elems.begin(), elems.end(), LayerSorter());
 		sortedByLayer = true;
 	}
-
-	shad->use();
 
 	for (GUIRenderer::ElementType ei : elems) {
 		if (ei.hasFirst()) {
@@ -84,8 +82,6 @@ void GUIRenderer::render() {
 			ei.getSecond()->postGroupRender();
 		}
 	}
-
-	shad->unuse();
 }
 
 void GUIRenderer::update() {

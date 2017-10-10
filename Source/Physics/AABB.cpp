@@ -60,15 +60,17 @@ namespace SWAN {
 		Shader* s = SWAN::Res::GetShader("Physics");
 		auto m = SWAN::Res::GetMesh("1x1 Cube");
 
-		s->use();
-		{
-			s->setUniformData("perspective", cam->getPerspective());
-			s->setUniformData("view", cam->getView());
-			s->setUniformData("transform", t);
-			s->setUniformData("colliding", colliding);
+		std::vector<ShaderUniform> uniforms = {
+			{"perspective", cam->getPerspective()},
+			{"view", cam->getView()},
+			{"transform", t},
+			{"colliding", colliding}
+		};
 
-			m->renderWireframe();
-		}
+		s->setUniforms(uniforms);
+
+		s->use();
+		s->renderWireframeMesh(*m);
 		s->unuse();
 	}
 }
