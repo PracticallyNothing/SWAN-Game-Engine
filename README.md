@@ -29,7 +29,7 @@ The project relies on several other libraries:
 | SDL2      | Input, opening a window and initializing a GL context | [SDL homepage](https://www.libsdl.org/index.php)           |
 | GLAD      | Loading GL functions                                  | [GLAD Github page](https://github.com/Dav1dde/glad)        |
 | GLM       | Maths (*matrix arithmetic*)                           | [GLM homepage](https://glm.g-truc.net/0.9.8/index.html)    |
-| STB Image | Image loading                                         | [STB Github page]()                                        |
+| STB Image | Image loading                                         | [STB Github page](https://github.com/nothings/stb)         |
 | cpptoml   | [TOML](https://github.com/toml-lang/toml) reading     | [cpptoml Github page](https://github.com/skystrife/cpptoml)|
 
 Future plans:
