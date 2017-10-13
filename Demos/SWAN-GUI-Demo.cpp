@@ -15,6 +15,9 @@ void ParseArgv (int argc, const char** argv);
 void Usage     ();
 void Version   ();
 
+#define BUTTON_RES \
+	SWAN::Res::GetTexture("Normal Button"), SWAN::Res::GetTexture("Hovered Button"), SWAN::Res::GetTexture("Pressed Button")
+
 int main (int argc, const char** argv) {
 	SWAN::Display::Init(1280, 720, "SWAN GUI Demo");
 	SWAN_Input_Init();
@@ -23,23 +26,9 @@ int main (int argc, const char** argv) {
 	SWAN::Res::LoadFromFile("Resources/res.xml");
 	SWAN::GUIRenderer guiRenderer;
 
-	guiRenderer.add(new SWAN::GUIP::Button(
-		SWAN::Res::GetTexture("Flat Blue"),
-		SWAN::Res::GetTexture("Flat Red"),
-		SWAN::Res::GetTexture("Flat Green")
-	)) -> moveTo(500, 500) -> resizeTo(200, 125);
-
-	guiRenderer.add(new SWAN::GUIP::Button(
-		SWAN::Res::GetTexture("Flat Blue"),
-		SWAN::Res::GetTexture("Flat Red"),
-		SWAN::Res::GetTexture("Flat Green")
-	)) -> moveTo(250, 500) -> resizeTo(200, 125);
-
-	guiRenderer.add(new SWAN::GUIP::Button(
-		SWAN::Res::GetTexture("Flat Blue"),
-		SWAN::Res::GetTexture("Flat Red"),
-		SWAN::Res::GetTexture("Flat Green")
-	)) -> moveTo(750, 500) -> resizeTo(200, 125);
+	guiRenderer.add(new SWAN::GUIP::Button(BUTTON_RES))->moveTo(500, 500)->resizeTo(150, 150);
+	guiRenderer.add(new SWAN::GUIP::Button(BUTTON_RES))->moveTo(250, 500)->resizeTo(150, 150);
+	guiRenderer.add(new SWAN::GUIP::Button(BUTTON_RES))->moveTo(750, 500)->resizeTo(150, 150);
 
 	SWAN::GUIP::Draggable* dr =
 		(SWAN::GUIP::Draggable*) guiRenderer.add(

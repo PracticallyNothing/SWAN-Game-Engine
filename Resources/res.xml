@@ -8,6 +8,10 @@
 	<Mesh file="Meshes/Torus.obj"       name="Torus"        />
 	<Mesh file="Meshes/airboat.obj"     name="Airboat"      />
 
+	<Texture file="Textures/GUI/ButtonNormal.png" name="Normal Button"/>
+	<Texture file="Textures/GUI/ButtonHover.png"  name="Hovered Button"/>
+	<Texture file="Textures/GUI/ButtonPress.png"  name="Pressed Button"/>
+
 	<Texture file="Textures/BlackTexture.png"  name="Flat Black"/>
 	<Texture file="Textures/BlueTexture.png"   name="Flat Blue"/>
 	<Texture file="Textures/CyanTexture.png"   name="Flat Cyan"/>
