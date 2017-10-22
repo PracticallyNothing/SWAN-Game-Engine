@@ -6,6 +6,14 @@
 
 #include "Rendering/Texture.hpp" // For Texture
 
+/*
+ *  TODO: Ditch all GUI primitives except for Image
+ *        Using EventListener, anything from a button to an animated image
+ *        can be implemented quite easily.
+ *        Plus, using this approach would make the GUI more flexible
+ *        and it would remove all of the unecessary virtual functions.
+ */
+
 namespace SWAN {
 namespace GUIP {
 	//---Interfaces-----------------------//
