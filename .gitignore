@@ -19,6 +19,8 @@ SWAN_*
 !CMakeLists.txt
 !*log*[c|cpp|h|hpp|inl]
 
+compile_commands.json
+
 Sources/OldMain.cpp
 *.swp
 *~

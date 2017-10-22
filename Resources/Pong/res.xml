@@ -1,0 +1,19 @@
+<Resources>
+	<Texture file="PlayButton.png"        name="B-Play" />
+	<Texture file="PlayButtonFocused.png" name="FB-Play"/>
+	<Texture file="PlayButtonPressed.png" name="PB-Play"/>
+
+	<Texture file="ExitButton.png"        name="B-Exit" />
+	<Texture file="ExitButtonFocused.png" name="FB-Exit"/>
+	<Texture file="ExitButtonPressed.png" name="PB-Exit"/>
+
+	<Texture file="Textures/BlueTexture.png"   name="Blue" />
+	<Texture file="Textures/RedTexture.png"    name="Red"  />
+	<Texture file="Textures/WhiteTexture.png"  name="White"/>
+
+	<Shader vertex="Shaders/GUIShader.vert" fragment="Shaders/GUIShader.frag" name="GUI">
+		<Attribute name="pos"/>
+		<Attribute name="UV"/>
+		<Uniform name="transform"/>
+	</Shader>
+</Resources>

@@ -1,6 +1,7 @@
 #define SDL_MAIN_HANDLED
 #include <chrono>
 
+#include "Core/EventListener.hpp"
 #include "Core/Display.hpp"
 #include "Core/Input.hpp"
 #include "Core/Resources.hpp"
@@ -44,19 +45,28 @@ int main (int argc, const char** argv) {
 
 	SWAN::Display::SetClearColor(0.0f, 0.3f, 0.25f, 0.0f);
 
-	while(!(SWAN_Input.Keyboard.escapeKey || SWAN_Input.Window.exitRequest)){
-		now = Clock::now();
+	bool running = true;
 
-		SWAN_Input.handleEvents();
+	SWAN::EventListener exitEvent (
+		[]() -> bool { return SWAN_Input.Keyboard.escapeKey || SWAN_Input.Window.exitRequest; },
+		[&running]() { running = false; },
+		false
+	);
 
-		if (now - prevTime > 16ms) {
+	SWAN::EventListener renderEvent = SWAN::CreateRepeatingTimer (
+		16ms,
+		[&guiRenderer] {
 			guiRenderer.update();
 			guiRenderer.render();
 
 			SWAN::Display::Clear();
-
-			prevTime = Clock::now();
 		}
+	);
+
+	while(running){
+		exitEvent.update();
+		SWAN_Input.handleEvents();
+		renderEvent.update();
 	}
 
 	SWAN::Display::Close();

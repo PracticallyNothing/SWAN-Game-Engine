@@ -54,23 +54,23 @@ namespace SWAN {
 			Spotlight slight;
 		} data;
 
-		ShaderUniform(std::string name, int i) : name(name) { data.i = i; type = T_INT; }
-		ShaderUniform(std::string name, bool b) : name(name) { data.b = b; type = T_BOOL; }
-		ShaderUniform(std::string name, float f) : name(name) { data.f = f; type = T_FLOAT; }
+		ShaderUniform(const std::string& name, int i) : name(name) { data.i = i; type = T_INT; }
+		ShaderUniform(const std::string& name, bool b) : name(name) { data.b = b; type = T_BOOL; }
+		ShaderUniform(const std::string& name, float f) : name(name) { data.f = f; type = T_FLOAT; }
 
-		ShaderUniform(std::string name, glm::vec2 v2) : name(name) { data.v2 =  v2; type = T_VEC2; }
-		ShaderUniform(std::string name, glm::vec3 v3) : name(name) { data.v3 =  v3; type = T_VEC3; }
-		ShaderUniform(std::string name, glm::vec4 v4) : name(name) { data.v4 =  v4; type = T_VEC4; }
+		ShaderUniform(const std::string& name, glm::vec2 v2) : name(name) { data.v2 =  v2; type = T_VEC2; }
+		ShaderUniform(const std::string& name, glm::vec3 v3) : name(name) { data.v3 =  v3; type = T_VEC3; }
+		ShaderUniform(const std::string& name, glm::vec4 v4) : name(name) { data.v4 =  v4; type = T_VEC4; }
 
-		ShaderUniform(std::string name, glm::mat2 m2) : name(name) { data.m2 = m2; type = T_MAT2; }
-		ShaderUniform(std::string name, glm::mat3 m3) : name(name) { data.m3 = m3; type = T_MAT3; }
-		ShaderUniform(std::string name, glm::mat4 m4) : name(name) { data.m4 = m4; type = T_MAT4; }
+		ShaderUniform(const std::string& name, glm::mat2 m2) : name(name) { data.m2 = m2; type = T_MAT2; }
+		ShaderUniform(const std::string& name, glm::mat3 m3) : name(name) { data.m3 = m3; type = T_MAT3; }
+		ShaderUniform(const std::string& name, glm::mat4 m4) : name(name) { data.m4 = m4; type = T_MAT4; }
 
-		ShaderUniform(std::string name, Transform transf) : name(name) { data.transf = transf; type = T_TRANSFORM; }
+		ShaderUniform(const std::string& name, Transform transf) : name(name) { data.transf = transf; type = T_TRANSFORM; }
 
-		ShaderUniform(std::string name, PointLight plight) : name(name) { data.plight = plight; type = T_POINTLIGHT; }
-		ShaderUniform(std::string name, DirectionalLight dlight) : name(name) { data.dlight = dlight; type = T_DIRLIGHT; }
-		ShaderUniform(std::string name, Spotlight slight) : name(name) { data.slight = slight; type = T_SPOTLIGHT; }
+		ShaderUniform(const std::string& name, PointLight plight) : name(name) { data.plight = plight; type = T_POINTLIGHT; }
+		ShaderUniform(const std::string& name, DirectionalLight dlight) : name(name) { data.dlight = dlight; type = T_DIRLIGHT; }
+		ShaderUniform(const std::string& name, Spotlight slight) : name(name) { data.slight = slight; type = T_SPOTLIGHT; }
 
 		ShaderUniform(const ShaderUniform& other)
 			: name(other.name), data(other.data), type(other.type) {}
@@ -82,6 +82,8 @@ namespace SWAN {
 			name = other.name;
 			data = other.data;
 			type = other.type;
+
+			return *this;
 		}
 	};
 
@@ -98,8 +100,11 @@ namespace SWAN {
 			Shader();
 			~Shader();
 
-			void compileShaders(const std::string& vertexShaderFilePath,
-			                    const std::string& fragmentShaderFilepath);
+			void compileShaders (
+				const std::string& vertexShaderFilePath,
+				const std::string& fragmentShaderFilepath
+			);
+
 			void linkShaders();
 			void addAttrib(const std::string& attributeName);
 

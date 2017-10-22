@@ -18,7 +18,7 @@ if (condition) {
     // Do something else
 } else {
     // Explode, crash, burn, die, etc.
-}  
+}
 
 void foo() {
     // Function body
@@ -27,7 +27,7 @@ void foo() {
 
 **However**, if the statement can be a short one-liner, put everything on the same line, like so:
 ```cpp
-if (condition) foo();  
+if (condition) foo();
 
 void bar() { return true; }
 ```
@@ -102,4 +102,6 @@ General tips:
 
 * If a class is going to be instantiated only once (i.e. it's a *singleton*), prefer to write it as a **namespace** instead.
 Put any *private* functions inside of a nested `detail` namespace.
+
+* Treat anything that has an *underscore* in the beggining of its name as follows: "**ABSOLUTELY DO NOT TOUCH UNLESS A GUN IS POINTED AT YOUR HEAD**".
 --------------------------

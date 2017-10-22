@@ -10,6 +10,9 @@ endif()
 
 message("CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
 
+# Creates a compile_commands.json file
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # Versioning
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 1)

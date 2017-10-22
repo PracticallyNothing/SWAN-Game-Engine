@@ -5,6 +5,7 @@
 #include <map>     // For std::map<K, V>
 #include <memory>  // For std::unique_ptr<T>
 #include <string>  // For std::string
+#include <vector>  // For std::vector<T>
 
 #include "Rendering/BitmapFont.hpp"  // For BitmapFont
 #include "Rendering/Mesh.hpp"        // For Mesh
@@ -13,25 +14,36 @@
 
 namespace SWAN {
 namespace Res {
+	using String = std::string;
+	using CStrRef = const String&;
+
+	template <typename T>
+		using Pointer = std::unique_ptr<T>;
+
+	template <typename K, typename V>
+		using Map = std::map<K, V>;
+
+	template<typename T>
+		using Vector = std::vector<T>;
+
     namespace detail {
-        using String = std::string;
-
-        template <typename T>
-        using Pointer = std::unique_ptr<T>;
-
-        template <typename K, typename V>
-        using Map = std::map<K, V>;
-
         extern Map<String, Pointer<Mesh>> meshes;
         extern Map<String, Pointer<Texture>> textures;
         extern Map<String, Pointer<BitmapFont>> bitmapFonts;
         extern Map<String, Pointer<Shader>> shaders;
     }
 
-    bool LoadShader(const std::string& filename);
-    bool LoadBitmapFont(const std::string& filename);
-    bool LoadMesh(const std::string& filename);
-    bool LoadTexture(const std::string& filename, bool pixelated = false);
+	enum LoadStatus {
+		L_OK,
+		L_NAMETAKEN,
+		L_FILEMISSING,
+		L_ERR,
+	};
+
+	extern LoadStatus LoadShader     (CStrRef filename, CStrRef name, Vector<String> attribs, Vector<String> uniforms);
+    extern LoadStatus LoadBitmapFont (CStrRef filename, CStrRef name);
+    extern LoadStatus LoadMesh       (CStrRef filename, CStrRef name);
+    extern LoadStatus LoadTexture    (CStrRef filename, CStrRef name, bool pixelated = false);
 
     bool LoadFromFile(const std::string& filename);
 
