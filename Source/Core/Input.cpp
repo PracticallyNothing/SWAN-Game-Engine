@@ -8,6 +8,34 @@
 
 _input SWAN_Input;
 
+namespace SWAN {
+	namespace detail {
+		_input prevState;
+	}
+
+	MouseState GetCurrMouseState() {
+		return {
+			SWAN_Input.Mouse.x,
+			SWAN_Input.Mouse.y,
+
+			SWAN_Input.Mouse.lButton,
+			SWAN_Input.Mouse.mButton,
+			SWAN_Input.Mouse.rButton
+		};
+	}
+
+	MouseState GetPrevMouseState() {
+		return {
+			detail::prevState.Mouse.x,
+			detail::prevState.Mouse.y,
+
+			detail::prevState.Mouse.lButton,
+			detail::prevState.Mouse.mButton,
+			detail::prevState.Mouse.rButton
+		};
+	}
+}
+
 void _handleEvents() {
     SDL_Event e;
     while (SDL_PollEvent(&e)) {
@@ -137,6 +165,8 @@ void _handleEvents() {
                 break;
         }
     }
+
+	SWAN::detail::prevState = SWAN_Input;
 }
 
 void SWAN_Input_Init() { SWAN_Input.handleEvents = _handleEvents; }

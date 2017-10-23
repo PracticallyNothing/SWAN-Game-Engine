@@ -3,7 +3,9 @@
 
 #include <vector> // For std::vector<T>
 #include <string> // For std::string
+#include <memory> // For std::unique_ptr<T>
 
+#include "../Core/Input.hpp"         // For SWAN_Input
 #include "../Core/EventListener.hpp" // For SWAN::EventListener
 
 #include "../Rendering/Mesh.hpp"    // For SWAN::Mesh
@@ -18,7 +20,10 @@ namespace SWAN {
 			: x(x), y(y), w(w), h(h), type(t) {}
 
 		GUIElement(const GUIElement& other) :
-			x(other.x), y(other.y), w(other.w), h(other.h), type(other.type), renderData(other.renderData) {}
+			x(other.x), y(other.y),
+			w(other.w), h(other.h),
+			type(other.type),
+			renderData(other.renderData) {}
 
 		GUIElement(GUIElement&& other) :
 			x(std::move(other.x)),
@@ -50,6 +55,7 @@ namespace SWAN {
 		}
 
 		int x, y, w, h;
+		int layer = 0, sublayer = 0;
 
 		enum Type {
 			T_COLOR,
@@ -70,26 +76,24 @@ namespace SWAN {
 			for (const auto& l : listeners)
 				l.update();
 		}
+
+		static const GUIElement* focused;
 	};
 
-	inline GUIElement CreateButton (
-			int x, int y,
-			int w, int h,
-			const Texture* normal,
-			const Texture* focused,
-			const Texture* active,
-			EventListener::ActionFuncT onClick) {
-		GUIElement res(x, y, w, h, GUIElement::T_TEXTURE);
-		res.renderData.texture = normal;
+	extern std::unique_ptr<GUIElement> CreateImage (
+		int x, int y,
+		int w, int h,
+		const Texture* texture
+	);
 
-		//EventListener onMouseOverListener (...);
-		//res.listeners.push_back(onMouseOverListener);
-
-		//EventListener onClickListener (...);
-		//res.listeners.push_back(onClickListener);
-
-		return res;
-	}
+	extern std::unique_ptr<GUIElement> CreateButton (
+		int x, int y,
+		int w, int h,
+		const Texture* normal,
+		const Texture* focused,
+		const Texture* active,
+		EventListener::ActionFuncT onRelease
+	);
 }
 
 #endif // SWAN_GUI_ELEMENT_HPP

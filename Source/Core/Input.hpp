@@ -13,31 +13,23 @@ void SWAN_Input_Init();
 
 struct _input{
     struct _keyboard{
-        bool letterKeys[26]; ///Ordered A-Z
-        bool FKeys[12];		 ///Ordered F1-F12
-        bool numberKeys[10]; ///Ordered 0-9
-        bool numpadKeys[10]; ///Ordered 0-9
-        enum {ARROWKEY_RIGHT, ARROWKEY_LEFT, ARROWKEY_DOWN, ARROWKEY_UP};
-        bool arrowKeys[4];
+        bool letterKeys [26]; // Ordered A-Z
+        bool FKeys [12];      // Ordered F1-F12
+        bool numberKeys [10]; // Ordered 0-9
+        bool numpadKeys [10]; // Ordered 0-9
 
-        bool UArrowKey;	bool DArrowKey;
-        bool LArrowKey;	bool RArrowKey;
+        bool UArrowKey, DArrowKey, LArrowKey, RArrowKey;
 
-        bool spaceKey;
-        bool escapeKey;
+        bool LShiftKey, RShiftKey,
+             LCtrlKey,  LAltKey,
+             RCtrlKey,  RAltKey;
 
-        bool LShiftKey;
-        bool RShiftKey;
-
-        bool LCtrlKey; bool LAltKey;
-        bool RCtrlKey; bool RAltKey;
-
-        bool enterKey;
+        bool spaceKey, escapeKey, enterKey;
     } Keyboard;
 
     struct _mouse{
-        int x,y;
-        int xRel,yRel;
+        int x, y;
+        int xRel, yRel;
         bool lButton, rButton, mButton;
     } Mouse;
 
@@ -49,5 +41,25 @@ struct _input{
 };
 
 extern _input SWAN_Input;
+
+namespace SWAN {
+	namespace detail {
+		extern _input prevState;
+	}
+
+	struct MouseState {
+		int x, y;
+		bool LMB, MMB, RMB;
+
+		bool mousesOver(int x, int y, int w, int h) {
+			return
+				this->x > x && this->y > y &&
+				this->x < x + w && this->y < y + h;
+		}
+	};
+
+	extern MouseState GetCurrMouseState();
+	extern MouseState GetPrevMouseState();
+}
 
 #endif // INPUT_H
