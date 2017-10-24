@@ -2,7 +2,7 @@
 
 namespace SWAN {
 	const GUIElement* GUIElement::focused = nullptr;
-
+	
 	std::unique_ptr<GUIElement> CreateImage (
 		int x, int y,
 		int w, int h,
@@ -21,6 +21,9 @@ namespace SWAN {
 				GUIElement::focused = el;
 			}
 		);
+		
+		onMouseEnter.type = "mouse";
+		onMouseEnter.description = "Activates when the mouse enters the area of the GUI element.";
 
 		EventListener onMouseLeave (
 			[el = res]() -> bool {
@@ -32,6 +35,9 @@ namespace SWAN {
 				GUIElement::focused = nullptr;
 			}
 		);
+
+		onMouseLeave.type = "mouse";
+		onMouseLeave.description = "Activates when the mouse leaves the area of the GUI element.";
 
 		res->listeners.push_back(onMouseEnter);
 		res->listeners.push_back(onMouseLeave);
@@ -62,6 +68,8 @@ namespace SWAN {
 				GUIElement::focused = el;
 			}
 		);
+		onMouseEnter.type = "mouse";
+		onMouseEnter.description = "Activates when the mouse enters the area of the GUI element.";
 
 		EventListener onMouseLeave (
 			[el = res]() -> bool {
@@ -74,6 +82,8 @@ namespace SWAN {
 				GUIElement::focused = nullptr;
 			}
 		);
+		onMouseLeave.type = "mouse";
+		onMouseLeave.description = "Activates when the mouse leaves the area of the GUI element.";
 
 		EventListener onMousePress (
 			[el = res]() -> bool {
@@ -85,6 +95,8 @@ namespace SWAN {
 				el->renderData.texture = active;
 			}
 		);
+		onMousePress.type = "mouse";
+		onMousePress.description = "Activates when the LMB is pressed over a focused GUI element.";
 
 		EventListener onMouseRelease (
 			[el = res]() -> bool {
@@ -97,6 +109,8 @@ namespace SWAN {
 				onRelease();
 			}
 		);
+		onMouseRelease.type = "mouse";
+		onMouseRelease.description = "Activates when the LMB is released over a focused GUI element.";
 
 		res->listeners.push_back(onMouseEnter);
 		res->listeners.push_back(onMouseLeave);
