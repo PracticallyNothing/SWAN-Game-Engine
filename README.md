@@ -11,7 +11,7 @@ low framerates and weird, nonsensical behaviour.
 
 -----------------------------------
 
-## SWAN: Something we all need
+## SWAN: Something We All Need
 ---------------------------
 **SWAN** aspires to be a game engine that enables developers to create simple games *quickly* and *efficiently*.
 
