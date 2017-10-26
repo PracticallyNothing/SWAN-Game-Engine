@@ -14,7 +14,7 @@
 
 namespace SWAN {
 	struct GUIElement {
-		GUIElement(Type t = T_COLOR) : type(t) {}
+		explicit GUIElement(Type t = T_COLOR) : type(t) {}
 
 		GUIElement(int x, int y, int w, int h, Type t = T_COLOR)
 			: x(x), y(y), w(w), h(h), type(t) {}
@@ -52,6 +52,8 @@ namespace SWAN {
 			h = std::move(other.h);
 			type = std::move(other.type);
 			renderData = std::move(other.renderData);
+
+			return *this;
 		}
 
 		int x, y, w, h;
@@ -67,10 +69,18 @@ namespace SWAN {
 		union {
 			Color color;
 			struct { Color color1, color2 } gradient;
-			const Texture* texture;
+			//const Texture* texture;
 		} renderData;
 
 		std::vector <EventListener> listeners;
+		GUIElement* parent = nullptr;
+
+		bool parentFocused() {
+			if(!parent)
+				return focused == this;
+			else
+				return parent->parentFocused();
+		}
 
 		void update() {
 			for (const auto& l : listeners)
@@ -94,6 +104,17 @@ namespace SWAN {
 		const Texture* active,
 		EventListener::ActionFuncT onRelease
 	);
+
+	/*
+	extern std::unique_ptr<GUIElement> CreateSlider (
+		int x, int y,
+		int w, int h,
+		Color bgColor,
+		Color activeColor,
+		Color handleColor,
+		EventListener::ActionFuncT onChange
+	);
+	*/
 }
 
 #endif // SWAN_GUI_ELEMENT_HPP

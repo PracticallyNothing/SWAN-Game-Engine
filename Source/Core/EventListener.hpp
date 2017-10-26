@@ -10,7 +10,7 @@ namespace SWAN {
 			using CheckFuncT = std::function<bool (void)>;
 			using ActionFuncT = std::function<void (void)>;
 
-			EventListener(bool runOnce = false) : runOnce(runOnce) {}
+			explicit EventListener(bool runOnce = false) : runOnce(runOnce) {}
 			EventListener(CheckFuncT checkFunc, ActionFuncT actionFunc, bool runOnce = false)
 				: check(checkFunc), action(actionFunc), runOnce(runOnce){}
 
@@ -30,8 +30,8 @@ namespace SWAN {
 			bool expired() { return runOnce && alreadyRan; }
 			bool active() { return check(); }
 
-			string description = "an event listener;
-			string type = "generic"
+			std::string description = "an event listener",
+			            type = "generic";
 		private:
 			CheckFuncT check;
 			ActionFuncT action;

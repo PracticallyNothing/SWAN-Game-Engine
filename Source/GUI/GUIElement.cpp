@@ -2,7 +2,7 @@
 
 namespace SWAN {
 	const GUIElement* GUIElement::focused = nullptr;
-	
+
 	std::unique_ptr<GUIElement> CreateImage (
 		int x, int y,
 		int w, int h,
@@ -21,7 +21,7 @@ namespace SWAN {
 				GUIElement::focused = el;
 			}
 		);
-		
+
 		onMouseEnter.type = "mouse";
 		onMouseEnter.description = "Activates when the mouse enters the area of the GUI element.";
 
