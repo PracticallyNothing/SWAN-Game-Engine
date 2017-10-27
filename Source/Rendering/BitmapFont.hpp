@@ -1,9 +1,9 @@
 #ifndef SWAN_BITMAP_FONT_HPP
 #define SWAN_BITMAP_FONT_HPP
 
-#include <string>  // For std::string
-#include <cctype>  // For std::isprint()
-#include <vector>  // For std::vector<T>
+#include <cctype> // For std::isprint()
+#include <string> // For std::string
+#include <vector> // For std::vector<T>
 
 #include "Image.hpp"   // For Image
 #include "Texture.hpp" // For Texture
@@ -13,65 +13,66 @@
 namespace SWAN {
 
 #ifdef SWAN_DEBUG
-	struct dbg_TextureCoords { int x, y, width, height; };
+struct dbg_TextureCoords {
+	int x, y, width, height;
+};
 
-	inline std::ostream& operator<<(std::ostream& os, dbg_TextureCoords d){
-		os << "dbg_TextureCoords { x: " << d.x <<
-								", y: " << d.y <<
-								", width: " << d.width <<
-								", height: " << d.height << " }";
-		return os;
-	}
+inline std::ostream&
+operator<< (std::ostream& os, dbg_TextureCoords d) {
+	os << "dbg_TextureCoords { x: " << d.x << ", y: " << d.y << ", width: " << d.width << ", height: " << d.height << " }";
+	return os;
+}
 #endif
 
-	// SUPPORTS ONLY MONOSPACE FONTS
-	class BitmapFont {
-		SWAN_DEBUG_USING(dbg_TexCoordsVec, std::vector<dbg_TextureCoords>);
+// SUPPORTS ONLY MONOSPACE FONTS
+class BitmapFont {
+	SWAN_DEBUG_USING (dbg_TexCoordsVec, std::vector<dbg_TextureCoords>);
 
-		public:
-			explicit BitmapFont(const std::string& confFilename);
-			~BitmapFont();
+  public:
+	explicit BitmapFont (const std::string& confFilename);
+	~BitmapFont ();
 
-			const Texture* getGlyphTexture(char c, bool bold = false, bool italics = false) const {
-				if(hasBoldItalics() && bold && italics)
-					return &boldItalicsGlyphs.at(c - '!');
-				else if(hasBold() && bold)
-					return &boldGlyphs.at(c - '!');
-				else if(hasItalics() && italics)
-					return &italicsGlyphs.at(c - '!');
-				else
-					return &glyphs.at(c - '!');
-			}
+	const Texture* getGlyphTexture (char c, bool bold = false, bool italics = false) const {
+		if (hasBoldItalics () && bold && italics)
+			return &boldItalicsGlyphs.at (c - '!');
+		else if (hasBold () && bold)
+			return &boldGlyphs.at (c - '!');
+		else if (hasItalics () && italics)
+			return &italicsGlyphs.at (c - '!');
+		else
+			return &glyphs.at (c - '!');
+	}
 
-			int getGlyphWidth(char c = ' ') const;
-			int getGlyphHeight() const { return glyphHeight; }
+	int getGlyphWidth (char c = ' ') const;
+	int getGlyphHeight () const { return glyphHeight; }
 
-			bool isSupported(char c) const { return supportedChars.find(c) != std::string::npos; }
+	bool isSupported (char c) const { return supportedChars.find (c) != std::string::npos; }
 
-			bool hasBold() const { return boldImg; }
-			bool hasItalics() const { return italicsImg; }
-			bool hasBoldItalics() const { return boldItalicsImg; }
+	bool hasBold () const { return boldImg; }
+	bool hasItalics () const { return italicsImg; }
+	bool hasBoldItalics () const { return boldItalicsImg; }
 
-			int tabWidth;
+	int tabWidth;
 
-			SWAN_DEBUG_VAR(Texture*, dbg_tex);
-			SWAN_DEBUG_VAR(dbg_TexCoordsVec, dbg_coords);
-		private:
-			void genGlyphs();
+	SWAN_DEBUG_VAR (Texture*, dbg_tex);
+	SWAN_DEBUG_VAR (dbg_TexCoordsVec, dbg_coords);
 
-			Image *img, *boldImg, *italicsImg, *boldItalicsImg;
+  private:
+	void genGlyphs ();
 
-			std::vector<Texture>
-				glyphs,
-				boldGlyphs,
-				italicsGlyphs,
-				boldItalicsGlyphs;
+	Image *img, *boldImg, *italicsImg, *boldItalicsImg;
 
-			std::string supportedChars;
+	std::vector<Texture>
+	  glyphs,
+	  boldGlyphs,
+	  italicsGlyphs,
+	  boldItalicsGlyphs;
 
-			int glyphWidth;
-			int glyphHeight;
-	};
+	std::string supportedChars;
+
+	int glyphWidth;
+	int glyphHeight;
+};
 }
 
 #endif //BITMAP_FONT_HPP

@@ -1,10 +1,10 @@
 #ifndef SWAN_TEXT_HPP
 #define SWAN_TEXT_HPP
 
-#include "Shader.hpp"      // For Shader
-#include "Texture.hpp"     // For Texture
-#include "Mesh.hpp"        // For Mesh
-#include "BitmapFont.hpp"  // For BitmapFont
+#include "BitmapFont.hpp" // For BitmapFont
+#include "Mesh.hpp"       // For Mesh
+#include "Shader.hpp"     // For Shader
+#include "Texture.hpp"    // For Texture
 
 #include "Physics/Transform.hpp"
 
@@ -12,47 +12,48 @@
 
 #include <string> // For std::string
 namespace SWAN {
-	struct TextConfig {
-		std::string text;
-		const BitmapFont* font;
-		bool bold = false;
-		bool italics = false;
-		glm::vec3 color = glm::vec3(1, 1, 1);
-	};
+struct TextConfig {
+	std::string       text;
+	const BitmapFont* font;
+	bool              bold    = false;
+	bool              italics = false;
+	glm::vec3         color   = glm::vec3 (1, 1, 1);
+};
 
-	struct Character {
-		SWAN_DEBUG_VAR(char, c);
-		bool isSpace = false;
+struct Character {
+	SWAN_DEBUG_VAR (char, c);
+	bool isSpace = false;
 
-		const Texture* tex = nullptr;
-		const Mesh* mesh   = nullptr;
-		glm::vec3 color    = glm::vec3(0,0,0);
-		Transform transform;
-	};
+	const Texture* tex   = nullptr;
+	const Mesh*    mesh  = nullptr;
+	glm::vec3      color = glm::vec3 (0, 0, 0);
+	Transform      transform;
+};
 
-	class Text {
-		public:
-			Text(){ initCharMesh(); }
+class Text {
+  public:
+	Text () { initCharMesh (); }
 
-			Text(TextConfig tc) {
-				set(tc);
-				initCharMesh();
-			}
+	Text (TextConfig tc) {
+		set (tc);
+		initCharMesh ();
+	}
 
-			~Text(){ delete charMesh; }
+	~Text () { delete charMesh; }
 
-			void set(TextConfig tc,	bool append = false);
+	void set (TextConfig tc, bool append = false);
 
-			void render(Shader* shad) const;
-		private:
-			const BitmapFont* font;
-			std::vector<Character> chars;
-			int lastX = 0, lastY = 0;
+	void render (Shader* shad) const;
 
-			void initCharMesh();
+  private:
+	const BitmapFont*      font;
+	std::vector<Character> chars;
+	int                    lastX = 0, lastY = 0;
 
-			Mesh* charMesh;
-	};
+	void initCharMesh ();
+
+	Mesh* charMesh;
+};
 }
 
 #endif

@@ -2,7 +2,7 @@
 
 #include "Utility/Math.hpp"
 #include <algorithm> // For std::max<T>(), std::min<T>()
-#include <cmath> // For std::sqrt()
+#include <cmath>     // For std::sqrt()
 
 using std::sqrt;
 using std::min;
@@ -16,7 +16,7 @@ using glm::vec4;
 using glm::mat4;
 
 namespace SWAN {
-	/*
+/*
 	Collision CheckCollision(BoundingSphere s, vec3 p){
 		Collision res;
 
@@ -36,33 +36,35 @@ namespace SWAN {
 	}
 	*/
 
-	Collision CheckCollision(AABB a, LineSegment b){
-		Collision res;
+Collision
+CheckCollision (AABB a, LineSegment b) {
+	Collision res;
 
-		res.happened =
-			Util::RangesOverlap(a.min.x, a.max.x, b.start.x, b.end.x) &&
-			Util::RangesOverlap(a.min.y, a.max.y, b.start.y, b.end.y) &&
-			Util::RangesOverlap(a.min.z, a.max.z, b.start.z, b.end.z);
+	res.happened =
+	  Util::RangesOverlap (a.min.x, a.max.x, b.start.x, b.end.x) &&
+	  Util::RangesOverlap (a.min.y, a.max.y, b.start.y, b.end.y) &&
+	  Util::RangesOverlap (a.min.z, a.max.z, b.start.z, b.end.z);
 
-		res.distance = length((a.max - a.min) - (b.end - b.start));
+	res.distance = length ((a.max - a.min) - (b.end - b.start));
 
-		return res;
-	}
+	return res;
+}
 
-	Collision CheckCollision(AABB a, AABB b){
-		Collision res;
+Collision
+CheckCollision (AABB a, AABB b) {
+	Collision res;
 
-		res.happened =
-			Util::RangesOverlap(a.min.x, a.max.x, b.min.x, b.max.x) &&
-			Util::RangesOverlap(a.min.y, a.max.y, b.min.y, b.max.y) &&
-			Util::RangesOverlap(a.min.z, a.max.z, b.min.z, b.max.z);
+	res.happened =
+	  Util::RangesOverlap (a.min.x, a.max.x, b.min.x, b.max.x) &&
+	  Util::RangesOverlap (a.min.y, a.max.y, b.min.y, b.max.y) &&
+	  Util::RangesOverlap (a.min.z, a.max.z, b.min.z, b.max.z);
 
-		res.distance = length((a.max - a.min) - (b.max - b.min));
+	res.distance = length ((a.max - a.min) - (b.max - b.min));
 
-		return res;
-	}
+	return res;
+}
 
-	/*
+/*
 	Collision CheckCollision(BoundingSphere s, AABB b){
 		// Closest point from AABB to Sphere
 		glm::vec3 p(max(b.min.x, min(s.center.x, b.max.x)),

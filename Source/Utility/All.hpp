@@ -12,4 +12,4 @@
 #include "StringUtil.hpp"
 #include "XML.hpp"
 
-#endif  // UTIL_ALL_HPP
+#endif // UTIL_ALL_HPP

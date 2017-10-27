@@ -5,18 +5,20 @@
 
 #include "Transform.hpp" // For Transform
 
-#include "Rendering/Camera.hpp"  // For Camera
-#include "Rendering/Shader.hpp"  // For Shader
+#include "Rendering/Camera.hpp" // For Camera
+#include "Rendering/Shader.hpp" // For Shader
 
 namespace SWAN {
-	struct BoundingSphere {
-		glm::vec3 center;
-		float radius;
-	};
+struct BoundingSphere {
+	glm::vec3 center;
+	float     radius;
+};
 
-	BoundingSphere ApplyTransform(BoundingSphere s, Transform t);
+BoundingSphere
+ApplyTransform (BoundingSphere s, Transform t);
 
-	void Render(BoundingSphere sphere, const Camera* cam, bool colliding = false);
+void
+Render (BoundingSphere sphere, const Camera* cam, bool colliding = false);
 }
 
 #endif

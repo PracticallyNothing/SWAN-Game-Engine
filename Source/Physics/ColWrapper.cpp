@@ -5,99 +5,107 @@
 using std::move;
 
 namespace SWAN {
-	ColWrapper::ColWrapper(const ColWrapper& c) : type(c.type) {
-		switch(type) {
-			case ColWrapper::COL_NONE:
-				break;
+ColWrapper::ColWrapper (const ColWrapper& c)
+  : type (c.type) {
+	switch (type) {
+		case ColWrapper::COL_NONE:
+			break;
 
-			case ColWrapper::COL_POINT:
-				point = c.point;
-				break;
+		case ColWrapper::COL_POINT:
+			point = c.point;
+			break;
 
-			case ColWrapper::COL_RAY:
-				ray = c.ray;
-				break;
+		case ColWrapper::COL_RAY:
+			ray = c.ray;
+			break;
 
-			case ColWrapper::COL_PLANE:
-				plane = c.plane;
-				break;
+		case ColWrapper::COL_PLANE:
+			plane = c.plane;
+			break;
 
-			case ColWrapper::COL_AABB:
-				aabb = c.aabb;
-				break;
-	/*
+		case ColWrapper::COL_AABB:
+			aabb = c.aabb;
+			break;
+			/*
 			case ColWrapper::COL_SPHERE:
 				sphere = c.sphere;
 				break;
 	*/
-		}
 	}
+}
 
-
-	ColWrapper::ColWrapper(ColWrapper&& c) : type(move(c.type)) {
-		switch(type) {
-			case ColWrapper::COL_NONE:                            break;
-			case ColWrapper::COL_POINT:  point  = move(c.point);  break;
-			case ColWrapper::COL_PLANE:  plane  = move(c.plane);  break;
-			case ColWrapper::COL_RAY:    ray    = move(c.ray);    break;
-			case ColWrapper::COL_AABB:   aabb   = move(c.aabb);   break;
+ColWrapper::ColWrapper (ColWrapper&& c)
+  : type (move (c.type)) {
+	switch (type) {
+		case ColWrapper::COL_NONE: break;
+		case ColWrapper::COL_POINT: point = move (c.point); break;
+		case ColWrapper::COL_PLANE: plane = move (c.plane); break;
+		case ColWrapper::COL_RAY: ray     = move (c.ray); break;
+		case ColWrapper::COL_AABB:
+			aabb = move (c.aabb);
+			break;
 			//case ColWrapper::COL_SPHERE: sphere = move(c.sphere); break;
-		}
 	}
+}
 
-	ColWrapper& ColWrapper::operator=(const ColWrapper& c) {
-		type = c.type;
+ColWrapper&
+ColWrapper::operator= (const ColWrapper& c) {
+	type = c.type;
 
-		switch(type) {
-			case ColWrapper::COL_NONE:
-				break;
+	switch (type) {
+		case ColWrapper::COL_NONE:
+			break;
 
-			case ColWrapper::COL_POINT:
-				point = c.point;
-				break;
+		case ColWrapper::COL_POINT:
+			point = c.point;
+			break;
 
-			case ColWrapper::COL_RAY:
-				ray = c.ray;
-				break;
+		case ColWrapper::COL_RAY:
+			ray = c.ray;
+			break;
 
-			case ColWrapper::COL_PLANE:
-				plane = c.plane;
-				break;
+		case ColWrapper::COL_PLANE:
+			plane = c.plane;
+			break;
 
-			case ColWrapper::COL_AABB:
-				aabb = c.aabb;
-				break;
-	/*
+		case ColWrapper::COL_AABB:
+			aabb = c.aabb;
+			break;
+			/*
 			case ColWrapper::COL_SPHERE:
 				sphere = c.sphere;
 				break;
 	*/
-		}
-
-		return *this;
 	}
 
-	ColWrapper& ColWrapper::operator=(ColWrapper&& c) {
-		type = move(c.type);
+	return *this;
+}
 
-		switch(type) {
-			case ColWrapper::COL_NONE:                            break;
-			case ColWrapper::COL_POINT:  point  = move(c.point);  break;
-			case ColWrapper::COL_PLANE:  plane  = move(c.plane);  break;
-			case ColWrapper::COL_RAY:    ray    = move(c.ray);    break;
-			case ColWrapper::COL_AABB:   aabb   = move(c.aabb);   break;
+ColWrapper&
+ColWrapper::operator= (ColWrapper&& c) {
+	type = move (c.type);
+
+	switch (type) {
+		case ColWrapper::COL_NONE: break;
+		case ColWrapper::COL_POINT: point = move (c.point); break;
+		case ColWrapper::COL_PLANE: plane = move (c.plane); break;
+		case ColWrapper::COL_RAY: ray     = move (c.ray); break;
+		case ColWrapper::COL_AABB:
+			aabb = move (c.aabb);
+			break;
 			//case ColWrapper::COL_SPHERE: sphere = move(c.sphere); break;
-		}
-
-		return *this;
 	}
 
-	Collision ColWrapper::checkCollision(const ColWrapper& other){
-		//if(type == ColWrapper::COL_NONE || other.type == ColWrapper::COL_NONE){
-			return Collision { false, 0 };
-		//}
+	return *this;
+}
 
-		/*
+Collision
+ColWrapper::checkCollision (const ColWrapper& other) {
+	//if(type == ColWrapper::COL_NONE || other.type == ColWrapper::COL_NONE){
+	return Collision{ false, 0 };
+	//}
+
+	/*
 		switch(type) {
 			case COL_POINT:
 				switch(other.type){
@@ -119,5 +127,5 @@ namespace SWAN {
 				break;
 		}
 		*/
-	}
+}
 }
