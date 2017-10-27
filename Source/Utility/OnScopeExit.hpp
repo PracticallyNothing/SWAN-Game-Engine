@@ -7,9 +7,8 @@ namespace SWAN {
 namespace Util {
 	class OnScopeExit {
 	  public:
-		OnScopeExit (const std::function<void(void)> func)
-		  : f (func) {}
-		~OnScopeExit () { f (); }
+		OnScopeExit(const std::function<void(void)> func) : f(func) {}
+		~OnScopeExit() { f(); }
 
 	  private:
 		const std::function<void(void)> f;
@@ -17,4 +16,4 @@ namespace Util {
 }
 }
 
-#endif //UTIL_ON_SCOPE_EXIT_HPP
+#endif // UTIL_ON_SCOPE_EXIT_HPP

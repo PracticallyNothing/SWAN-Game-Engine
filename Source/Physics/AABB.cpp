@@ -18,35 +18,32 @@ using glm::mat4;
 using std::min;
 using std::max;
 
-void
-MakeMinMax (vec3& a, vec3& b) {
+void MakeMinMax(vec3& a, vec3& b) {
 	vec3 tmp1 = a, tmp2 = b;
 
-	a.x = min (tmp1.x, tmp2.x);
-	a.y = min (tmp1.y, tmp2.y);
-	a.z = min (tmp1.z, tmp2.z);
+	a.x = min(tmp1.x, tmp2.x);
+	a.y = min(tmp1.y, tmp2.y);
+	a.z = min(tmp1.z, tmp2.z);
 
-	b.x = max (tmp1.x, tmp2.x);
-	b.y = max (tmp1.y, tmp2.y);
-	b.z = max (tmp1.z, tmp2.z);
+	b.x = max(tmp1.x, tmp2.x);
+	b.y = max(tmp1.y, tmp2.y);
+	b.z = max(tmp1.z, tmp2.z);
 }
 
 namespace SWAN {
-AABB
-ApplyTransform (AABB box, Transform t) {
-	box.min = vec3 (vec4 (box.min, 1) * t.getRotMat ());
-	box.max = vec3 (vec4 (box.max, 1) * t.getRotMat ());
+AABB ApplyTransform(AABB box, Transform t) {
+	box.min = vec3(vec4(box.min, 1) * t.getRotMat());
+	box.max = vec3(vec4(box.max, 1) * t.getRotMat());
 
 	box.min += t.pos;
 	box.max += t.pos;
 
-	MakeMinMax (box.min, box.max);
+	MakeMinMax(box.min, box.max);
 
 	return box;
 }
 
-void
-Render (AABB box, const Camera* cam, bool colliding) {
+void Render(AABB box, const Camera* cam, bool colliding) {
 	Transform t;
 
 	// Set the transform position to the center of the AABB
@@ -60,20 +57,19 @@ Render (AABB box, const Camera* cam, bool colliding) {
 	t.scale.y = box.max.y - box.min.y;
 	t.scale.z = box.max.z - box.min.z;
 
-	Shader* s = SWAN::Res::GetShader ("Physics");
-	auto    m = SWAN::Res::GetMesh ("1x1 Cube");
+	Shader* s = SWAN::Res::GetShader("Physics");
+	auto m    = SWAN::Res::GetMesh("1x1 Cube");
 
-	std::vector<ShaderUniform> uniforms = {
-		{ "perspective", cam->getPerspective () },
-		{ "view", cam->getView () },
-		{ "transform", t },
-		{ "colliding", colliding }
-	};
+	std::vector<ShaderUniform> uniforms = { { "perspective",
+		                                      cam->getPerspective() },
+		                                    { "view", cam->getView() },
+		                                    { "transform", t },
+		                                    { "colliding", colliding } };
 
-	s->setUniforms (uniforms);
+	s->setUniforms(uniforms);
 
-	s->use ();
-	s->renderWireframeMesh (*m);
-	s->unuse ();
+	s->use();
+	s->renderWireframeMesh(*m);
+	s->unuse();
 }
 }

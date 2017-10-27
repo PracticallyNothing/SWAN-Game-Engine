@@ -17,12 +17,10 @@ struct LineSegment {
 };
 
 /// Returns an AABB adjusted to fit the transform
-AABB
-ApplyTransform (AABB box, Transform t);
+AABB ApplyTransform(AABB box, Transform t);
 
 /// Renders an AABB onscreen using the "Cube" mesh
-void
-Render (AABB aabb, const Camera* cam, bool colliding = false);
+void Render(AABB aabb, const Camera* cam, bool colliding = false);
 }
 
 #endif

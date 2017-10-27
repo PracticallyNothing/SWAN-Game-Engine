@@ -11,30 +11,34 @@ namespace Util {
 	template <typename T>
 	class NotNull<T*> {
 	  public:
-		NotNull (T* ptr) {
-			if (!ptr)
-				throw std::invalid_argument ("NotNull::NotNull() - Argument is NULL pointer!");
+		NotNull(T* ptr) {
+			if(!ptr)
+				throw std::invalid_argument(
+				    "NotNull::NotNull() - Argument is NULL pointer!");
 			m_ptr = ptr;
 		}
-		~NotNull () {}
+		~NotNull() {}
 
-		T& get () {
-			if (!m_ptr)
-				throw std::logic_error ("NotNull::get() - Dereference of NULL pointer!");
+		T& get() {
+			if(!m_ptr)
+				throw std::logic_error(
+				    "NotNull::get() - Dereference of NULL pointer!");
 			return *m_ptr;
 		}
-		T& operator* () {
-			if (!m_ptr)
-				throw std::logic_error ("NotNull::operator*() - Dereference of NULL pointer!");
+		T& operator*() {
+			if(!m_ptr)
+				throw std::logic_error(
+				    "NotNull::operator*() - Dereference of NULL pointer!");
 			return *m_ptr;
 		}
-		T* operator-> () {
-			if (!m_ptr)
-				throw std::logic_error ("NotNull::operator->() - Return NULL pointer!");
+		T* operator->() {
+			if(!m_ptr)
+				throw std::logic_error(
+				    "NotNull::operator->() - Return NULL pointer!");
 			return m_ptr;
 		}
 
-		inline bool checkValidity () { return !m_ptr; }
+		inline bool checkValidity() { return !m_ptr; }
 
 	  private:
 		T* m_ptr;

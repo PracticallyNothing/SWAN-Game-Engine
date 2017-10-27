@@ -9,13 +9,13 @@
 namespace SWAN {
 namespace Import {
 	struct Settings {
-		bool             smoothNormals = false;
-		bool             createAABB    = false;
-		ColWrapper::Type colType       = ColWrapper::COL_NONE;
+		bool smoothNormals       = false;
+		bool createAABB          = false;
+		ColWrapper::Type colType = ColWrapper::COL_NONE;
 	};
 
-	std::unique_ptr<Mesh> OBJ (std::string filename, Settings s = Settings ());
+	std::unique_ptr<Mesh> OBJ(std::string filename, Settings s = Settings());
 }
 }
 
-#endif //OBJ_IMPORT_HPP
+#endif // OBJ_IMPORT_HPP

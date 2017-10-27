@@ -3,14 +3,13 @@
 
 #include <SDL2/SDL.h>
 
-typedef void (*handleEvents_func) ();
+typedef void (*handleEvents_func)();
 #ifndef __cplusplus
 typedef unsigned char bool;
 #endif // __cplusplus
 typedef struct _input _input;
 
-void
-SWAN_Input_Init ();
+void SWAN_Input_Init();
 
 struct _input {
 	struct _keyboard {
@@ -21,16 +20,14 @@ struct _input {
 
 		bool UArrowKey, DArrowKey, LArrowKey, RArrowKey;
 
-		bool LShiftKey, RShiftKey,
-		  LCtrlKey, LAltKey,
-		  RCtrlKey, RAltKey;
+		bool LShiftKey, RShiftKey, LCtrlKey, LAltKey, RCtrlKey, RAltKey;
 
 		bool spaceKey, escapeKey, enterKey;
 	} Keyboard;
 
 	struct _mouse {
-		int  x, y;
-		int  xRel, yRel;
+		int x, y;
+		int xRel, yRel;
 		bool lButton, rButton, mButton;
 	} Mouse;
 
@@ -49,19 +46,16 @@ namespace detail {
 }
 
 struct MouseState {
-	int  x, y;
+	int x, y;
 	bool LMB, MMB, RMB;
 
-	bool mousesOver (int x, int y, int w, int h) {
-		return this->x > x && this->y > y &&
-		       this->x < x + w && this->y < y + h;
+	bool mousesOver(int x, int y, int w, int h) {
+		return this->x > x && this->y > y && this->x < x + w && this->y < y + h;
 	}
 };
 
-extern MouseState
-GetCurrMouseState ();
-extern MouseState
-GetPrevMouseState ();
+extern MouseState GetCurrMouseState();
+extern MouseState GetPrevMouseState();
 }
 
 #endif // INPUT_H

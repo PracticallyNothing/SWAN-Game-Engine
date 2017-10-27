@@ -1,14 +1,16 @@
 ---
 Language: Cpp
 
-BasedOnStyle: Mozilla
-
 AlignConsecutiveAssignments: true
-AlignConsecutiveDeclarations: true
+AlignConsecutiveDeclarations: false
 AlignOperands: true
 #AlignEscapedNewlines: Right
 AlignAfterOpenBracket: Align
 AlignTrailingComments: true
+
+AlwaysBreakAfterDefinitionReturnType: None
+AlwaysBreakAfterReturnType: None
+AlwaysBreakTemplateDeclarations: true
 
 AllowShortBlocksOnASingleLine: true
 AllowShortCaseLabelsOnASingleLine: true
@@ -31,9 +33,11 @@ BraceWrapping:
 
 BreakBeforeBinaryOperators: None
 BreakBeforeBraces: Attach
-BreakBeforeTernaryOperators: false
+BreakBeforeTernaryOperators: true
 #BreakBeforeInheritanceComma: false
+BreakConstructorInitializersBeforeComma: false
 BreakStringLiterals: true
+BreakBeforeBinaryOperators: None
 
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
 
@@ -51,7 +55,7 @@ SortIncludes: true
 SpaceAfterCStyleCast: true
 SpaceAfterTemplateKeyword: true
 SpaceBeforeAssignmentOperators: true
-SpaceBeforeParens: Always
+SpaceBeforeParens: Never
 SpacesInAngles: false
 SpaceInEmptyParentheses: false
 

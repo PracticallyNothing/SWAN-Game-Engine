@@ -17,56 +17,55 @@ struct dbg_TextureCoords {
 	int x, y, width, height;
 };
 
-inline std::ostream&
-operator<< (std::ostream& os, dbg_TextureCoords d) {
-	os << "dbg_TextureCoords { x: " << d.x << ", y: " << d.y << ", width: " << d.width << ", height: " << d.height << " }";
+inline std::ostream& operator<<(std::ostream& os, dbg_TextureCoords d) {
+	os << "dbg_TextureCoords { x: " << d.x << ", y: " << d.y
+	   << ", width: " << d.width << ", height: " << d.height << " }";
 	return os;
 }
 #endif
 
 // SUPPORTS ONLY MONOSPACE FONTS
 class BitmapFont {
-	SWAN_DEBUG_USING (dbg_TexCoordsVec, std::vector<dbg_TextureCoords>);
+	SWAN_DEBUG_USING(dbg_TexCoordsVec, std::vector<dbg_TextureCoords>);
 
   public:
-	explicit BitmapFont (const std::string& confFilename);
-	~BitmapFont ();
+	explicit BitmapFont(const std::string& confFilename);
+	~BitmapFont();
 
-	const Texture* getGlyphTexture (char c, bool bold = false, bool italics = false) const {
-		if (hasBoldItalics () && bold && italics)
-			return &boldItalicsGlyphs.at (c - '!');
-		else if (hasBold () && bold)
-			return &boldGlyphs.at (c - '!');
-		else if (hasItalics () && italics)
-			return &italicsGlyphs.at (c - '!');
+	const Texture* getGlyphTexture(char c, bool bold = false,
+	                               bool italics = false) const {
+		if(hasBoldItalics() && bold && italics)
+			return &boldItalicsGlyphs.at(c - '!');
+		else if(hasBold() && bold)
+			return &boldGlyphs.at(c - '!');
+		else if(hasItalics() && italics)
+			return &italicsGlyphs.at(c - '!');
 		else
-			return &glyphs.at (c - '!');
+			return &glyphs.at(c - '!');
 	}
 
-	int getGlyphWidth (char c = ' ') const;
-	int getGlyphHeight () const { return glyphHeight; }
+	int getGlyphWidth(char c = ' ') const;
+	int getGlyphHeight() const { return glyphHeight; }
 
-	bool isSupported (char c) const { return supportedChars.find (c) != std::string::npos; }
+	bool isSupported(char c) const {
+		return supportedChars.find(c) != std::string::npos;
+	}
 
-	bool hasBold () const { return boldImg; }
-	bool hasItalics () const { return italicsImg; }
-	bool hasBoldItalics () const { return boldItalicsImg; }
+	bool hasBold() const { return boldImg; }
+	bool hasItalics() const { return italicsImg; }
+	bool hasBoldItalics() const { return boldItalicsImg; }
 
 	int tabWidth;
 
-	SWAN_DEBUG_VAR (Texture*, dbg_tex);
-	SWAN_DEBUG_VAR (dbg_TexCoordsVec, dbg_coords);
+	SWAN_DEBUG_VAR(Texture*, dbg_tex);
+	SWAN_DEBUG_VAR(dbg_TexCoordsVec, dbg_coords);
 
   private:
-	void genGlyphs ();
+	void genGlyphs();
 
 	Image *img, *boldImg, *italicsImg, *boldItalicsImg;
 
-	std::vector<Texture>
-	  glyphs,
-	  boldGlyphs,
-	  italicsGlyphs,
-	  boldItalicsGlyphs;
+	std::vector<Texture> glyphs, boldGlyphs, italicsGlyphs, boldItalicsGlyphs;
 
 	std::string supportedChars;
 
@@ -75,4 +74,4 @@ class BitmapFont {
 };
 }
 
-#endif //BITMAP_FONT_HPP
+#endif // BITMAP_FONT_HPP

@@ -15,11 +15,16 @@
 #endif
 
 #if defined(SWAN_PROFILE) && !defined(SWAN_NO_PROFILE)
-#define SWAN_UTIL_PROFILE()                                                                                                                                          \
-	SWAN::Util::CurrentProfile = SWAN::Util::Profile{ __FUNCTION__, SDL_GetTicks () };                                                                               \
-	SWAN::Util::OnScopeExit _ ([] { std::cout << SWAN::Util::CurrentProfile.funcName << ": " << SDL_GetTicks () - SWAN::Util::CurrentProfile.durationMs << '\n'; }); \
-	do {                                                                                                                                                             \
-	} while (0)
+#define SWAN_UTIL_PROFILE()                                                 \
+	SWAN::Util::CurrentProfile =                                            \
+	    SWAN::Util::Profile{ __FUNCTION__, SDL_GetTicks() };                \
+	SWAN::Util::OnScopeExit _([] {                                          \
+		std::cout << SWAN::Util::CurrentProfile.funcName << ": "            \
+		          << SDL_GetTicks() - SWAN::Util::CurrentProfile.durationMs \
+		          << '\n';                                                  \
+	});                                                                     \
+	do {                                                                    \
+	} while(0)
 #else
 #define SWAN_UTIL_PROFILE() (void) 0
 #warning Header "Utility/Profile.hpp" included, but SWAN_PROFILE isnt defined.
@@ -28,7 +33,7 @@
 namespace SWAN {
 namespace Util {
 	struct Profile {
-		const char*   funcName;
+		const char* funcName;
 		std::uint32_t durationMs;
 	};
 

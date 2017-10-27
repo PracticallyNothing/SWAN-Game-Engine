@@ -11,14 +11,12 @@
 namespace SWAN {
 struct BoundingSphere {
 	glm::vec3 center;
-	float     radius;
+	float radius;
 };
 
-BoundingSphere
-ApplyTransform (BoundingSphere s, Transform t);
+BoundingSphere ApplyTransform(BoundingSphere s, Transform t);
 
-void
-Render (BoundingSphere sphere, const Camera* cam, bool colliding = false);
+void Render(BoundingSphere sphere, const Camera* cam, bool colliding = false);
 }
 
 #endif

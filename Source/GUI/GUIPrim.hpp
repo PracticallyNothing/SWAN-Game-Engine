@@ -34,110 +34,100 @@ namespace GUIP {
 		int minX = -1, minY = -1, maxX = -1, maxY = -1;
 		int layer = 0, sublayer = 0;
 
-		IElement (int x = 0, int y = 0, int w = 0, int h = 0, int layer = 0, int sublayer = 0)
-		  : x (x)
-		  , y (y)
-		  , w (w)
-		  , h (h)
-		  , layer (layer)
-		  , sublayer (sublayer) {}
+		IElement(int x = 0, int y = 0, int w = 0, int h = 0, int layer = 0,
+		         int sublayer = 0)
+		    : x(x), y(y), w(w), h(h), layer(layer), sublayer(sublayer) {}
 
-		virtual IElement* moveTo (int newX, int newY) {
+		virtual IElement* moveTo(int newX, int newY) {
 			x = newX;
 			y = newY;
 			return this;
 		}
-		virtual IElement* moveBy (int relX, int relY) {
+		virtual IElement* moveBy(int relX, int relY) {
 			x += relX;
 			y += relY;
 			return this;
 		}
-		virtual IElement* resizeTo (int newW, int newH) {
+		virtual IElement* resizeTo(int newW, int newH) {
 			w = newW;
 			h = newH;
 			return this;
 		}
-		virtual IElement* resizeBy (int relW, int relH) {
+		virtual IElement* resizeBy(int relW, int relH) {
 			w += relW;
 			h += relH;
 			return this;
 		}
 
-		virtual IElement* setMinX (int x) {
+		virtual IElement* setMinX(int x) {
 			minX = x;
 			return this;
 		}
-		virtual IElement* setMinY (int y) {
+		virtual IElement* setMinY(int y) {
 			minY = y;
 			return this;
 		}
-		virtual IElement* setMaxX (int x) {
+		virtual IElement* setMaxX(int x) {
 			maxX = x;
 			return this;
 		}
-		virtual IElement* setMaxY (int y) {
+		virtual IElement* setMaxY(int y) {
 			maxY = y;
 			return this;
 		}
 
-		virtual ~IElement () {}
-		virtual const Texture* getTexture () = 0;
-		virtual void           update () {}
-		virtual void           preRender () {}
-		virtual void           postRender () {}
+		virtual ~IElement() {}
+		virtual const Texture* getTexture() = 0;
+		virtual void update() {}
+		virtual void preRender() {}
+		virtual void postRender() {}
 	};
 
 	struct ElementGroup {
-		int                    layer, sublayer;
+		int layer, sublayer;
 		std::vector<IElement*> elements;
 	};
 
 	struct IElementContainer {
-		virtual ElementGroup& getElements () = 0;
-		virtual void          preGroupRender () {}
-		virtual void          postGroupRender () {}
+		virtual ElementGroup& getElements() = 0;
+		virtual void preGroupRender() {}
+		virtual void postGroupRender() {}
 	};
 
 	struct Image : public IElement {
 		const Texture* img;
 
-		Image (const Texture* image);
-		Image (const Texture* image, int w, int h);
+		Image(const Texture* image);
+		Image(const Texture* image, int w, int h);
 
-		virtual ~Image () {}
-		virtual const Texture* getTexture ();
+		virtual ~Image() {}
+		virtual const Texture* getTexture();
 
-		void fitToImage ();
+		void fitToImage();
 	};
 
 	struct AnimatedImage : public IElement {
 		std::vector<const Texture*> frames;
-		int                         currentFrame, framerate;
+		int currentFrame, framerate;
 
-		virtual const Texture* getTexture ();
-		void                   update ();
+		virtual const Texture* getTexture();
+		void update();
 	};
 
 	struct Button : public IElement {
-		Button (const Texture* inactive,
-		        const Texture* active,
-		        const Texture* pressed)
-		  : inactive (inactive)
-		  , active (active)
-		  , pressed (pressed) {
-			w = std::max (std::max (inactive->getW (), active->getW ()), pressed->getW ());
-			h = std::max (std::max (inactive->getH (), active->getH ()), pressed->getH ());
+		Button(const Texture* inactive, const Texture* active,
+		       const Texture* pressed)
+		    : inactive(inactive), active(active), pressed(pressed) {
+			w = std::max(std::max(inactive->getW(), active->getW()),
+			             pressed->getW());
+			h = std::max(std::max(inactive->getH(), active->getH()),
+			             pressed->getH());
 		}
 
-		Button (const Texture* inactive,
-		        const Texture* active,
-		        const Texture* pressed,
-		        int            w,
-		        int            h)
-		  : IElement (0, 0, w, h)
-		  , inactive (inactive)
-		  , active (active)
-		  , pressed (pressed) {}
+		Button(const Texture* inactive, const Texture* active,
+		       const Texture* pressed, int w, int h)
+		    : IElement(0, 0, w, h), inactive(inactive), active(active),
+		      pressed(pressed) {}
 
 		const Texture *inactive, *active, *pressed;
 
@@ -146,51 +136,49 @@ namespace GUIP {
 			               PRESSED };
 		State currState = State::INACTIVE;
 
-		const Texture* getTexture ();
-		void           update ();
+		const Texture* getTexture();
+		void update();
 	};
 
 	struct Draggable : public IElement {
 	  public:
-		Draggable (const Texture* tex, bool lockX = false, bool lockY = false)
-		  : IElement (0, 0, tex->getW (), tex->getH ())
-		  , texture (tex)
-		  , _lockX (lockX)
-		  , _lockY (lockY) {}
+		Draggable(const Texture* tex, bool lockX = false, bool lockY = false)
+		    : IElement(0, 0, tex->getW(), tex->getH()), texture(tex),
+		      _lockX(lockX), _lockY(lockY) {}
 
-		Draggable (const Texture* tex, int w, int h, bool lockX = false, bool lockY = false)
-		  : IElement (0, 0, w, h)
-		  , texture (tex)
-		  , _lockX (lockX)
-		  , _lockY (lockY) {}
+		Draggable(const Texture* tex, int w, int h, bool lockX = false,
+		          bool lockY = false)
+		    : IElement(0, 0, w, h), texture(tex), _lockX(lockX), _lockY(lockY) {
+		}
 
-		void update ();
+		void update();
 
-		const Texture* getTexture () { return texture; }
+		const Texture* getTexture() { return texture; }
 		const Texture* texture;
 
-		void lockX () { _lockX = true; }
-		void lockY () { _lockY = true; }
-		void unlockX () { _lockX = false; }
-		void unlockY () { _lockY = false; }
+		void lockX() { _lockX = true; }
+		void lockY() { _lockY = true; }
+		void unlockX() { _lockX = false; }
+		void unlockY() { _lockY = false; }
 
 	  private:
 		bool _lockX = false, _lockY = false;
 
-		int  offsetX = 0, offsetY = 0;
+		int offsetX = 0, offsetY = 0;
 		bool moving = false;
 	};
 
 	class Window : public IElement {
 	  public:
-		Window (unsigned topMargin, unsigned bottomMargin, unsigned leftMargin, unsigned rightMargin) {
+		Window(unsigned topMargin, unsigned bottomMargin, unsigned leftMargin,
+		       unsigned rightMargin) {
 			uMargin = topMargin;
 			dMargin = bottomMargin;
 			lMargin = leftMargin;
 			rMargin = rightMargin;
 		}
 
-		Window (unsigned horizontalMargin, unsigned verticalMargin) {
+		Window(unsigned horizontalMargin, unsigned verticalMargin) {
 			uMargin = verticalMargin;
 			dMargin = verticalMargin;
 			lMargin = horizontalMargin;
@@ -199,14 +187,14 @@ namespace GUIP {
 
 	  private:
 		std::vector<IElement*> elements;
-		Draggable*             top;
-		Button *               minimize, *maximize, *close;
-		unsigned               uMargin, dMargin, lMargin, rMargin;
+		Draggable* top;
+		Button *minimize, *maximize, *close;
+		unsigned uMargin, dMargin, lMargin, rMargin;
 	};
 
 	extern IElement* currFocused;
-	extern void setCurrentlyFocused (IElement* el);
-	extern bool noCurrFocused ();
+	extern void setCurrentlyFocused(IElement* el);
+	extern bool noCurrFocused();
 }
 }
 

@@ -4,11 +4,9 @@
 #include "Utility/AngleUnits.hpp"
 #include <glm/glm.hpp>
 namespace SWAN {
-enum LightType {
-	L_DIRECTIONAL = 0,
-	L_POINT,
-	L_SPOT
-};
+enum LightType { L_DIRECTIONAL = 0,
+	             L_POINT,
+	             L_SPOT };
 
 struct DirectionalLight {
 	glm::vec3 direction;
@@ -51,4 +49,4 @@ struct Spotlight {
 };
 }
 
-#endif //LIGHT_HPP
+#endif // LIGHT_HPP

@@ -3,9 +3,10 @@
 
 namespace SWAN {
 /// Struct containing information about a collision
-/// Note: Some collisions may not record a distance if the [happened] variable is false.
+/// Note: Some collisions may not record a distance if the [happened] variable
+/// is false.
 struct Collision {
-	bool  happened = false;
+	bool happened = false;
 	float distance;
 };
 }

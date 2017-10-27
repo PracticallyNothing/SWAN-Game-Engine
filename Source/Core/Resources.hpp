@@ -27,10 +27,10 @@ namespace Res {
 	using Vector = std::vector<T>;
 
 	namespace detail {
-		extern Map<String, Pointer<Mesh>>       meshes;
-		extern Map<String, Pointer<Texture>>    textures;
+		extern Map<String, Pointer<Mesh>> meshes;
+		extern Map<String, Pointer<Texture>> textures;
 		extern Map<String, Pointer<BitmapFont>> bitmapFonts;
-		extern Map<String, Pointer<Shader>>     shaders;
+		extern Map<String, Pointer<Shader>> shaders;
 	}
 
 	enum LoadStatus {
@@ -40,17 +40,20 @@ namespace Res {
 		L_ERR,
 	};
 
-	extern LoadStatus LoadShader (CStrRef filename, CStrRef name, Vector<String> attribs, Vector<String> uniforms);
-	extern LoadStatus LoadBitmapFont (CStrRef filename, CStrRef name);
-	extern LoadStatus LoadMesh (CStrRef filename, CStrRef name);
-	extern LoadStatus LoadTexture (CStrRef filename, CStrRef name, bool pixelated = false);
+	extern LoadStatus LoadShader(CStrRef filename, CStrRef name,
+	                             Vector<String> attribs,
+	                             Vector<String> uniforms);
+	extern LoadStatus LoadBitmapFont(CStrRef filename, CStrRef name);
+	extern LoadStatus LoadMesh(CStrRef filename, CStrRef name);
+	extern LoadStatus LoadTexture(CStrRef filename, CStrRef name,
+	                              bool pixelated = false);
 
-	bool LoadFromFile (const std::string& filename);
+	bool LoadFromFile(const std::string& filename);
 
-	const Mesh* GetMesh (const std::string& name);
-	const Texture* GetTexture (const std::string& name);
-	const BitmapFont* GetBitmapFont (const std::string& name);
-	Shader* GetShader (const std::string& name);
+	const Mesh* GetMesh(const std::string& name);
+	const Texture* GetTexture(const std::string& name);
+	const BitmapFont* GetBitmapFont(const std::string& name);
+	Shader* GetShader(const std::string& name);
 }
 }
 

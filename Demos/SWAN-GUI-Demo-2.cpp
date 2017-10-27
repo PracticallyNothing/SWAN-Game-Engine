@@ -28,27 +28,22 @@ int main(int argc, const char** argv) {
 	SWAN::Res::LoadFromFile("Resources/res.xml");
 	SWAN::GUIRenderer guiRenderer;
 
-	guiRenderer.add(new SWAN::GUIP::Button(BUTTON_RES))
-	    ->moveTo(500, 500)
-	    ->resizeTo(150, 150);
-	guiRenderer.add(new SWAN::GUIP::Button(BUTTON_RES))
-	    ->moveTo(250, 500)
-	    ->resizeTo(150, 150);
-	guiRenderer.add(new SWAN::GUIP::Button(BUTTON_RES))
-	    ->moveTo(750, 500)
-	    ->resizeTo(150, 150);
+	bool running = true;
 
-	SWAN::GUIP::Draggable* dr =
-	    (SWAN::GUIP::Draggable*) guiRenderer
-	        .add(new SWAN::GUIP::Draggable(SWAN::Res::GetTexture("Flat Cyan"),
-	                                       false, true))
-	        ->resizeTo(50, 20)
-	        ->setMinX(100)
-	        ->setMaxX(1000);
+	guiRenderer.add(SWAN::CreateButton(10, 10, 100, 100, BUTTON_RES, [&running] { running = false }));
+	guiRenderer.add(SWAN::CreateButton(10, 150, 100, 100, BUTTON_RES, [] {}));
+	guiRenderer.add(SWAN::CreateButton(150, 150, 100, 100, BUTTON_RES, [] {}));
+
+	guiRenderer.add(
+	    SWAN::CreateSlider(
+	        500, 500,
+	        300, 75,
+	        SWAN::Color{ 100, 25, 68, 0 },
+	        SWAN::Color{ 150, 75, 118, 0 },
+	        SWAN::Color{ 30, 120, 120, 0 },
+	        [](double v) {}));
 
 	SWAN::Display::SetClearColor(0.0f, 0.3f, 0.25f, 0.0f);
-
-	bool running = true;
 
 	SWAN::EventListener exitEvent(
 	    []() -> bool {

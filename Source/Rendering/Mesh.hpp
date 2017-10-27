@@ -18,10 +18,9 @@ struct Vertex {
 	glm::vec2 UV;
 	glm::vec3 norm;
 
-	Vertex (glm::vec3 pos = glm::vec3 (), glm::vec2 UV = glm::vec2 (), glm::vec3 norm = glm::vec3 (0, 0, 1))
-	  : pos (pos)
-	  , UV (UV)
-	  , norm (norm) {}
+	Vertex(glm::vec3 pos = glm::vec3(), glm::vec2 UV = glm::vec2(),
+	       glm::vec3 norm = glm::vec3(0, 0, 1))
+	    : pos(pos), UV(UV), norm(norm) {}
 };
 
 typedef unsigned int uint;
@@ -35,36 +34,36 @@ class Mesh {
 	friend class Shader;
 
   public:
-	Mesh (uint numVerts, Vertex* verts, uint numInds, uint* inds);
+	Mesh(uint numVerts, Vertex* verts, uint numInds, uint* inds);
 
-	Mesh (Vector<Vertex> verts, Vector<uint> inds);
-	Mesh (Vector<Vertex> verts, InitList<uint> inds);
-	Mesh (InitList<Vertex> verts, Vector<uint> inds);
-	Mesh (InitList<Vertex> verts, InitList<uint> inds);
+	Mesh(Vector<Vertex> verts, Vector<uint> inds);
+	Mesh(Vector<Vertex> verts, InitList<uint> inds);
+	Mesh(InitList<Vertex> verts, Vector<uint> inds);
+	Mesh(InitList<Vertex> verts, InitList<uint> inds);
 
-	~Mesh ();
+	~Mesh();
 
 	// TODO: Deprecate in favour of ColWrappers
-	inline bool hasAABB () const { return _hasAABB; }
-	inline auto getAABB () const { return aabb; }
-	inline void setAABB (AABB newAABB) {
+	inline bool hasAABB() const { return _hasAABB; }
+	inline auto getAABB() const { return aabb; }
+	inline void setAABB(AABB newAABB) {
 		aabb     = newAABB;
 		_hasAABB = true;
 	}
 
-	inline bool hasColWrapper () const { return _hasColWrapper; }
-	inline auto getColWrapper () const { return colWrapper; }
-	inline void setColWrapper (ColWrapper newColWrapper) {
+	inline bool hasColWrapper() const { return _hasColWrapper; }
+	inline auto getColWrapper() const { return colWrapper; }
+	inline void setColWrapper(ColWrapper newColWrapper) {
 		colWrapper     = newColWrapper;
 		_hasColWrapper = true;
 	}
 
   private:
-	void render () const;
-	void renderWireframe () const;
-	void renderVerts () const;
+	void render() const;
+	void renderWireframe() const;
+	void renderVerts() const;
 
-	void init (Vertex* verts, uint* inds);
+	void init(Vertex* verts, uint* inds);
 
 	uint vertCount;
 	uint indCount;
@@ -72,7 +71,7 @@ class Mesh {
 	bool _hasAABB = false;
 	AABB aabb;
 
-	bool       _hasColWrapper = false;
+	bool _hasColWrapper = false;
 	ColWrapper colWrapper;
 
 	enum {
