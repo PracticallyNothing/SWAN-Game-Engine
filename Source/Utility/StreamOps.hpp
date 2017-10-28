@@ -2,14 +2,17 @@
 #define SWAN_UTIL_STREAM_OPS_HPP
 
 #include <iostream> // For std::ostream
+#include <vector>   // For std::vector<T>
 
-#include "Physics/Transform.hpp" // For Transform
+#include "Physics/Transform.hpp" // For SWAN::Transform
+#include "Rendering/Shader.hpp"  // For SWAN::ShaderUniform
 #include <glm/fwd.hpp>           // For glm::vec*
 
 namespace SWAN {
 namespace Util {
 	namespace StreamOps {
 		using std::ostream;
+		using std::vector;
 
 		inline ostream& operator<<(ostream& os, glm::vec2 v) {
 			os << "vec2 (" << v.x << ", " << v.y << ")";
@@ -43,6 +46,40 @@ namespace Util {
 		inline ostream& operator<<(ostream& os, Transform t) {
 			os << "Transform (pos: " << t.pos << ", rot: " << t.rot
 			   << ", scale: " << t.scale << ")";
+			return os;
+		}
+
+		inline ostream& operator<<(ostream& os, ShaderUniform s) {
+			os << "ShaderUniform (\"" << s.name << "\": ";
+
+			switch(s.type) {
+				case ShaderUniform::T_INT: os << "[int] " << s.data.i; break;
+				case ShaderUniform::T_BOOL: os << "[bool] " << s.data.b; break;
+				case ShaderUniform::T_FLOAT: os << "[float] " << s.data.f; break;
+				case ShaderUniform::T_DOUBLE: os << "[double] " << s.data.d; break;
+
+				case ShaderUniform::T_VEC2: os << "[vec2] " << s.data.v2; break;
+				case ShaderUniform::T_VEC3: os << "[vec3] " << s.data.v3; break;
+				case ShaderUniform::T_VEC4: os << "[vec4] " << s.data.v4; break;
+				case ShaderUniform::T_MAT2: os << "[mat2] " << s.data.m2; break;
+				case ShaderUniform::T_MAT3: os << "[mat3] " << s.data.m3; break;
+				case ShaderUniform::T_MAT4: os << "[mat4] " << s.data.m4; break;
+
+				case ShaderUniform::T_TRANSFORM: os << "[transform] " << s.data.transf; break;
+			}
+			os << ")";
+
+			return os;
+		}
+
+		inline ostream& operator<<(ostream& os, vector<ShaderUniform> v) {
+			os << "std::vector<T> {\n";
+
+			for(const auto& e : v)
+				os << "    " << e << ",\n";
+
+			os << "}";
+
 			return os;
 		}
 	}

@@ -12,7 +12,9 @@
 #endif
 
 #if defined(SWAN_DEBUG) && !defined(SWAN_NO_DEBUG)
+#include "StreamOps.hpp"
 #include <iostream>
+using namespace SWAN::Util::StreamOps;
 #define SWAN_DEBUG_PRINT(str)                         \
 	do {                                              \
 		std::cout << "SWAN DEBUG: " << (str) << '\n'; \

@@ -1,7 +1,8 @@
 #ifndef SWAN_GUIRENDERER_HPP
 #define SWAN_GUIRENDERER_HPP
 
-#include "GUIPrim.hpp" // For SWAN::GUIP::*
+#include "GUIElement.hpp" // For SWAN::GUIElement
+#include "GUIPrim.hpp"    // For SWAN::GUIP::*
 
 #include "Physics/Transform.hpp" // For SWAN::Transform
 #include "Rendering/Mesh.hpp"    // For SWAN::Mesh
@@ -65,8 +66,9 @@ class GUIRenderer {
 	GUIRenderer();
 	~GUIRenderer();
 
-	SWAN::GUIP::IElement* add(SWAN::GUIP::IElement*);
-	SWAN::GUIP::IElementContainer* add(SWAN::GUIP::IElementContainer*);
+	GUIP::IElement* add(GUIP::IElement*);
+	GUIP::IElementContainer* add(GUIP::IElementContainer*);
+
 	void render();
 	void update();
 
@@ -74,8 +76,14 @@ class GUIRenderer {
 
 	ElementType& getElem(int index);
 
+	void _exp_render();
+	void _exp_update();
+	GUIElement* _exp_add(std::unique_ptr<GUIElement>);
+	SWAN::Shader* _exp_shad;
+	std::vector<std::unique_ptr<GUIElement>> _exp_elems; // experimental elements
   private:
 	void renderElement(SWAN::GUIP::IElement*);
+	void _exp_renderElement(GUIElement*);
 	SWAN::Shader* shad;
 
 	std::vector<ElementType> elems;

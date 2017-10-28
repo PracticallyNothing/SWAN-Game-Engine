@@ -2,9 +2,14 @@
 
 #include "Core/Display.hpp"   // For Display
 #include "Core/Resources.hpp" // For SWAN::Res::GetShader()
+#include "Utility/Debug.hpp"  // For SWAN_DEBUG_PRINT()
 #include "Utility/Math.hpp"   // For SWAN::Util::PixelToGLCoord
+#include "Utility/StreamOps.hpp"
+
+#include <cassert> // For assert()
 
 namespace SWAN {
+using namespace Util::StreamOps;
 GUIRenderer::GUIRenderer() {
 	shad = SWAN::Res::GetShader("GUI");
 
@@ -105,5 +110,77 @@ const std::vector<GUIRenderer::ElementType>& GUIRenderer::getElems() const {
 
 GUIRenderer::ElementType& GUIRenderer::getElem(int index) {
 	return elems[index];
+}
+
+GUIElement* GUIRenderer::_exp_add(std::unique_ptr<GUIElement> e) {
+	//sortedByLayer = false;
+	_exp_elems.emplace_back(std::move(e));
+	return e.get();
+}
+
+void GUIRenderer::_exp_renderElement(GUIElement* el) {
+	if(el->x > Display::GetWidth() || el->y > Display::GetHeight() ||
+	   el->x + el->w < 0 || el->y + el->h < 0)
+		return;
+
+	std::vector<ShaderUniform> unis;
+
+	Transform transform;
+	transform.scale.x = (float) el->w / Display::GetWidth();
+	transform.scale.y = (float) el->h / Display::GetHeight();
+
+	transform.pos.x =
+	    SWAN::Util::PixelToGLCoord(Display::GetWidth(), el->x + el->w / 2);
+	transform.pos.y = SWAN::Util::PixelToGLCoord(
+	    Display::GetHeight(), Display::GetHeight() - (el->y + el->h / 2));
+
+	unis.emplace_back("type", el->type);
+	unis.emplace_back("transform", transform);
+
+	switch(el->type) {
+		case GUIElement::T_COLOR:
+			unis.emplace_back("color1", (glm::vec4) el->renderData.color);
+			break;
+		case GUIElement::T_VERTGRAD:
+		case GUIElement::T_HORIZGRAD:
+			unis.emplace_back("color1", (glm::vec4) el->renderData.gradient.color1);
+			unis.emplace_back("color2", (glm::vec4) el->renderData.gradient.color2);
+			unis.emplace_back("topLeft", transform.getModel() * glm::vec4(-1, 1, 0, 1));
+			unis.emplace_back("bottomRight", transform.getModel() * glm::vec4(1, -1, 0, 1));
+			break;
+		case GUIElement::T_TEXTURE:
+			unis.emplace_back("tex", el->renderData.texture);
+			break;
+	}
+
+	_exp_shad->setUniforms(unis);
+	_exp_shad->renderMesh(*rect);
+
+	if(el->hasChildren())
+		for(auto& c : el->children)
+			_exp_renderElement(c.get());
+}
+
+void GUIRenderer::_exp_render() {
+	assert(_exp_shad != nullptr);
+
+	//assert(_exp_shad->hasUniform("transform"));
+
+	//assert(_exp_shad->hasUniform("topLeft"));
+	//assert(_exp_shad->hasUniform("bottomRight"));
+
+	//assert(_exp_shad->hasUniform("color1"));
+	//assert(_exp_shad->hasUniform("color2"));
+	//assert(_exp_shad->hasUniform("tex"));
+	//assert(_exp_shad->hasUniform("type"));
+
+	for(auto& el : _exp_elems) {
+		_exp_renderElement(el.get());
+	}
+}
+void GUIRenderer::_exp_update() {
+	for(auto& e : _exp_elems) {
+		e->update();
+	}
 }
 }

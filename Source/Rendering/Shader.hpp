@@ -62,63 +62,65 @@ struct ShaderUniform {
 		Spotlight slight;
 	} data;
 
-	ShaderUniform(const std::string& name, int i) : name(name) {
+	ShaderUniform(std::string name, int i) : name(name) {
 		data.i = i;
 		type   = T_INT;
 	}
-	ShaderUniform(const std::string& name, bool b) : name(name) {
+	ShaderUniform(std::string name, bool b) : name(name) {
 		data.b = b;
 		type   = T_BOOL;
 	}
-	ShaderUniform(const std::string& name, float f) : name(name) {
+	ShaderUniform(std::string name, float f) : name(name) {
 		data.f = f;
 		type   = T_FLOAT;
 	}
 
-	ShaderUniform(const std::string& name, glm::vec2 v2) : name(name) {
+	ShaderUniform(std::string name, glm::vec2 v2) : name(name) {
 		data.v2 = v2;
 		type    = T_VEC2;
 	}
-	ShaderUniform(const std::string& name, glm::vec3 v3) : name(name) {
+	ShaderUniform(std::string name, glm::vec3 v3) : name(name) {
 		data.v3 = v3;
 		type    = T_VEC3;
 	}
-	ShaderUniform(const std::string& name, glm::vec4 v4) : name(name) {
+	ShaderUniform(std::string name, glm::vec4 v4) : name(name) {
 		data.v4 = v4;
 		type    = T_VEC4;
 	}
 
-	ShaderUniform(const std::string& name, glm::mat2 m2) : name(name) {
+	ShaderUniform(std::string name, glm::mat2 m2) : name(name) {
 		data.m2 = m2;
 		type    = T_MAT2;
 	}
-	ShaderUniform(const std::string& name, glm::mat3 m3) : name(name) {
+	ShaderUniform(std::string name, glm::mat3 m3) : name(name) {
 		data.m3 = m3;
 		type    = T_MAT3;
 	}
-	ShaderUniform(const std::string& name, glm::mat4 m4) : name(name) {
+	ShaderUniform(std::string name, glm::mat4 m4) : name(name) {
 		data.m4 = m4;
 		type    = T_MAT4;
 	}
 
-	ShaderUniform(const std::string& name, Transform transf) : name(name) {
+	ShaderUniform(std::string name, Transform transf) : name(name) {
 		data.transf = transf;
 		type        = T_TRANSFORM;
 	}
 
-	ShaderUniform(const std::string& name, PointLight plight) : name(name) {
+	ShaderUniform(std::string name, PointLight plight) : name(name) {
 		data.plight = plight;
 		type        = T_POINTLIGHT;
 	}
-	ShaderUniform(const std::string& name, DirectionalLight dlight)
+	ShaderUniform(std::string name, DirectionalLight dlight)
 	    : name(name) {
 		data.dlight = dlight;
 		type        = T_DIRLIGHT;
 	}
-	ShaderUniform(const std::string& name, Spotlight slight) : name(name) {
+	ShaderUniform(std::string name, Spotlight slight) : name(name) {
 		data.slight = slight;
 		type        = T_SPOTLIGHT;
 	}
+
+	ShaderUniform() {}
 
 	ShaderUniform(const ShaderUniform& other)
 	    : name(other.name), data(other.data), type(other.type) {}
@@ -137,17 +139,17 @@ struct ShaderUniform {
 };
 
 //-----------------------------------------------------------------------------------------
-// Note: This class was taken pretty much verbatim from MakingGamesWithBen's
-// excellent
-// "Advanced C++/Graphics Tutorials" series. You should check it out.
+// Note:
+//     This class was taken pretty much verbatim from MakingGamesWithBen's
+//     excellent "Advanced C++/Graphics Tutorials" series. You should check it out.
+//     The only things that were added to it were all of the "setUniformData" functions.
 // Link:
-// https://www.youtube.com/playlist?list=PLSPw4ASQYyymu3PfG9gxywSPghnSMiOAW
-// The only thing that was added to it were all of the "setUniformData"
-// functions.
+//     https://www.youtube.com/playlist?list=PLSPw4ASQYyymu3PfG9gxywSPghnSMiOAW
 //-----------------------------------------------------------------------------------------
 // This class handles the compilation, linking, and usage of a GLSL shader
 // program.
 // Reference: http://www.opengl.org/wiki/Shader_Compilation
+//-----------------------------------------------------------------------------------------
 class Shader {
   public:
 	Shader();

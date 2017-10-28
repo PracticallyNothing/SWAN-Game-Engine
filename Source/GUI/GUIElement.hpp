@@ -1,12 +1,11 @@
 #ifndef SWAN_GUI_ELEMENT_HPP
 #define SWAN_GUI_ELEMENT_HPP
 
-#include <memory> // For std::unique_ptr<T>
-#include <string> // For std::string
-#include <vector> // For std::vector<T>
-
 #include "../Core/EventListener.hpp" // For SWAN::EventListener
 #include "../Core/Input.hpp"         // For SWAN_Input
+#include <memory>                    // For std::unique_ptr<T>
+#include <string>                    // For std::string
+#include <vector>                    // For std::vector<T>
 
 #include "../Rendering/Image.hpp"   // For SWAN::Color
 #include "../Rendering/Mesh.hpp"    // For SWAN::Mesh
@@ -14,6 +13,21 @@
 
 namespace SWAN {
 struct GUIElement {
+	enum Type {
+		T_COLOR = 0,
+		T_VERTGRAD,  // Vertical gradient
+		T_HORIZGRAD, // Horizontal gradient
+		T_TEXTURE,
+	} type;
+
+	union {
+		Color color;
+		struct {
+			Color color1, color2;
+		} gradient;
+		const Texture* texture;
+	} renderData;
+
 	explicit GUIElement(Type t = T_COLOR) : type(t) {}
 
 	GUIElement(int x, int y, int w, int h, Type t = T_COLOR)
@@ -58,21 +72,6 @@ struct GUIElement {
 	GUIElement* parent = nullptr;
 	std::vector<std::unique_ptr<GUIElement>> children;
 
-	enum Type {
-		T_COLOR,
-		T_VERTGRAD,  // Vertical gradient
-		T_HORIZGRAD, // Horizontal gradient
-		T_TEXTURE
-	} type;
-
-	union {
-		Color color;
-		struct {
-			Color color1, color2
-		} gradient;
-		// const Texture* texture;
-	} renderData;
-
 	bool hasChildren() const { return !children.empty(); }
 	bool isFocused() const {
 		if(!focused)
@@ -81,16 +80,16 @@ struct GUIElement {
 		if(focused == this)
 			return true;
 		else if(parent)
-			return parent->focused();
+			return parent->isFocused();
 		else
 			return false;
 	}
 
 	void update() {
-		for(const auto& l : listeners)
+		for(auto& l : listeners)
 			l();
 
-		for(const auto* c : children)
+		for(auto& c : children)
 			c->update();
 	}
 
@@ -116,7 +115,7 @@ extern std::unique_ptr<GUIElement> CreateSlider(
     Color bgColor,
     Color activeColor,
     Color handleColor,
-    EventListener::ActionFuncT onChange);
+    std::function<void(double)> onChange);
 }
 
 #endif // SWAN_GUI_ELEMENT_HPP

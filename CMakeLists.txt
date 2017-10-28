@@ -108,6 +108,7 @@ set(Sources
 
 	# GUI stuff
 	Source/GUI/GUIPrim.cpp
+	Source/GUI/GUIElement.cpp
 	Source/GUI/GUIRenderer.cpp
 
 	# Physics code
@@ -125,6 +126,9 @@ target_link_libraries(SWAN-Unnamed-Demo SWAN)
 
 add_executable(SWAN-GUI-Demo Demos/SWAN-GUI-Demo.cpp)
 target_link_libraries(SWAN-GUI-Demo SWAN)
+
+add_executable(SWAN-GUI-Demo-2 Demos/SWAN-GUI-Demo-2.cpp)
+target_link_libraries(SWAN-GUI-Demo-2 SWAN)
 
 install(FILES ${Headers} DESTINATION include)
 install(TARGETS SWAN ARCHIVE DESTINATION lib)

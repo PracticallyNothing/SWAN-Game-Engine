@@ -28,13 +28,15 @@ int main(int argc, const char** argv) {
 	SWAN::Res::LoadFromFile("Resources/res.xml");
 	SWAN::GUIRenderer guiRenderer;
 
+	guiRenderer._exp_shad = SWAN::Res::GetShader("_exp_GUIShader");
+
 	bool running = true;
 
-	guiRenderer.add(SWAN::CreateButton(10, 10, 100, 100, BUTTON_RES, [&running] { running = false }));
-	guiRenderer.add(SWAN::CreateButton(10, 150, 100, 100, BUTTON_RES, [] {}));
-	guiRenderer.add(SWAN::CreateButton(150, 150, 100, 100, BUTTON_RES, [] {}));
+	guiRenderer._exp_add(SWAN::CreateButton( 10,  10, 100, 100, BUTTON_RES, [&running] { running = false; }));
+	guiRenderer._exp_add(SWAN::CreateButton( 10, 150, 100, 100, BUTTON_RES, [] {}));
+	guiRenderer._exp_add(SWAN::CreateButton(150, 150, 100, 100, BUTTON_RES, [] {}));
 
-	guiRenderer.add(
+	guiRenderer._exp_add(
 	    SWAN::CreateSlider(
 	        500, 500,
 	        300, 75,
@@ -54,8 +56,8 @@ int main(int argc, const char** argv) {
 
 	SWAN::EventListener renderEvent =
 	    SWAN::CreateRepeatingTimer(16ms, [&guiRenderer] {
-		    guiRenderer.update();
-		    guiRenderer.render();
+		    guiRenderer._exp_update();
+		    guiRenderer._exp_render();
 
 		    SWAN::Display::Clear();
 		});

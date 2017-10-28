@@ -82,7 +82,7 @@ static EventListener CreateOnMouseReleaseListener(
 }
 
 static inline EventListener CreateOnMouseEnterListener(GUIElement* el) {
-	return CreateOnMouseEventListener(el, [] {});
+	return CreateOnMouseEnterListener(el, [] {});
 }
 static inline EventListener CreateOnMouseLeaveListener(GUIElement* el) {
 	return CreateOnMouseLeaveListener(el, [] {});
@@ -117,8 +117,8 @@ std::unique_ptr<GUIElement> CreateButton(
 	res->listeners.push_back(CreateOnMouseEnterListener(res, [res, focused] { res->renderData.texture = focused; }));
 	res->listeners.push_back(CreateOnMouseLeaveListener(res, [res, normal] { res->renderData.texture = normal; }));
 	res->listeners.push_back(CreateOnMousePressListener(res, [res, active] { res->renderData.texture = active; }));
-	res->listeners.push_back(CreateOnMousePressListener(res, [res, normal, onRelease] {
-		res->renderData.texture = active;
+	res->listeners.push_back(CreateOnMouseReleaseListener(res, [res, normal, onRelease] {
+		res->renderData.texture = normal;
 		onRelease();
 	}));
 
@@ -156,14 +156,14 @@ std::unique_ptr<GUIElement> CreateSlider(
 	bg->listeners.push_back(CreateOnMouseLeaveListener(bg));
 	bg->listeners.push_back(CreateOnMousePressListener(
 	    bg,
-	    [bg, handle, active] {
+	    [bg, handle, active, onChange] {
 		    handle->x = std::min(std::max(GetCurrMouseState().x - bg->x - handle->w / 2, 0), bg->w - handle->w);
 		    active->w = std::min(std::max(bg->x - handle->x + handle->w / 2, 0), bg->w);
 		    onChange((double) active->w / bg->w);
 		}));
 
-	children.emplace_back(handle);
-	children.emplace_back(active);
+	bg->children.emplace_back(handle);
+	bg->children.emplace_back(active);
 
 	return std::unique_ptr<GUIElement>(bg);
 }

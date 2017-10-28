@@ -45,6 +45,19 @@
 		<Uniform name="transform"/>
 	</Shader>
 
+	<Shader vertex="Shaders/_expGUIShader.vert" fragment="Shaders/_expGUIShader.frag" name="_exp_GUIShader">
+		<Attribute name="pos"/>
+		<Attribute name="UV"/>
+
+		<Uniform name="transform"/>
+		<Uniform name="topLeft"/>
+		<Uniform name="bottomRight"/>
+		<Uniform name="type"/>
+		<Uniform name="color1"/>
+		<Uniform name="color2"/>
+		<Uniform name="tex"/>
+	</Shader>
+
 	<Shader vertex="Shaders/text.vert" fragment="Shaders/text.frag" name="Text">
 		<Attribute name="pos"/>
 		<Attribute name="UV"/>
