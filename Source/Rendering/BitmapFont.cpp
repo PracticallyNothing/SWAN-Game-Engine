@@ -1,5 +1,6 @@
 #include "BitmapFont.hpp"
 
+#include "Utility/Math.hpp"
 #include "Utility/StringUtil.hpp" // For SWAN::Util::GetDirectory(), SWAN::Util::IsAbsolutePath()
 
 #include <cpptoml.h> // For cpptoml::parse_file()
@@ -13,9 +14,9 @@ namespace SWAN {
 // TODO: Move to importer function
 BitmapFont::BitmapFont(const std::string& confFilename)
     : boldImg(nullptr), italicsImg(nullptr), boldItalicsImg(nullptr) {
-	auto conf = cpptoml::parse_file(confFilename);
-
+	auto conf           = cpptoml::parse_file(confFilename);
 	auto confGlyphWidth = conf->get_as<int>("glyph_width");
+
 	if(!confGlyphWidth) {
 		std::cout << "ERROR: Bitmap font config file \"" << confFilename
 		          << "\" doesn't contain a \"glyph_width\" field!\n";
@@ -94,6 +95,10 @@ BitmapFont::BitmapFont(const std::string& confFilename)
 	    conf->get_as<std::string>("supported_chars").value_or(defSuppChars);
 	tabWidth = conf->get_as<int>("tab_width").value_or(4);
 
+	glyphsPerRow = img->width / glyphWidth;
+
+	tex = new Texture(*img);
+
 	genGlyphs();
 }
 
@@ -141,8 +146,29 @@ void BitmapFont::genGlyphs() {
 	SWAN_DEBUG_DO(dbg_tex = new Texture(*img));
 }
 
+Transform BitmapFont::getGlyphUVTransform(char c) const {
+	Transform transform;
+
+	if(c == ' ' || c == '\t' || c == '\n') {
+		transform.scale = glm::vec3(0, 0, 0);
+		return transform;
+	}
+
+	transform.scale.x = (float) glyphWidth / img->width;
+	transform.scale.y = (float) glyphHeight / img->height;
+
+	int glyphX = ((c - '!') % glyphsPerRow) * glyphWidth,
+	    glyphY = ((c - '!') / glyphsPerRow) * glyphHeight;
+
+	transform.pos.x = Util::PixelToGLCoord(img->width, glyphX + glyphWidth / 2);
+	transform.pos.y = Util::PixelToGLCoord(img->height, img->height - (glyphY + glyphHeight / 2));
+
+	return transform;
+}
+
 BitmapFont::~BitmapFont() {
 	SWAN_DEBUG_DO(delete dbg_tex);
 	delete img;
+	delete tex;
 }
-}
+} // namespace SWAN

@@ -55,6 +55,10 @@ if(WIN32)
 	set(SDL2_PATH "${PROJECT_SOURCE_DIR}/Dependencies/SDL2-2.0.5/lib/x64")
 endif()
 
+if(LINUX)
+	add_compile_options("-ftest-coverage")
+endif()
+
 find_package(OpenGL REQUIRED)
 find_package(SDL2 REQUIRED)
 #find_package(Freetype REQUIRED)

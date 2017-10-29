@@ -4,6 +4,8 @@
 #include "Core/Input.hpp"
 #include "Core/Resources.hpp"
 
+#include "Rendering/Text.hpp"
+
 #include "GUI/GUIPrim.hpp"
 #include "GUI/GUIRenderer.hpp"
 
@@ -35,13 +37,17 @@ int main(int argc, const char** argv) {
 	guiRenderer._exp_add(SWAN::CreateButton(10, 150, 100, 100, BUTTON_RES, [] {}));
 	guiRenderer._exp_add(SWAN::CreateButton(150, 150, 100, 100, BUTTON_RES, [] {}));
 
+	SWAN::Color sliderBGColor{ 60, 60, 60, 0 };
+	SWAN::Color sliderHandleColor{ 183, 186, 0, 0 };
+	SWAN::Color sliderActiveColor{ 221, 111, 0, 0 };
+
 	guiRenderer._exp_add(
-	    SWAN::CreateSlider(
-	        500, 425,
-	        400, 25,
-	        SWAN::Color{ 100, 0, 0, 0 },
-	        SWAN::Color{ 0, 0, 150, 0 },
-	        SWAN::Color{ 200, 75, 75, 0 },
+	    SWAN::CreateVerticalSlider(
+	        1000, 250,
+	        50, 300,
+	        sliderBGColor,
+	        sliderHandleColor,
+	        sliderActiveColor,
 	        [](double v) {
 		        SWAN::Display::SetClearColor(
 		            v,
@@ -49,13 +55,29 @@ int main(int argc, const char** argv) {
 		            SWAN::Display::detail::blue,
 		            1);
 		    }));
+
+	guiRenderer._exp_add(
+	    SWAN::CreateSlider(
+	        500, 425,
+	        400, 25,
+	        sliderBGColor,
+	        sliderHandleColor,
+	        sliderActiveColor,
+	        [](double v) {
+		        SWAN::Display::SetClearColor(
+		            v,
+		            SWAN::Display::detail::green,
+		            SWAN::Display::detail::blue,
+		            1);
+		    }));
+
 	guiRenderer._exp_add(
 	    SWAN::CreateSlider(
 	        500, 525,
 	        400, 25,
-	        SWAN::Color{ 100, 0, 0, 0 },
-	        SWAN::Color{ 150, 75, 118, 0 },
-	        SWAN::Color{ 30, 120, 120, 0 },
+	        sliderBGColor,
+	        sliderHandleColor,
+	        sliderActiveColor,
 	        [](double v) {
 		        SWAN::Display::SetClearColor(
 		            SWAN::Display::detail::red,
@@ -63,13 +85,14 @@ int main(int argc, const char** argv) {
 		            SWAN::Display::detail::blue,
 		            1);
 		    }));
+
 	guiRenderer._exp_add(
 	    SWAN::CreateSlider(
 	        500, 625,
 	        400, 25,
-	        SWAN::Color{ 100, 0, 0, 0 },
-	        SWAN::Color{ 150, 75, 118, 0 },
-	        SWAN::Color{ 30, 120, 120, 0 },
+	        sliderBGColor,
+	        sliderHandleColor,
+	        sliderActiveColor,
 	        [](double v) {
 		        SWAN::Display::SetClearColor(
 		            SWAN::Display::detail::red,
@@ -91,6 +114,14 @@ int main(int argc, const char** argv) {
 	    SWAN::CreateRepeatingTimer(16ms, [&guiRenderer] {
 		    guiRenderer._exp_update();
 		    guiRenderer._exp_render();
+
+		    SWAN::RenderText(
+		        10, 10,
+		        " !\"#$%&'()*+,-./"
+		        "\n0123456789\n:;<=>?@\nABCDEFGHIJKLMNOPQRSTUVWXYZ\n["
+		        "\\]^_`\nabcdefghijklmnopqrstuvwxyz{|}~",
+		        SWAN::Res::GetShader("Text"),
+		        SWAN::Res::GetBitmapFont("Monospace 16"));
 
 		    SWAN::Display::Clear();
 		});

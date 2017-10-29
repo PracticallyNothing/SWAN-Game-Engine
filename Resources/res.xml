@@ -62,10 +62,8 @@
 		<Attribute name="pos"/>
 		<Attribute name="UV"/>
 
-		<Uniform name="UVScale"/>
-		<Uniform name="UVOffset"/>
-		<Uniform name="model"/>
-		<Uniform name="color"/>
+		<Uniform name="transform"/>
+		<Uniform name="UVtransform"/>
 	</Shader>
 
 	<Shader vertex="Shaders/proper.vert" fragment="Shaders/proper.frag" name="Proper">

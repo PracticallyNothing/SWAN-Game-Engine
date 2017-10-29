@@ -16,7 +16,7 @@
  *  v2      v3
  */
 namespace SWAN {
-Mesh* genRect2D_ptr() {
+static Mesh* genRect2D_ptr() {
 	Vertex v0(glm::vec3(-1, 1, 0), glm::vec2(0, 1),
 	          glm::normalize(glm::vec3(-0.5, -0.5, 0.5)));
 	Vertex v1(glm::vec3(1, 1, 0), glm::vec2(1, 1),
@@ -75,11 +75,13 @@ void Text::set(TextConfig tc, bool append) {
 		res.color     = tc.color;
 		res.transform = Transform(
 		    glm::vec3(
-		        SWAN::Util::PixelToGLCoord(Display::GetWidth(),
-		                                   x + font->getGlyphWidth(c) / 2.0),
-		        SWAN::Util::PixelToGLCoord(Display::GetHeight(),
-		                                   Display::GetHeight() - y -
-		                                       font->getGlyphHeight() / 2.0),
+		        SWAN::Util::PixelToGLCoord(
+		            Display::GetWidth(),
+		            x + font->getGlyphWidth(c) / 2.0),
+		        SWAN::Util::PixelToGLCoord(
+		            Display::GetHeight(),
+		            Display::GetHeight() - y -
+		                font->getGlyphHeight() / 2.0),
 		        0),
 		    glm::vec3(0, 0, 0),
 		    glm::vec3((double) font->getGlyphWidth(c) / Display::GetWidth(),
@@ -113,4 +115,53 @@ void Text::render(Shader* shad) const {
 		shad->renderMesh(*chars[i].mesh);
 	}
 }
+
+void RenderText(int x, int y, std::string text, Shader* s, const BitmapFont* f) {
+	assert(s);
+
+	assert(s->hasUniform("transform"));
+	assert(s->hasUniform("UVtransform"));
+
+	std::unique_ptr<Mesh> rect(genRect2D_ptr());
+
+	int letter = 0,
+	    line   = 0;
+
+	for(int i = 0; i < text.length(); i++) {
+		char c = text[i];
+
+		if(c == ' ') {
+			letter++;
+			continue;
+		} else if(c == '\t') {
+			letter += f->tabWidth;
+		} else if(c == '\n') {
+			line++;
+			letter = 0;
+			continue;
+		}
+
+		int gw = f->getGlyphWidth(c),
+		    gh = f->getGlyphHeight();
+
+		Transform transform;
+		transform.scale.x = (float) gw / Display::GetWidth();
+		transform.scale.y = (float) gh / Display::GetHeight();
+
+		transform.pos.x = SWAN::Util::PixelToGLCoord(Display::GetWidth(), x + letter * gw + gw / 2);
+		transform.pos.y = SWAN::Util::PixelToGLCoord(
+		    Display::GetHeight(),
+		    Display::GetHeight() - (y + line * gh + gh / 2));
+
+		std::vector<ShaderUniform> unis;
+		unis.emplace_back("transform", transform);
+		unis.emplace_back("UVtransform", f->getGlyphUVTransform(c));
+		unis.emplace_back("tex", f->getTexture());
+
+		s->setUniforms(unis);
+		s->renderMesh(*rect.get());
+
+		letter++;
+	}
 }
+} // namespace SWAN

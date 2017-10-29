@@ -116,6 +116,22 @@ extern std::unique_ptr<GUIElement> CreateSlider(
     Color activeColor,
     Color handleColor,
     std::function<void(double)> onChange);
-}
+
+extern std::unique_ptr<GUIElement> CreateVerticalSlider(
+    int x, int y,
+    int w, int h,
+    Color bgColor,
+    Color activeColor,
+    Color handleColor,
+    std::function<void(double)> onChange);
+
+extern std::unique_ptr<GUIElement> CreateCheckBox(
+    int x, int y,
+    int w, int h,
+    const Texture* normal,
+    const Texture* active,
+    std::function<void(bool)> onChange);
+
+} // namespace SWAN
 
 #endif // SWAN_GUI_ELEMENT_HPP

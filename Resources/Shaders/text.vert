@@ -5,14 +5,12 @@ in vec2 UV;
 
 out vec2 fUV;
 
-uniform vec2 UVScale;
-uniform vec2 UVOffset;
-
-uniform mat4 model;
+uniform mat4 transform;
+uniform mat4 UVtransform;
 
 void main(){
-	gl_Position = model * vec4(pos, 1);
+	gl_Position = transform * vec4(pos, 1);
 	gl_PointSize = 5;
 
-	fUV = (UV * UVScale) + UVOffset;
+	fUV = (UVtransform * vec4(UV, 0, 1)).xy;
 }

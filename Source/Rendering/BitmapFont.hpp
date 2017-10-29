@@ -44,6 +44,8 @@ class BitmapFont {
 			return &glyphs.at(c - '!');
 	}
 
+	Transform getGlyphUVTransform(char c) const;
+
 	int getGlyphWidth(char c = ' ') const;
 	int getGlyphHeight() const { return glyphHeight; }
 
@@ -60,17 +62,20 @@ class BitmapFont {
 	SWAN_DEBUG_VAR(Texture*, dbg_tex);
 	SWAN_DEBUG_VAR(dbg_TexCoordsVec, dbg_coords);
 
+	inline const Texture* getTexture() const { return tex; }
+
   private:
 	void genGlyphs();
 
 	Image *img, *boldImg, *italicsImg, *boldItalicsImg;
+	Texture* tex;
 
 	std::vector<Texture> glyphs, boldGlyphs, italicsGlyphs, boldItalicsGlyphs;
 
 	std::string supportedChars;
 
-	int glyphWidth;
-	int glyphHeight;
+	int glyphWidth, glyphHeight,
+	    glyphsPerRow;
 };
 }
 

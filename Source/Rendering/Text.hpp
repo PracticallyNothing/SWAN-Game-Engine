@@ -54,6 +54,8 @@ class Text {
 
 	Mesh* charMesh;
 };
+
+void RenderText(int x, int y, std::string text, Shader* s, const BitmapFont* f);
 }
 
 #endif
