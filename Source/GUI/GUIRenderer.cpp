@@ -46,7 +46,6 @@ GUIP::IElement* GUIRenderer::add(GUIP::IElement* elem) {
 	elems.push_back(GUIRenderer::ElementType(elem));
 	return elem;
 }
-
 GUIP::IElementContainer* GUIRenderer::add(GUIP::IElementContainer* elemCont) {
 	sortedByLayer = false;
 	elems.push_back(GUIRenderer::ElementType(elemCont));

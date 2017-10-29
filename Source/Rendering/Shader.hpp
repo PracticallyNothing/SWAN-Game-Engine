@@ -11,6 +11,7 @@
 #include "Light.hpp"
 #include "Mesh.hpp"
 #include "Physics/Transform.hpp"
+#include "Texture.hpp"
 
 namespace SWAN {
 // TODO: Rewrite Shader class
@@ -31,6 +32,7 @@ struct ShaderUniform {
 		T_MAT3,
 		T_MAT4,
 
+		T_TEXTURE,
 		T_TRANSFORM,
 
 		T_POINTLIGHT,
@@ -54,6 +56,8 @@ struct ShaderUniform {
 		glm::mat2 m2;
 		glm::mat3 m3;
 		glm::mat4 m4;
+
+		const Texture* tex;
 
 		Transform transf;
 
@@ -99,6 +103,11 @@ struct ShaderUniform {
 	ShaderUniform(std::string name, glm::mat4 m4) : name(name) {
 		data.m4 = m4;
 		type    = T_MAT4;
+	}
+
+	ShaderUniform(std::string name, const Texture* tex) : name(name) {
+		data.tex = tex;
+		type     = T_TEXTURE;
 	}
 
 	ShaderUniform(std::string name, Transform transf) : name(name) {

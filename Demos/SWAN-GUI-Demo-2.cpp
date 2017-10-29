@@ -1,5 +1,4 @@
 #define SDL_MAIN_HANDLED
-
 #include "Core/Display.hpp"
 #include "Core/EventListener.hpp"
 #include "Core/Input.hpp"
@@ -32,18 +31,52 @@ int main(int argc, const char** argv) {
 
 	bool running = true;
 
-	guiRenderer._exp_add(SWAN::CreateButton( 10,  10, 100, 100, BUTTON_RES, [&running] { running = false; }));
-	guiRenderer._exp_add(SWAN::CreateButton( 10, 150, 100, 100, BUTTON_RES, [] {}));
+	guiRenderer._exp_add(SWAN::CreateButton(10, 10, 100, 100, BUTTON_RES, [&running] { running = false; }));
+	guiRenderer._exp_add(SWAN::CreateButton(10, 150, 100, 100, BUTTON_RES, [] {}));
 	guiRenderer._exp_add(SWAN::CreateButton(150, 150, 100, 100, BUTTON_RES, [] {}));
 
 	guiRenderer._exp_add(
 	    SWAN::CreateSlider(
-	        500, 500,
-	        300, 75,
-	        SWAN::Color{ 100, 25, 68, 0 },
+	        500, 425,
+	        400, 25,
+	        SWAN::Color{ 100, 0, 0, 0 },
+	        SWAN::Color{ 0, 0, 150, 0 },
+	        SWAN::Color{ 200, 75, 75, 0 },
+	        [](double v) {
+		        SWAN::Display::SetClearColor(
+		            v,
+		            SWAN::Display::detail::green,
+		            SWAN::Display::detail::blue,
+		            1);
+		    }));
+	guiRenderer._exp_add(
+	    SWAN::CreateSlider(
+	        500, 525,
+	        400, 25,
+	        SWAN::Color{ 100, 0, 0, 0 },
 	        SWAN::Color{ 150, 75, 118, 0 },
 	        SWAN::Color{ 30, 120, 120, 0 },
-	        [](double v) {}));
+	        [](double v) {
+		        SWAN::Display::SetClearColor(
+		            SWAN::Display::detail::red,
+		            v,
+		            SWAN::Display::detail::blue,
+		            1);
+		    }));
+	guiRenderer._exp_add(
+	    SWAN::CreateSlider(
+	        500, 625,
+	        400, 25,
+	        SWAN::Color{ 100, 0, 0, 0 },
+	        SWAN::Color{ 150, 75, 118, 0 },
+	        SWAN::Color{ 30, 120, 120, 0 },
+	        [](double v) {
+		        SWAN::Display::SetClearColor(
+		            SWAN::Display::detail::red,
+		            SWAN::Display::detail::green,
+		            v,
+		            1);
+		    }));
 
 	SWAN::Display::SetClearColor(0.0f, 0.3f, 0.25f, 0.0f);
 

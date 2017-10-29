@@ -29,6 +29,8 @@ MouseState GetPrevMouseState() {
 }
 
 void _handleEvents() {
+	SWAN::detail::prevState = SWAN_Input;
+
 	SDL_Event e;
 	while(SDL_PollEvent(&e)) {
 		switch(e.type) {
@@ -155,8 +157,6 @@ void _handleEvents() {
 				break;
 		}
 	}
-
-	SWAN::detail::prevState = SWAN_Input;
 }
 
 void SWAN_Input_Init() { SWAN_Input.handleEvents = _handleEvents; }

@@ -354,6 +354,10 @@ void Shader::setUniform(ShaderUniform su) {
 		case ShaderUniform::T_MAT3: setUniformData(su.name, su.data.m3); break;
 		case ShaderUniform::T_MAT4: setUniformData(su.name, su.data.m4); break;
 
+		case ShaderUniform::T_TEXTURE:
+			su.data.tex->bind();
+			break;
+
 		case ShaderUniform::T_TRANSFORM:
 			setUniformData(su.name, su.data.transf);
 			break;

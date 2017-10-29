@@ -1,6 +1,9 @@
 #include "GUIElement.hpp"
 
+#include "Utility/Debug.hpp" // For SWAN_DEBUG_PRINT()
+
 #include <algorithm> // For std::max(), std::min()
+#include <cassert>
 
 namespace SWAN {
 const GUIElement* GUIElement::focused = nullptr;
@@ -34,7 +37,7 @@ static EventListener CreateOnMouseLeaveListener(
 		           !GetCurrMouseState().mousesOver(el->x, el->y, el->w, el->h) &&
 		           GetPrevMouseState().mousesOver(el->x, el->y, el->w, el->h);
 		},
-	    [el, action] {
+	    [action] {
 		    GUIElement::focused = nullptr;
 		    action();
 		});
@@ -51,9 +54,7 @@ static EventListener CreateOnMousePressListener(
 
 	EventListener res(
 	    [el]() -> bool {
-		    return el->isFocused() &&
-		           GetCurrMouseState().LMB &&
-		           !GetPrevMouseState().LMB;
+		    return el->isFocused() && GetCurrMouseState().LMB;
 		},
 	    action);
 
@@ -112,6 +113,10 @@ std::unique_ptr<GUIElement> CreateButton(
 
 	GUIElement* res = new GUIElement(x, y, w, h, GUIElement::T_TEXTURE);
 
+	assert(normal);
+	assert(focused);
+	assert(active);
+
 	res->renderData.texture = normal;
 
 	res->listeners.push_back(CreateOnMouseEnterListener(res, [res, focused] { res->renderData.texture = focused; }));
@@ -137,13 +142,14 @@ std::unique_ptr<GUIElement> CreateSlider(
 
 	GUIElement* handle = new GUIElement(
 	    (int) x + (w * 0.9) / 2,
-	    y,
+	    (int) y + (h * 0.2) / 2,
 	    (int) w * 0.1,
 	    (int) h * 0.8,
 	    GUIElement::T_COLOR);
 
 	GUIElement* active = new GUIElement(x, y, w / 2, h, GUIElement::T_COLOR);
 
+	bg->renderData.color     = bgColor;
 	handle->renderData.color = handleColor;
 	active->renderData.color = activeColor;
 
@@ -157,13 +163,13 @@ std::unique_ptr<GUIElement> CreateSlider(
 	bg->listeners.push_back(CreateOnMousePressListener(
 	    bg,
 	    [bg, handle, active, onChange] {
-		    handle->x = std::min(std::max(GetCurrMouseState().x - bg->x - handle->w / 2, 0), bg->w - handle->w);
-		    active->w = std::min(std::max(bg->x - handle->x + handle->w / 2, 0), bg->w);
+		    active->w = GetCurrMouseState().x - bg->x;
+		    handle->x = bg->x + active->w - handle->w / 2;
 		    onChange((double) active->w / bg->w);
 		}));
 
-	bg->children.emplace_back(handle);
 	bg->children.emplace_back(active);
+	bg->children.emplace_back(handle);
 
 	return std::unique_ptr<GUIElement>(bg);
 }

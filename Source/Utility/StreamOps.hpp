@@ -4,6 +4,7 @@
 #include <iostream> // For std::ostream
 #include <vector>   // For std::vector<T>
 
+#include "Core/Input.hpp"        // For SWAN::MouseState
 #include "Physics/Transform.hpp" // For SWAN::Transform
 #include "Rendering/Shader.hpp"  // For SWAN::ShaderUniform
 #include <glm/fwd.hpp>           // For glm::vec*
@@ -69,6 +70,15 @@ namespace Util {
 			}
 			os << ")";
 
+			return os;
+		}
+
+		inline ostream& operator<<(ostream& os, MouseState s) {
+			os << "MouseState (x: " << s.x
+			   << ", y: " << s.y
+			   << ", LMB: " << s.LMB
+			   << ", MMB: " << s.MMB
+			   << ", RMB: " << s.RMB << ")";
 			return os;
 		}
 
