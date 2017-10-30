@@ -120,7 +120,13 @@ void Text::render(Shader* shad) const {
 	}
 }
 
-void RenderText(int x, int y, std::string text, Shader* s, const BitmapFont* f) {
+void RenderText(
+    int x, int y,
+    std::string text,
+    Shader* s,
+    const BitmapFont* f,
+    SWAN::Color color,
+    SWAN::Color bgColor) {
 	assert(s);
 
 	assert(s->hasUniform("transform"));
@@ -131,16 +137,22 @@ void RenderText(int x, int y, std::string text, Shader* s, const BitmapFont* f) 
 	int letter = 0,
 	    line   = 0;
 
+	bool newLineVis = false;
+
 	for(int i = 0; i < text.length(); i++) {
 		char c = text[i];
 
-		if(c == ' ') {
-			letter++;
-			continue;
-		} else if(c == '\t') {
-			letter += f->tabWidth;
-			continue;
-		} else if(c == '\n') {
+		if(bgColor.alpha == 0) {
+			if(c == ' ') {
+				letter++;
+				continue;
+			} else if(c == '\t') {
+				letter += f->tabWidth;
+				continue;
+			}
+		}
+
+		if(c == '\n') {
 			line++;
 			letter = 0;
 			continue;
@@ -161,6 +173,8 @@ void RenderText(int x, int y, std::string text, Shader* s, const BitmapFont* f) 
 		std::vector<ShaderUniform> unis;
 		unis.emplace_back("transform", transform);
 		unis.emplace_back("UVtransform", f->getGlyphUVTransform(c));
+		unis.emplace_back("color", (glm::vec4) color);
+		unis.emplace_back("bgColor", (glm::vec4) bgColor);
 		unis.emplace_back("tex", f->getTexture());
 
 		s->setUniforms(unis);

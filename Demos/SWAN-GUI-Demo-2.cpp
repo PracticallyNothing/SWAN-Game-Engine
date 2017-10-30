@@ -9,6 +9,8 @@
 #include "GUI/GUIPrim.hpp"
 #include "GUI/GUIRenderer.hpp"
 
+#include "Utility/Math.hpp"
+
 using namespace std::chrono;
 using Clock = std::chrono::steady_clock;
 
@@ -44,6 +46,8 @@ int main(int argc, const char** argv) {
 	SWAN::Color sliderHandleColor{ 183, 186, 0, 255 };
 	SWAN::Color sliderActiveColor{ 221, 111, 0, 255 };
 
+	int textX = 0, textY = 0;
+
 	guiRenderer._exp_add(
 	    SWAN::CreateVerticalSlider(
 	        1000, 250,
@@ -51,12 +55,8 @@ int main(int argc, const char** argv) {
 	        sliderBGColor,
 	        sliderHandleColor,
 	        sliderActiveColor,
-	        [](double v) {
-		        SWAN::Display::SetClearColor(
-		            v,
-		            SWAN::Display::detail::green,
-		            SWAN::Display::detail::blue,
-		            1);
+	        [&textY](double v) {
+		        textY = SWAN::Util::UnNormalize(v, 0, SWAN::Display::GetHeight());
 		    }));
 
 	guiRenderer._exp_add(
@@ -113,43 +113,17 @@ int main(int argc, const char** argv) {
 		},
 	    [&running]() { running = false; }, false);
 
-	int textX = 0, textY = 0;
-
 	SWAN::EventListener renderEvent =
-	    SWAN::CreateRepeatingTimer(16ms, [&guiRenderer] {
+	    SWAN::CreateRepeatingTimer(16ms, [=, &textX, &textY, &guiRenderer] {
 		    guiRenderer._exp_update();
 		    guiRenderer._exp_render();
 
 		    SWAN::RenderText(
-		        350, 350,
-		        "int main() {\n"
-		        "    int a = 0;\n"
-		        "\n"
-		        "    if (a < 0) {\n"
-		        "        a = 10;\n"
-		        "    }\n"
-		        "\n"
-		        "    return 0;\n"
-		        "}",
-		        SWAN::Res::GetShader("Text"),
-		        SWAN::Res::GetBitmapFont("Monospace 16"));
-
-		    SWAN::RenderText(
 		        200, 200,
-		        "abcdefg hijklmn opqrtsu vwxyz\n",
+		        "!!!! \\\\\\\\ \"\"\"\"",
 		        SWAN::Res::GetShader("Text"),
-		        SWAN::Res::GetBitmapFont("Monospace 12"));
-
-		    SWAN::RenderText(
-		        10, 10,
-		        "!\"#$%&'()*+,-./01\n"
-		        "23456789:;<=>?@AB\n"
-		        "CDEFGHIJKLMNOPQRS\n"
-		        "TUVWXYZ[\\]^_`abcd\n"
-		        "efghijklmnopqrstu\n"
-		        "vwxyz{|}~",
-		        SWAN::Res::GetShader("Text"),
-		        SWAN::Res::GetBitmapFont("Monospace 12"));
+		        SWAN::Res::GetBitmapFont("Monospace 12"),
+		        sliderActiveColor, sliderBGColor);
 
 		    SWAN::Display::Clear();
 		});

@@ -65,6 +65,8 @@
 
 		<Uniform name="transform"/>
 		<Uniform name="UVtransform"/>
+		<Uniform name="color"/>
+		<Uniform name="bgColor"/>
 	</Shader>
 
 	<Shader vertex="Shaders/proper.vert" fragment="Shaders/proper.frag" name="Proper">

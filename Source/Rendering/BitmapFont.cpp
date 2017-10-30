@@ -166,6 +166,10 @@ Transform BitmapFont::getGlyphUVTransform(char c) const {
 	int glyphX = ((c - '!') % glyphsPerRow) * glyphWidth,
 	    glyphY = ((c - '!' + glyphsPerRow) / glyphsPerRow) * glyphHeight;
 
+	SWAN_DEBUG_OUT(c);
+	SWAN_DEBUG_OUT(glyphX);
+	SWAN_DEBUG_OUT(glyphY);
+
 	transform.pos.x = Util::Normalize(glyphX, 0, img->width);
 	transform.pos.y = 1.0 - Util::Normalize(glyphY, 0, img->height);
 

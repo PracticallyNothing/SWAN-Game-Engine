@@ -55,7 +55,13 @@ class Text {
 	Mesh* charMesh;
 };
 
-void RenderText(int x, int y, std::string text, Shader* s, const BitmapFont* f);
+void RenderText(
+    int x, int y,
+    std::string text,
+    Shader* s,
+    const BitmapFont* f,
+    SWAN::Color color   = SWAN::Color{ 0, 0, 0, 255 },
+    SWAN::Color bgColor = SWAN::Color{ 0, 0, 0, 0 });
 }
 
 #endif
