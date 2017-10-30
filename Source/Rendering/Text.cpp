@@ -3,6 +3,7 @@
 #include "Core/Display.hpp" // For Display::GetWidth(), Display::GetHeight()
 
 #include "Utility/Math.hpp" // For SWAN::Util::GLToPixelCoord()
+#include "Utility/StreamOps.hpp"
 
 /*
  *  v0      v1
@@ -19,10 +20,13 @@ namespace SWAN {
 static Mesh* genRect2D_ptr() {
 	Vertex v0(glm::vec3(-1, 1, 0), glm::vec2(0, 1),
 	          glm::normalize(glm::vec3(-0.5, -0.5, 0.5)));
+
 	Vertex v1(glm::vec3(1, 1, 0), glm::vec2(1, 1),
 	          glm::normalize(glm::vec3(0.5, 0.5, 0.5)));
+
 	Vertex v2(glm::vec3(-1, -1, 0), glm::vec2(0, 0),
 	          glm::normalize(glm::vec3(0.5, -0.5, 0.5)));
+
 	Vertex v3(glm::vec3(1, -1, 0), glm::vec2(1, 0),
 	          glm::normalize(glm::vec3(-0.5, 0.5, 0.5)));
 

@@ -1,14 +1,17 @@
 #include "BitmapFont.hpp"
 
+#include "External/stb_image.h"
+
 #include "Utility/Math.hpp"
 #include "Utility/StringUtil.hpp" // For SWAN::Util::GetDirectory(), SWAN::Util::IsAbsolutePath()
 
 #include <cpptoml.h> // For cpptoml::parse_file()
 #include <iostream>  // For std::cout
 
-const std::string defSuppChars = " !\"#$%&'()*+,-./"
-                                 "0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ["
-                                 "\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+const std::string defSuppChars =
+    " !\"#$%&'()*+,-./"
+    "0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ["
+    "\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 
 namespace SWAN {
 // TODO: Move to importer function
@@ -22,8 +25,7 @@ BitmapFont::BitmapFont(const std::string& confFilename)
 		          << "\" doesn't contain a \"glyph_width\" field!\n";
 		return;
 	} else if(*confGlyphWidth < 4) {
-		std::cout << "ERROR: Bitmap font config file \"" << confFilename
-		          << "\" has too small of a \"glyph_width\" field!\n";
+		std::cout << "ERROR: Bitmap font config file \"" << confFilename << "\" has too small of a \"glyph_width\" field!\n";
 		return;
 	} else {
 		glyphWidth = *confGlyphWidth;
@@ -53,12 +55,14 @@ BitmapFont::BitmapFont(const std::string& confFilename)
 	if(Util::IsRelativePath(confFilename))
 		dir = SWAN::Util::GetDirectory(confFilename);
 
+	stbi_set_flip_vertically_on_load(true);
 	img = new Image((dir + *confImageName).c_str());
 	if(!img->data) {
 		std::cout << "ERROR: Bitmap font config file \"" << confFilename
 		          << "\" has an incorrect \"image_file\" field!\n";
 		return;
 	}
+	stbi_set_flip_vertically_on_load(false);
 
 	auto confImgBold = conf->get_as<std::string>("image_bold_file");
 	if(confImgBold) {
@@ -150,6 +154,7 @@ Transform BitmapFont::getGlyphUVTransform(char c) const {
 	Transform transform;
 
 	if(c == ' ' || c == '\t' || c == '\n') {
+		transform.pos   = glm::vec3(0, 0, 0);
 		transform.scale = glm::vec3(0, 0, 0);
 		return transform;
 	}
@@ -158,10 +163,10 @@ Transform BitmapFont::getGlyphUVTransform(char c) const {
 	transform.scale.y = (float) glyphHeight / img->height;
 
 	int glyphX = ((c - '!') % glyphsPerRow) * glyphWidth,
-	    glyphY = ((c - '!') / glyphsPerRow) * glyphHeight;
+	    glyphY = ((c - '!' + glyphsPerRow) / glyphsPerRow) * glyphHeight;
 
-	transform.pos.x = Util::PixelToGLCoord(img->width, glyphX + glyphWidth / 2);
-	transform.pos.y = Util::PixelToGLCoord(img->height, img->height - (glyphY + glyphHeight / 2));
+	transform.pos.x = Util::Normalize(glyphX, 0, img->width);
+	transform.pos.y = 1.0 - Util::Normalize(glyphY, 0, img->height);
 
 	return transform;
 }

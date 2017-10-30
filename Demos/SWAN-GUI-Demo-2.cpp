@@ -26,6 +26,9 @@ int main(int argc, const char** argv) {
 	SWAN_Input_Init();
 	SWAN::Display::SetClearColor(0.1f, 0.3f, 0.3f, 0.0f);
 
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	SWAN::Res::LoadFromFile("Resources/res.xml");
 	SWAN::GUIRenderer guiRenderer;
 
@@ -37,9 +40,9 @@ int main(int argc, const char** argv) {
 	guiRenderer._exp_add(SWAN::CreateButton(10, 150, 100, 100, BUTTON_RES, [] {}));
 	guiRenderer._exp_add(SWAN::CreateButton(150, 150, 100, 100, BUTTON_RES, [] {}));
 
-	SWAN::Color sliderBGColor{ 60, 60, 60, 0 };
-	SWAN::Color sliderHandleColor{ 183, 186, 0, 0 };
-	SWAN::Color sliderActiveColor{ 221, 111, 0, 0 };
+	SWAN::Color sliderBGColor{ 60, 60, 60, 255 };
+	SWAN::Color sliderHandleColor{ 183, 186, 0, 255 };
+	SWAN::Color sliderActiveColor{ 221, 111, 0, 255 };
 
 	guiRenderer._exp_add(
 	    SWAN::CreateVerticalSlider(
@@ -110,16 +113,27 @@ int main(int argc, const char** argv) {
 		},
 	    [&running]() { running = false; }, false);
 
+	int textX = 0, textY = 0;
+
 	SWAN::EventListener renderEvent =
 	    SWAN::CreateRepeatingTimer(16ms, [&guiRenderer] {
 		    guiRenderer._exp_update();
 		    guiRenderer._exp_render();
 
 		    SWAN::RenderText(
+		        200, 200,
+		        "Hello, World!\n",
+		        SWAN::Res::GetShader("Text"),
+		        SWAN::Res::GetBitmapFont("Monospace 16"));
+
+		    SWAN::RenderText(
 		        10, 10,
-		        " !\"#$%&'()*+,-./"
-		        "\n0123456789\n:;<=>?@\nABCDEFGHIJKLMNOPQRSTUVWXYZ\n["
-		        "\\]^_`\nabcdefghijklmnopqrstuvwxyz{|}~",
+		        "!\"#$%&'()*+,-./01\n"
+		        "23456789:;<=>?@AB\n"
+		        "CDEFGHIJKLMNOPQRS\n"
+		        "TUVWXYZ[\\]^_`abcd\n"
+		        "efghijklmnopqrstu\n"
+		        "vwxyz{|}~",
 		        SWAN::Res::GetShader("Text"),
 		        SWAN::Res::GetBitmapFont("Monospace 16"));
 
