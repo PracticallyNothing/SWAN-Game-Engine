@@ -121,10 +121,24 @@ int main(int argc, const char** argv) {
 		    guiRenderer._exp_render();
 
 		    SWAN::RenderText(
-		        200, 200,
-		        "Hello, World!\n",
+		        350, 350,
+		        "int main() {\n"
+		        "    int a = 0;\n"
+		        "\n"
+		        "    if (a < 0) {\n"
+		        "        a = 10;\n"
+		        "    }\n"
+		        "\n"
+		        "    return 0;\n"
+		        "}",
 		        SWAN::Res::GetShader("Text"),
 		        SWAN::Res::GetBitmapFont("Monospace 16"));
+
+		    SWAN::RenderText(
+		        200, 200,
+		        "abcdefg hijklmn opqrtsu vwxyz\n",
+		        SWAN::Res::GetShader("Text"),
+		        SWAN::Res::GetBitmapFont("Monospace 12"));
 
 		    SWAN::RenderText(
 		        10, 10,
@@ -135,7 +149,7 @@ int main(int argc, const char** argv) {
 		        "efghijklmnopqrstu\n"
 		        "vwxyz{|}~",
 		        SWAN::Res::GetShader("Text"),
-		        SWAN::Res::GetBitmapFont("Monospace 16"));
+		        SWAN::Res::GetBitmapFont("Monospace 12"));
 
 		    SWAN::Display::Clear();
 		});

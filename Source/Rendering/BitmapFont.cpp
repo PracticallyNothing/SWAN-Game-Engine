@@ -100,6 +100,7 @@ BitmapFont::BitmapFont(const std::string& confFilename)
 	tabWidth = conf->get_as<int>("tab_width").value_or(4);
 
 	glyphsPerRow = img->width / glyphWidth;
+	SWAN_DEBUG_OUT(glyphsPerRow);
 
 	tex = new Texture(*img);
 

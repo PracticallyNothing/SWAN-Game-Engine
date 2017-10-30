@@ -139,6 +139,7 @@ void RenderText(int x, int y, std::string text, Shader* s, const BitmapFont* f) 
 			continue;
 		} else if(c == '\t') {
 			letter += f->tabWidth;
+			continue;
 		} else if(c == '\n') {
 			line++;
 			letter = 0;

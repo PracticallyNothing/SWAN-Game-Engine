@@ -26,7 +26,8 @@
 	<Texture file="Textures/tex.png" 		   name=""/>
 	<Texture file="Textures/Diffuse_Color.png" name="Monkey Head Texture"/>
 
-	<BitmapFont file="Font.toml" name="Monospace 16"/>
+	<BitmapFont file="Font.toml"  name="Monospace 16"/>
+	<BitmapFont file="Font2.toml" name="Monospace 12"/>
 
 	<Shader vertex="Shaders/Physics.vert" fragment="Shaders/Physics.frag" name="Physics">
 		<Attribute name="pos"/>
