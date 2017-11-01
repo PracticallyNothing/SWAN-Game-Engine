@@ -1,12 +1,15 @@
 #define SDL_MAIN_HANDLED
+#include "Core/Display.hpp"       // For SWAN::Display::*
+#include "Core/EventListener.hpp" // For SWAN::EventListener, SWAN::CreateTimer()
+#include "Core/Input.hpp"         // For SWAN_Input
+#include "Core/Resources.hpp"     // For SWAN::Res::Get*
 
-#include "Core/Display.hpp"
-#include "Core/EventListener.hpp"
-#include "Core/Input.hpp"
-#include "Core/Resources.hpp"
+#include "Rendering/Text.hpp" // For SWAN::RenderText()
 
-#include "GUI/GUIPrim.hpp"
-#include "GUI/GUIRenderer.hpp"
+#include "GUI/Element.hpp"  // For SWAN::GUI::Element
+#include "GUI/Renderer.hpp" // For SWAN::GUI::Renderer
+
+#include "Utility/Math.hpp"
 
 using namespace std::chrono;
 using Clock = std::chrono::steady_clock;
@@ -25,30 +28,82 @@ int main(int argc, const char** argv) {
 	SWAN_Input_Init();
 	SWAN::Display::SetClearColor(0.1f, 0.3f, 0.3f, 0.0f);
 
-	SWAN::Res::LoadFromFile("Resources/res.xml");
-	SWAN::GUIRenderer guiRenderer;
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	guiRenderer.add(new SWAN::GUIP::Button(BUTTON_RES))
-	    ->moveTo(500, 500)
-	    ->resizeTo(150, 150);
-	guiRenderer.add(new SWAN::GUIP::Button(BUTTON_RES))
-	    ->moveTo(250, 500)
-	    ->resizeTo(150, 150);
-	guiRenderer.add(new SWAN::GUIP::Button(BUTTON_RES))
-	    ->moveTo(750, 500)
-	    ->resizeTo(150, 150);
+	SWAN::Res::LoadFromFile("Resources/minires.xml");
 
-	SWAN::GUIP::Draggable* dr =
-	    (SWAN::GUIP::Draggable*) guiRenderer
-	        .add(new SWAN::GUIP::Draggable(SWAN::Res::GetTexture("Flat Cyan"),
-	                                       false, true))
-	        ->resizeTo(50, 20)
-	        ->setMinX(100)
-	        ->setMaxX(1000);
-
-	SWAN::Display::SetClearColor(0.0f, 0.3f, 0.25f, 0.0f);
+	SWAN::GUI::Renderer guiRenderer(SWAN::Res::GetShader("GUI"));
 
 	bool running = true;
+
+	guiRenderer.add(SWAN::GUI::CreateButton(10, 10, 100, 100, BUTTON_RES, [&running] { running = false; }));
+	guiRenderer.add(SWAN::GUI::CreateButton(10, 150, 100, 100, BUTTON_RES, [] {}));
+	guiRenderer.add(SWAN::GUI::CreateButton(150, 150, 100, 100, BUTTON_RES, [] {}));
+
+	SWAN::Color sliderBGColor{ 60, 60, 60, 255 };
+	SWAN::Color sliderHandleColor{ 183, 186, 0, 255 };
+	SWAN::Color sliderActiveColor{ 221, 111, 0, 255 };
+
+	int textX = 0, textY = 0;
+
+	guiRenderer.add(
+	    SWAN::GUI::CreateVerticalSlider(
+	        1000, 250,
+	        50, 300,
+	        sliderBGColor,
+	        sliderHandleColor,
+	        sliderActiveColor,
+	        [&textY](double v) {
+		        textY = SWAN::Util::UnNormalize(v, 0, SWAN::Display::GetHeight());
+		    }));
+
+	guiRenderer.add(
+	    SWAN::GUI::CreateSlider(
+	        500, 425,
+	        400, 25,
+	        sliderBGColor,
+	        sliderHandleColor,
+	        sliderActiveColor,
+	        [](double v) {
+		        SWAN::Display::SetClearColor(
+		            v,
+		            SWAN::Display::detail::green,
+		            SWAN::Display::detail::blue,
+		            1);
+		    }));
+
+	guiRenderer.add(
+	    SWAN::GUI::CreateSlider(
+	        500, 525,
+	        400, 25,
+	        sliderBGColor,
+	        sliderHandleColor,
+	        sliderActiveColor,
+	        [](double v) {
+		        SWAN::Display::SetClearColor(
+		            SWAN::Display::detail::red,
+		            v,
+		            SWAN::Display::detail::blue,
+		            1);
+		    }));
+
+	guiRenderer.add(
+	    SWAN::GUI::CreateSlider(
+	        500, 625,
+	        400, 25,
+	        sliderBGColor,
+	        sliderHandleColor,
+	        sliderActiveColor,
+	        [](double v) {
+		        SWAN::Display::SetClearColor(
+		            SWAN::Display::detail::red,
+		            SWAN::Display::detail::green,
+		            v,
+		            1);
+		    }));
+
+	SWAN::Display::SetClearColor(0.0f, 0.3f, 0.25f, 0.0f);
 
 	SWAN::EventListener exitEvent(
 	    []() -> bool {
@@ -58,9 +113,16 @@ int main(int argc, const char** argv) {
 	    [&running]() { running = false; }, false);
 
 	SWAN::EventListener renderEvent =
-	    SWAN::CreateRepeatingTimer(16ms, [&guiRenderer] {
+	    SWAN::CreateRepeatingTimer(16ms, [=, &textX, &textY, &guiRenderer] {
 		    guiRenderer.update();
 		    guiRenderer.render();
+
+		    SWAN::RenderText(
+		        200, 200,
+		        "!!!! \\\\\\\\ \"\"\"\"",
+		        SWAN::Res::GetShader("Text"),
+		        SWAN::Res::GetBitmapFont("Monospace 16"),
+		        sliderActiveColor, sliderBGColor);
 
 		    SWAN::Display::Clear();
 		});

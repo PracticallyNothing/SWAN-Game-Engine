@@ -6,8 +6,7 @@
 #include "Core/Input.hpp"     // For SWAN_Input
 #include "Core/Resources.hpp" // For SWAN::Res::LoadFromFile(), SWAN::Res::Get*()
 
-#include "GUI/GUIPrim.hpp"     // For SWAN::GUIP::*
-#include "GUI/GUIRenderer.hpp" // For SWAN::GUIRenderer
+#include "GUI/Renderer.hpp" // For SWAN::GUI::Renderer
 
 #include "Utility/Debug.hpp"      // For SWAN_DEBUG_OUT()
 #include "Utility/Math.hpp"       // For SWAN::Util::pixelToGLCoord()
@@ -95,11 +94,7 @@ class Game {
 
 		shader->setUniforms(uniforms);
 
-		guiRenderer = make_unique<SWAN::GUIRenderer>();
-		guiRenderer->add(new SWAN::GUIP::Draggable(
-		    SWAN::Res::GetTexture("Flat Red"), 100, 100));
-		guiRenderer->add(new SWAN::GUIP::Draggable(
-		    SWAN::Res::GetTexture("Flat Blue"), 100, 100));
+		guiRenderer = make_unique<SWAN::GUI::Renderer>();
 
 		plane.getTransform_ref().pos = pl1.position;
 
@@ -270,7 +265,7 @@ class Game {
 	SWAN::Shader* textShader;
 	const SWAN::BitmapFont* font;
 
-	unique_ptr<SWAN::GUIRenderer> guiRenderer;
+	unique_ptr<SWAN::GUI::Renderer> guiRenderer;
 
 	float shininess = 10.0f;
 	float time      = 0;
