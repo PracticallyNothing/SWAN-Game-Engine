@@ -24,3 +24,5 @@ compile_commands.json
 Sources/OldMain.cpp
 *.swp
 *~
+
+*-Demo
