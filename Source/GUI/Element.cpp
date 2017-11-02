@@ -1,9 +1,12 @@
 #include "Element.hpp"
 
+#include "Rendering/Text.hpp" // For SWAN::RenderText()
+
 #include "Utility/Debug.hpp" // For SWAN_DEBUG_PRINT()
 
 #include <algorithm> // For std::max(), std::min()
-#include <cassert>
+#include <cassert>   // For assert()
+#include <string>    // For std::string
 
 namespace SWAN {
 namespace GUI {
@@ -79,6 +82,70 @@ namespace GUI {
 
 		res.type        = "mouse";
 		res.description = "Activates when the LMB is released over a focused GUI element.";
+
+		return res;
+	}
+
+	EventListener CreateTooltipListener(
+	    Element* el,
+	    std::string text,
+	    const BitmapFont* f,
+	    Shader* s,
+	    Clock::duration delay) {
+
+		struct TimedListener {
+			TimedListener(Clock::duration dur, EventListener::CheckFuncT check)
+			    : dur(dur), check(check) {}
+
+			bool started = false;
+			Clock::time_point start;
+			Clock::duration dur;
+			EventListener::CheckFuncT check;
+
+			bool operator()() {
+				if(!started) {
+					if(check()) {
+						started = true;
+						start   = Clock::now();
+					}
+					return false;
+				} else {
+					if(check()) {
+						if(Clock::now() - start >= dur) {
+							return true;
+						} else {
+							return false;
+						}
+					} else {
+						started = false;
+						return false;
+					}
+				}
+			}
+		};
+
+		EventListener res(
+		    TimedListener(
+		        delay,
+		        [el]() -> bool {
+			        return GetCurrMouseState().mousesOver(el->x, el->y, el->w, el->h);
+			    }),
+		    [text, s, f] {
+			    int w = f->getTextWidth(text),
+			        h = f->getTextHeight(text);
+
+			    MouseState ms = GetCurrMouseState();
+
+			    int x = ms.x + 10,
+			        y = ms.y + 10;
+
+			    if(ms.x + w > Display::GetWidth())
+				    x -= w;
+			    if(ms.y + h > Display::GetHeight())
+				    y -= h;
+
+			    RenderText(x, y, text, s, f, Color{ 255, 255, 255, 255 }, Color{ 0, 0, 0, 255 });
+			});
 
 		return res;
 	}

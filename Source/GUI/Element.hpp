@@ -1,15 +1,16 @@
 #ifndef SWAN_GUI_ELEMENT_HPP
 #define SWAN_GUI_ELEMENT_HPP
 
-#include "../Core/EventListener.hpp" // For SWAN::EventListener
-#include "../Core/Input.hpp"         // For SWAN_Input
-#include <memory>                    // For std::unique_ptr<T>
-#include <string>                    // For std::string
-#include <vector>                    // For std::vector<T>
+#include "Core/EventListener.hpp" // For SWAN::EventListener
+#include "Core/Input.hpp"         // For SWAN_Input
+#include <memory>                 // For std::unique_ptr<T>
+#include <string>                 // For std::string
+#include <vector>                 // For std::vector<T>
 
-#include "../Rendering/Image.hpp"   // For SWAN::Color
-#include "../Rendering/Mesh.hpp"    // For SWAN::Mesh
-#include "../Rendering/Texture.hpp" // For SWAN::Texture
+#include "Rendering/BitmapFont.hpp" // For SWAN::BitmapFont
+#include "Rendering/Image.hpp"      // For SWAN::Color
+#include "Rendering/Mesh.hpp"       // For SWAN::Mesh
+#include "Rendering/Texture.hpp"    // For SWAN::Texture
 
 namespace SWAN {
 namespace GUI {
@@ -53,7 +54,6 @@ namespace GUI {
 
 			return *this;
 		}
-
 		Element& operator=(Element&& other) {
 			x          = std::move(other.x);
 			y          = std::move(other.y);
@@ -73,7 +73,6 @@ namespace GUI {
 			y = _y;
 			return *this;
 		}
-
 		Element& setXY(int _x, int _y) {
 			setX(_x);
 			setY(_y);
@@ -84,7 +83,7 @@ namespace GUI {
 			w = _w;
 			return *this;
 		}
-		Element& setH(int _w) {
+		Element& setH(int _h) {
 			h = _h;
 			return *this;
 		}
@@ -112,8 +111,47 @@ namespace GUI {
 			visible = _visible;
 			return *this;
 		}
+
+		Element& setColor(Color c) {
+			type = T_COLOR;
+
+			renderData.color = c;
+			return *this;
+		}
+		Element& setHorizGrad(Color l, Color r) {
+			type = T_HORIZGRAD;
+
+			renderData.gradient = { l, r };
+			return *this;
+		}
+		Element& setVertGrad(Color u, Color d) {
+			type = T_VERTGRAD;
+
+			renderData.gradient = { u, d };
+			return *this;
+		}
+		Element& setTexture(const Texture* t) {
+			type = T_TEXTURE;
+
+			renderData.texture = t;
+			return *this;
+		}
+
+		Element& addListener(EventListener el) {
+			listeners.push_back(el);
+			return *this;
+		}
+
 		Element& setParent(const Element* _parent) {
 			parent = _parent;
+			return *this;
+		}
+		Element& adopt(Element* el) {
+			children.emplace_back(el);
+			return *this;
+		}
+		Element& addChild(std::unique_ptr<Element> child) {
+			children.emplace_back(std::move(child));
 			return *this;
 		}
 
@@ -192,6 +230,13 @@ namespace GUI {
 	    const Texture* normal,
 	    const Texture* active,
 	    std::function<void(bool)> onChange);
+
+	extern EventListener CreateTooltipListener(
+	    Element* el,
+	    std::string text,
+	    const BitmapFont* f,
+	    Shader* s,
+	    Clock::duration delay);
 
 } // namespace GUI
 } // namespace SWAN

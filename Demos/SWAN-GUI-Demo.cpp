@@ -37,8 +37,17 @@ int main(int argc, const char** argv) {
 
 	bool running = true;
 
-	guiRenderer.add(SWAN::GUI::CreateButton(10, 10, 100, 100, BUTTON_RES, [&running] { running = false; }));
-	guiRenderer.add(SWAN::GUI::CreateButton(10, 150, 100, 100, BUTTON_RES, [] {}));
+	auto* b = guiRenderer.add(SWAN::GUI::CreateButton(10, 10, 100, 100, BUTTON_RES, [&running] { running = false; }));
+
+	b->setVisible(true)
+	    .addListener(
+	        CreateTooltipListener(
+	            b, "Exit button.\n'Nuff said. ",
+	            SWAN::Res::GetBitmapFont("Monospace 16"),
+	            SWAN::Res::GetShader("Text"),
+	            2s));
+
+	guiRenderer.add(SWAN::GUI::CreateButton(10, 150, 100, 100, BUTTON_RES, [] {}))->setVisible(false);
 	guiRenderer.add(SWAN::GUI::CreateButton(150, 150, 100, 100, BUTTON_RES, [] {}));
 
 	SWAN::Color sliderBGColor{ 60, 60, 60, 255 };
@@ -46,17 +55,6 @@ int main(int argc, const char** argv) {
 	SWAN::Color sliderActiveColor{ 221, 111, 0, 255 };
 
 	int textX = 0, textY = 0;
-
-	guiRenderer.add(
-	    SWAN::GUI::CreateVerticalSlider(
-	        1000, 250,
-	        50, 300,
-	        sliderBGColor,
-	        sliderHandleColor,
-	        sliderActiveColor,
-	        [&textY](double v) {
-		        textY = SWAN::Util::UnNormalize(v, 0, SWAN::Display::GetHeight());
-		    }));
 
 	guiRenderer.add(
 	    SWAN::GUI::CreateSlider(

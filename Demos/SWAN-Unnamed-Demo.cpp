@@ -179,13 +179,6 @@ class Game {
 
 		PrevInput = SWAN_Input;
 
-		SWAN::TextConfig tc;
-		// tc.bold = true;
-		tc.italics = true;
-		tc.text    = std::string("time: ") + std::to_string(time) + "\n ";
-		tc.font    = font;
-		txt.set(tc, false);
-
 		guiRenderer->update();
 	}
 
@@ -229,18 +222,7 @@ class Game {
 		             cam.get(),
 		             col.happened);
 
-		/*
-		           TextConfig tc;
-		           tc.text = std::string("shotgun center: (") +
-		   std::to_string(SMSC.x) + ", " + std::to_string(SMSC.y) + ", " +
-		   std::to_string(SMSC.z) + ")";
-		           tc.font = font;
-		           tc.color = glm::vec3(0.3, 0.0, 0.7);
-		           txt.set(tc, true);
-		           */
-
 		glClear(GL_DEPTH_BUFFER_BIT);
-		// txt.render(textShader);
 		guiRenderer->render();
 
 		glClear(GL_DEPTH_BUFFER_BIT);
@@ -261,7 +243,6 @@ class Game {
 	const SWAN::Texture* tex;
 	unique_ptr<SWAN::Camera> cam;
 
-	SWAN::Text txt;
 	SWAN::Shader* textShader;
 	const SWAN::BitmapFont* font;
 

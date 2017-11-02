@@ -1,10 +1,11 @@
 #include "BitmapFont.hpp"
 
-#include "External/stb_image.h"
+#include "External/stb_image.h" // For stbi_set_flip_vertically_on_load()
 
-#include "Utility/Math.hpp"
+#include "Utility/Math.hpp"       // For SWAN::Util::Normalize()
 #include "Utility/StringUtil.hpp" // For SWAN::Util::GetDirectory(), SWAN::Util::IsAbsolutePath()
 
+#include <algorithm> // For std::max_element(), std::count()
 #include <cpptoml.h> // For cpptoml::parse_file()
 #include <iostream>  // For std::cout
 
@@ -176,5 +177,13 @@ BitmapFont::~BitmapFont() {
 	SWAN_DEBUG_DO(delete dbg_tex);
 	delete img;
 	delete tex;
+}
+
+int BitmapFont::getTextWidth(std::string text) const {
+	auto v = Util::SplitOn(text, '\n');
+	return glyphWidth * (*std::max_element(v.begin(), v.end(), [](std::string a, std::string b) { return a.length() < b.length(); })).length();
+}
+int BitmapFont::getTextHeight(std::string text) const {
+	return glyphHeight * std::count(text.begin(), text.end(), '\n');
 }
 } // namespace SWAN

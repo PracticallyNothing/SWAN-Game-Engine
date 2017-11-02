@@ -49,6 +49,9 @@ class BitmapFont {
 	int getGlyphWidth(char c = ' ') const;
 	int getGlyphHeight() const { return glyphHeight; }
 
+	int getTextWidth(std::string text) const;
+	int getTextHeight(std::string text) const;
+
 	bool isSupported(char c) const {
 		return supportedChars.find(c) != std::string::npos;
 	}

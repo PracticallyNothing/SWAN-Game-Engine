@@ -56,6 +56,9 @@ inline EventListener CreateTimer(typename Clock::duration time,
 
 	return res;
 }
+// FIXME: Not even remotely proper implementation
+//        This just waits for the duration and then non-stop
+//        calls the action.
 inline EventListener CreateRepeatingTimer(typename Clock::duration time,
                                           EventListener::ActionFuncT action) {
 	return CreateTimer(time, action, false);

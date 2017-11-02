@@ -37,7 +37,7 @@ namespace GUI {
 	Element* Renderer::add(std::unique_ptr<Element> e) {
 		//sortedByLayer = false;
 		elems.emplace_back(std::move(e));
-		return e.get();
+		elems.back().get();
 	}
 
 	void Renderer::renderElement(const Element* el) {
@@ -94,7 +94,8 @@ namespace GUI {
 	}
 	void Renderer::update() {
 		for(auto& e : elems) {
-			e->update();
+			if(e->isVisible())
+				e->update();
 		}
 	}
 } // namespace GUI
