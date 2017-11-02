@@ -65,12 +65,65 @@ namespace GUI {
 			return *this;
 		}
 
+		Element& setX(int _x) {
+			x = _x;
+			return *this;
+		}
+		Element& setY(int _y) {
+			y = _y;
+			return *this;
+		}
+
+		Element& setXY(int _x, int _y) {
+			setX(_x);
+			setY(_y);
+			return *this;
+		}
+
+		Element& setW(int _w) {
+			w = _w;
+			return *this;
+		}
+		Element& setH(int _w) {
+			h = _h;
+			return *this;
+		}
+		Element& setWH(int _w, int _h) {
+			setW(_w);
+			setH(_h);
+			return *this;
+		}
+
+		Element& setLayer(int _layer) {
+			layer = _layer;
+			return *this;
+		}
+		Element& setSublayer(int _sublayer) {
+			sublayer = _sublayer;
+			return *this;
+		}
+		Element& setLayerSublayer(int _layer, int _sublayer) {
+			setLayer(_layer);
+			setSublayer(_sublayer);
+			return *this;
+		}
+
+		Element& setVisible(bool _visible) {
+			visible = _visible;
+			return *this;
+		}
+		Element& setParent(const Element* _parent) {
+			parent = _parent;
+			return *this;
+		}
+
 		int x, y, w, h;
 		int layer = 0, sublayer = 0;
+		bool visible = true;
 
 		std::vector<EventListener> listeners;
 
-		Element* parent = nullptr;
+		const Element* parent = nullptr;
 		std::vector<std::unique_ptr<Element>> children;
 
 		bool hasChildren() const { return !children.empty(); }
@@ -84,6 +137,13 @@ namespace GUI {
 				return parent->isFocused();
 			else
 				return false;
+		}
+
+		bool isVisible() const {
+			if(parent)
+				return parent->isVisible();
+			else
+				return visible;
 		}
 
 		void update() {

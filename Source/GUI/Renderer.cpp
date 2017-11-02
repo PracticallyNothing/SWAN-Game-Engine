@@ -41,6 +41,9 @@ namespace GUI {
 	}
 
 	void Renderer::renderElement(const Element* el) {
+		if(!el->isVisible())
+			return;
+
 		if(el->x > Display::GetWidth() || el->y > Display::GetHeight() ||
 		   el->x + el->w < 0 || el->y + el->h < 0)
 			return;
@@ -51,10 +54,8 @@ namespace GUI {
 		transform.scale.x = (float) el->w / Display::GetWidth();
 		transform.scale.y = (float) el->h / Display::GetHeight();
 
-		transform.pos.x =
-		    SWAN::Util::PixelToGLCoord(Display::GetWidth(), el->x + el->w / 2);
-		transform.pos.y = SWAN::Util::PixelToGLCoord(
-		    Display::GetHeight(), Display::GetHeight() - (el->y + el->h / 2));
+		transform.pos.x = SWAN::Util::PixelToGLCoord(Display::GetWidth(), el->x + el->w / 2);
+		transform.pos.y = SWAN::Util::PixelToGLCoord(Display::GetHeight(), Display::GetHeight() - (el->y + el->h / 2));
 
 		unis.emplace_back("type", el->type);
 		unis.emplace_back("transform", transform);
