@@ -37,16 +37,7 @@ int main(int argc, const char** argv) {
 
 	bool running = true;
 
-	auto* b = guiRenderer.add(SWAN::GUI::CreateButton(10, 10, 100, 100, BUTTON_RES, [&running] { running = false; }));
-
-	b->setVisible(true)
-	    .addListener(
-	        CreateTooltipListener(
-	            b, "Exit button.\n'Nuff said. ",
-	            SWAN::Res::GetBitmapFont("Monospace 16"),
-	            SWAN::Res::GetShader("Text"),
-	            2s));
-
+	guiRenderer.add(SWAN::GUI::CreateButton(10, 10, 100, 100, BUTTON_RES, [&running] { running = false; }));
 	guiRenderer.add(SWAN::GUI::CreateButton(10, 150, 100, 100, BUTTON_RES, [] {}))->setVisible(false);
 	guiRenderer.add(SWAN::GUI::CreateButton(150, 150, 100, 100, BUTTON_RES, [] {}));
 
@@ -116,7 +107,7 @@ int main(int argc, const char** argv) {
 		    guiRenderer.render();
 
 		    SWAN::RenderText(
-		        200, 200,
+		        0, 0,
 		        "!!!! \\\\\\\\ \"\"\"\"",
 		        SWAN::Res::GetShader("Text"),
 		        SWAN::Res::GetBitmapFont("Monospace 16"),

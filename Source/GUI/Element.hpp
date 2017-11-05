@@ -1,6 +1,5 @@
 #ifndef SWAN_GUI_ELEMENT_HPP
 #define SWAN_GUI_ELEMENT_HPP
-
 #include "Core/EventListener.hpp" // For SWAN::EventListener
 #include "Core/Input.hpp"         // For SWAN_Input
 #include <memory>                 // For std::unique_ptr<T>
@@ -230,14 +229,6 @@ namespace GUI {
 	    const Texture* normal,
 	    const Texture* active,
 	    std::function<void(bool)> onChange);
-
-	extern EventListener CreateTooltipListener(
-	    Element* el,
-	    std::string text,
-	    const BitmapFont* f,
-	    Shader* s,
-	    Clock::duration delay);
-
 } // namespace GUI
 } // namespace SWAN
 
