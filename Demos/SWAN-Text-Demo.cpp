@@ -38,7 +38,7 @@ int main(int argc, const char** argv) {
 	    SWAN::CreateRepeatingTimer(16ms, [=] {
 		    SWAN::RenderText(
 		        0, 0,
-		        text,
+		        "Hello, memes!",
 		        SWAN::Res::GetShader("Text"),
 		        SWAN::Res::GetBitmapFont("Terminus 10"),
 		        SWAN::Color{ 255, 255, 255, 255 },
