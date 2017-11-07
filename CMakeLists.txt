@@ -100,6 +100,7 @@ set(Sources
 	# Utility code (parsers, maths, debugging, etc.)
 	Source/Utility/XML.cpp
 	Source/Utility/StringUtil.cpp
+	Source/Utility/Octree.cpp
 
 	# Rendering code
 	Source/Rendering/Texture.cpp

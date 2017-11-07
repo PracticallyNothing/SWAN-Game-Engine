@@ -21,15 +21,15 @@ Rendering:
 		-> [x] Point light
 		-> [x] Spotlight
 		-> [x] Directional light (Sun)
-		-> [ ] Shadows
-	-> [?] Text
+		-> [ ] Shadows/Shadowmapping
+	-> [x] Text
 		-> [x] Bitmap font
 		-> [ ] Vector font (extra)
 	-> [?] GUI
 		-> [x] Image
 		-> [ ] TextBox
 		-> [x] Button
-		-> [x] Draggable
+		-> [x] Slider
 	-> [ ] Lightmapping (Possibly using https://github.com/ands/lightmapper)
 	-> [ ] COLLADA support (Using the XML parser)
 

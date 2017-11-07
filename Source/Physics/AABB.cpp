@@ -2,12 +2,8 @@
 
 #include <algorithm> // For std::max(), std::min()
 
-#include "Core/Resources.hpp"    // For SWAN::Res::GetMesh(), SWAN::Res::GetShader()
-#include "Rendering/Mesh.hpp"    // For Mesh
-#include "Utility/Debug.hpp"     // For SWAN_DEBUG_OUT()
-#include "Utility/StreamOps.hpp" // For SWAN::Util::StreamOps::*
-
-using namespace SWAN::Util::StreamOps;
+#include "Core/Resources.hpp" // For SWAN::Res::GetMesh(), SWAN::Res::GetShader()
+#include "Rendering/Mesh.hpp" // For Mesh
 
 using glm::length;
 
@@ -31,6 +27,15 @@ void MakeMinMax(vec3& a, vec3& b) {
 }
 
 namespace SWAN {
+bool PointIsInsideAABB(AABB box, glm::vec3 point) {
+	return box.min.x >= point.x &&
+	       box.min.y >= point.y &&
+	       box.min.z >= point.z &&
+	       box.max.x <= point.x &&
+	       box.max.y <= point.y &&
+	       box.max.z <= point.z;
+}
+
 AABB ApplyTransform(AABB box, Transform t) {
 	box.min = vec3(vec4(box.min, 1) * t.getRotMat());
 	box.max = vec3(vec4(box.max, 1) * t.getRotMat());

@@ -12,6 +12,7 @@ test*
 *.rar
 *out
 *log*
+*.gch
 
 OpenGL*
 SWAN_*

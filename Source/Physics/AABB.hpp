@@ -16,6 +16,8 @@ struct LineSegment {
 	glm::vec3 start, end;
 };
 
+bool PointIsInsideAABB(AABB, glm::vec3);
+
 /// Returns an AABB adjusted to fit the transform
 AABB ApplyTransform(AABB box, Transform t);
 
