@@ -27,16 +27,15 @@ struct Octree {
 	struct Node {
 		Node* parent   = nullptr;
 		Node* children = nullptr;
-
-		~Node();
 		AABB box;
 
 		struct Object {
 			const T* data;
 			double x, y, z;
 		};
-
 		std::vector<Object> objects;
+
+		~Node();
 
 		bool isRoot() { return !parent; }
 		bool hasChildren() { return children; }

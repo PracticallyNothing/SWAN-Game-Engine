@@ -75,7 +75,7 @@ void Octree<T, Threshold>::Node::split() {
 	       centerZ = minZ + (maxZ - minZ) / 2;
 
 	// --------- Top Front ----------------------------
-	children[Octree::S_TopLeftFront - 1].box= {
+	children[Octree::S_TopLeftFront - 1].box = {
 		glm::vec3(minX, centerY, minZ),
 		glm::vec3(centerX, maxY, centerZ)
 	};
@@ -132,7 +132,7 @@ void Octree<T, Threshold>::Node::add(Object o) {
 
 	ObjectSector s = GetObjectSector(o.x, o.y, o.z);
 
-	if(s == S_Main)
+	if(!s)
 		objects.push_back(o);
 	else
 		children[s - 1].add(o);
