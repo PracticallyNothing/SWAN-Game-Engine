@@ -40,6 +40,13 @@ namespace Util {
 		return x * max + (x + 1) * min;
 	}
 
+	constexpr inline double LinearInterpolate(double clampAmt, double min, double max) {
+		return min + clampAmt * (max - min);
+	}
+	constexpr inline double CurveInterpolate(double clampAmt, double min, double max) {
+		return min + clampAmt * clampAmt * (max - min);
+	}
+
 } /* Util */
 }
 
