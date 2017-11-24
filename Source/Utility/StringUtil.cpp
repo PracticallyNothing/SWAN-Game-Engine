@@ -1,5 +1,7 @@
 #include "StringUtil.hpp"
 
+#include <sstream> // For std::stringstream
+
 #include "Utility/Collect.hpp" // For SWAN::Util::CollectIter()
 
 namespace SWAN {
@@ -27,23 +29,24 @@ namespace Util {
 	// 17/1/3
 	// 17//3
 
-	vector<string> SplitOn(const string& str, char c) {
+	vector<string> SplitOn(const string& str, char delim) {
 		vector<string> res;
+		res.reserve(str.length() / 4);
+
+		std::stringstream ss;
 		int prevI = 0;
-		for(int i = 0; prevI + i < str.length(); i++) {
-			if(c == str[prevI + i]) {
-				if(i == 0) {
-					res.push_back("");
-					prevI++;
-				} else {
-					res.push_back(str.substr(prevI, i));
-				}
-				prevI += i + 1;
-				i = -1;
+
+		for(int i = 0; prevI + i <= str.length(); i++) {
+			char c = str[i + prevI];
+			if(c == delim || (prevI + i == str.length() && ss.str().length())) {
+				res.push_back(ss.str());
+				ss.str("");
+				prevI += i;
+				i = 0;
+			} else {
+				ss << c;
 			}
 		}
-
-		res.push_back(str.substr(prevI));
 
 		return res;
 	}

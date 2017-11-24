@@ -11,6 +11,7 @@
 #include "Utility/Collect.hpp" // For SWAN::Util::CollectIterIf()
 #include "Utility/Debug.hpp"   // For SWAN_DEBUG_OUT()
 #include "Utility/Profile.hpp" // For UTIL_PROFILE()
+#include "Utility/StreamOps.hpp"
 #include "Utility/StringUtil.hpp"
 
 #include <cctype> // For std::isspace()
@@ -30,6 +31,8 @@ using std::stringstream;
 using std::stof;
 using std::unique_ptr;
 using std::make_unique;
+
+using namespace SWAN::Util::StreamOps;
 
 struct XVertex {
 	XVertex(glm::vec3 pos = glm::vec3(), glm::vec2 UV = glm::vec2(),
@@ -96,7 +99,6 @@ Model importOBJ(string filename) {
 
 	while(std::getline(file, line)) {
 		// std::getline(file, line);
-
 		if(line[0] == '#' || line.length() < 2) {
 			// Skip the line, it's either a comment or an empty line.
 			continue;

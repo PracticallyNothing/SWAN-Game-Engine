@@ -60,7 +60,7 @@ class Game {
 
 		tex         = SWAN::Res::GetTexture("Monkey Head Texture");
 		planeMesh   = SWAN::Res::GetMesh("Plane");
-		shotgunMesh = SWAN::Res::GetMesh("SPAS 12");
+		shotgunMesh = SWAN::Res::GetMesh("Room");
 		torusMesh   = SWAN::Res::GetMesh("Torus");
 		font        = SWAN::Res::GetBitmapFont("Monospace 16");
 

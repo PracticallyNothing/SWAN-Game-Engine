@@ -5,9 +5,9 @@ project("SWAN")
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMakeModules/")
 
 if(UNIX)
-	set(CMAKE_C_COMPILER "clang")
-	set(CMAKE_CXX_COMPILER "clang++")
-	list(APPEND CMAKE_CXX_FLAGS "-fsanitize=undefined")
+	# set(CMAKE_C_COMPILER "clang")
+	# set(CMAKE_CXX_COMPILER "clang++")
+	# list(APPEND CMAKE_CXX_FLAGS "-fsanitize=undefined")
 endif()
 
 if(WIN32)
@@ -29,7 +29,7 @@ set(VERSION_PATCH 0)
 set(VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
 if(NOT CMAKE_BUILD_TYPE)
-	set(CMAKE_BUILD_TYPE SWAN_DEBUG)
+	set(CMAKE_BUILD_TYPE DEBUG)
 endif()
 
 set(CMAKE_CXX_STANDARD 14)
