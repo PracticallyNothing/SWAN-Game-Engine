@@ -1,12 +1,13 @@
 <Resources>
-	<Mesh file="Meshes/Cube.obj"        name="1x1 Cube"     col="None"/>
-	<Mesh file="Meshes/1x1_Sphere.obj"  name="1x1 Sphere"   col="None"/>
-	<Mesh file="Meshes/IcoSphere.obj"   name="Sphere"       />
-	<Mesh file="Meshes/Monkey.obj"      name="Monkey Head"  />
-	<Mesh file="Meshes/SPAS-12.obj"     name="SPAS 12"      />
-	<Mesh file="Meshes/SimplePlane.obj" name="Plane"        />
-	<Mesh file="Meshes/Torus.obj"       name="Torus"        />
-	<Mesh file="Meshes/airboat.obj"     name="Airboat"      />
+	<Mesh file="Meshes/strange-room.obj" name="Room"/>
+	<Mesh file="Meshes/Cube.obj"         name="1x1 Cube"     col="None"/>
+	<Mesh file="Meshes/1x1_Sphere.obj"   name="1x1 Sphere"   col="None"/>
+	<Mesh file="Meshes/IcoSphere.obj"    name="Sphere"       />
+	<Mesh file="Meshes/Monkey.obj"       name="Monkey Head"  />
+	<Mesh file="Meshes/SPAS-12.obj"      name="SPAS 12"      />
+	<Mesh file="Meshes/SimplePlane.obj"  name="Plane"        />
+	<Mesh file="Meshes/Torus.obj"        name="Torus"        />
+	<Mesh file="Meshes/airboat.obj"      name="Airboat"      />
 
 	<Texture file="Textures/GUI/ButtonNormal.png" name="Normal Button"/>
 	<Texture file="Textures/GUI/ButtonHover.png"  name="Hovered Button"/>

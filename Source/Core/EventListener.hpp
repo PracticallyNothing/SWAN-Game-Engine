@@ -25,14 +25,8 @@ class EventListener {
 	inline void operator()() {
 		update();
 	}
-	void setCheckFunc(CheckFuncT cf) { check = cf; }
-	void setActionFunc(ActionFuncT af) { action = af; }
 
-	void setRunOnce(bool ro) { runOnce = ro; }
-
-	bool runsOnce() { return runOnce; }
 	bool expired() { return runOnce && alreadyRan; }
-	bool active() { return check(); }
 
 	std::string description = "an event listener", type = "generic";
 

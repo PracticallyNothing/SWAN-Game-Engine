@@ -4,9 +4,17 @@ project("SWAN")
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMakeModules/")
 
+if(UNIX)
+	set(CMAKE_C_COMPILER "clang")
+	set(CMAKE_CXX_COMPILER "clang++")
+	list(APPEND CMAKE_CXX_FLAGS "-fsanitize=undefined")
+endif()
+
 if(WIN32)
 	list(APPEND CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/Dependencies/")
 endif()
+
+list(APPEND CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/Dependencies/")
 
 message("CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
 
@@ -51,12 +59,7 @@ include_directories("${PROJECT_SOURCE_DIR}/Dependencies/include/")
 
 if(WIN32)
 	link_directories("${PROJECT_SOURCE_DIR}/Dependencies/lib/")
-
 	set(SDL2_PATH "${PROJECT_SOURCE_DIR}/Dependencies/SDL2-2.0.5/lib/x64")
-endif()
-
-if(LINUX)
-	add_compile_options("-ftest-coverage")
 endif()
 
 find_package(OpenGL REQUIRED)

@@ -12,6 +12,7 @@ namespace Util {
 				return true;
 			begin++;
 		}
+		return false;
 	}
 }
 }

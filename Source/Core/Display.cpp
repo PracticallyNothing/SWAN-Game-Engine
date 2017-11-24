@@ -53,14 +53,6 @@ namespace Display {
 		detail::glContext = SDL_GL_CreateContext(detail::window);
 		SDL_assert(gladLoadGL());
 
-		/*
-	  glewExperimental = true;
-	  auto i = glewInit();
-	  DEBUG_OUT(i);
-	  SDL_assert(i == GLEW_OK);
-	  glGetError();
-	  */
-
 		detail::initialized = true;
 
 		detail::width  = width;
