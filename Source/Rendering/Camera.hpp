@@ -26,12 +26,6 @@ class Camera {
 	inline glm::vec3 getForw() const { return transform.getForw(); }
 	inline glm::vec3 getUp() const { return transform.getUp(); }
 
-	inline Transform getTransform() const { return transform; }
-	inline Transform& getTransform_ref() { return transform; }
-
-	inline glm::vec3 getPos() const { return transform.pos; }
-	inline glm::vec3 getRot() const { return transform.rot; }
-
 	inline glm::mat4 getView() const {
 		return glm::lookAt(transform.pos, transform.pos + transform.getForw(),
 		                   transform.getUp());
@@ -61,9 +55,9 @@ class Camera {
 	}
 
 	float aspect, fov, zNear, zFar;
+	Transform transform;
 
   private:
-	Transform transform;
 	glm::mat4 perspective;
 	bool ortho = false;
 };

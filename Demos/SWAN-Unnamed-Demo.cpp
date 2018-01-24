@@ -84,12 +84,20 @@ class Game {
 		pl1.linearAtt    = 0.045;
 		pl1.quadraticAtt = 0.0075;
 
+		pl2.position     = glm::vec3(0, 0, 0);
+		pl2.ambient      = glm::vec3(0.5, 0.5, 0.5);
+		pl2.diffuse      = glm::vec3(1, 1, 1);
+		pl2.specular     = glm::vec3(1, 1, 1);
+		pl2.linearAtt    = 0.09;
+		pl2.quadraticAtt = 0.075;
+
 		std::vector<SWAN::ShaderUniform> uniforms = {
 			{ "matSpecular", glm::vec3(0.5, 0.5, 0.5) },
 			{ "matShininess", 2.0f },
 			{ "lights[0]", dl0 },
 			{ "lights[1]", pl1 },
-			{ "activeLights", 2 },
+			{ "lights[2]", pl2 },
+			{ "activeLights", 3 },
 		};
 
 		shader->setUniforms(uniforms);
@@ -177,34 +185,47 @@ class Game {
 
 		time += 0.01f;
 
+		const float shininessD = 0.5;
+		if(SWAN_Input.Keyboard.letterKeys['p' - 'a']) {
+			shininess += shininessD;
+		} else if(SWAN_Input.Keyboard.letterKeys['o' - 'a']) {
+			shininess -= shininessD;
+		}
+
+		if(shininess < 0)
+			shininess = 0;
+
 		PrevInput = SWAN_Input;
+
+		pl2.position = cam->transform.pos;
 
 		guiRenderer->update();
 	}
 
 	void render() {
+		std::vector<SWAN::ShaderUniform> unis = {
+			{ "camPos", cam->transform.pos },
+			{ "view", cam->getView() },
+			{ "perspective", cam->getPerspective() },
+			{ "matShininess", shininess },
+			{ "lights[2]", pl2 },
+		};
+		shader->setUniforms(unis);
+
+		/*
 		shader->setUniform({ "matShininess", shininess });
+		shader->setUniformData("camPos", cam->getPos());
+		shader->setUniformData("view", cam->getView());
+		shader->setUniformData("perspective", cam->getPerspective());
+		*/
 
-		shader->use();
-		{
-			const float shininessD = 0.5;
-			if(SWAN_Input.Keyboard.letterKeys['p' - 'a']) {
-				shininess += shininessD;
-			} else if(SWAN_Input.Keyboard.letterKeys['o' - 'a']) {
-				shininess -= shininessD;
-			}
+		shotgun.getTexture()->bind();
 
-			if(shininess < 0)
-				shininess = 0;
+		shader->setUniform({ "transform", shotgun.getTransform() });
+		shader->renderMesh(*shotgun.getMesh());
 
-			shader->setUniformData("camPos", cam->getPos());
-			shader->setUniformData("view", cam->getView());
-			shader->setUniformData("perspective", cam->getPerspective());
-
-			shotgun.render(shader);
-			plane.render(shader);
-		}
-		shader->unuse();
+		shader->setUniform({ "transform", plane.getTransform() });
+		shader->renderMesh(*plane.getMesh());
 
 		auto col = SWAN::CheckCollision(
 		    SWAN::ApplyTransform(shotgunMesh->getColWrapper().aabb,
@@ -235,6 +256,8 @@ class Game {
 	bool run;
 
 	_input PrevInput;
+
+	SWAN::PointLight pl2;
 
 	SWAN::Shader* shader;
 	SWAN::Entity plane, shotgun, xTorus, yTorus, zTorus;

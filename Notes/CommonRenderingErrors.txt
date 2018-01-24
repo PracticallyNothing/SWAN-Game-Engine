@@ -1,0 +1,35 @@
++---------------------------------------------------------------------------------------+
+| If you are trying to render something onto the screen,                                |
+| but aren't seeing anything show up, or are seeing errors,                             |
+| this list of common programming mistakes (mostly made by me) may be able to help you. |
++---------------------------------------------------------------------------------------+
+
+==========================================================================================
+- No Transform has been set
+	- How it looks:
+		Seemingly no mesh has been rendered at all.
+
+	- Explanation:
+		Due to the fact that not all shaders set default values for their uniforms,
+		and due to the fact that OpenGL will set zero out variables as a default,
+		your mesh might be transformed into a single point - (0, 0, 0).
+
+	- Solution:
+		Simple - set a transform inside your shader.
+		Use a call to SWAN::Shader::setUniform(SWAN::ShaderUniform(std::string, SWAN::Transform))
+		to set your transform.
+==========================================================================================
+- No texture has been set
+	- How it looks:
+		A mesh with a purely black texture has been rendered.
+
+	- Explanation:
+		This is pretty simple to understand.
+		OpenGL zeroes out variables if no default is specified.
+		If you don't pass it a texture, but it needs one, it will just sample from black.
+
+	- Solution:
+		Simple problem, simple solution - bind a texture.
+		Use a call to SWAN::Texture::bind() to bind a texture.
+==========================================================================================
+==========================================================================================

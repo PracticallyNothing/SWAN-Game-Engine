@@ -137,5 +137,8 @@ target_link_libraries(SWAN-GUI-Demo SWAN)
 add_executable(SWAN-Text-Demo Demos/SWAN-Text-Demo.cpp)
 target_link_libraries(SWAN-Text-Demo SWAN)
 
+add_executable(SWAN-FPS-Demo Demos/FPS/Main.cpp)
+target_link_libraries(SWAN-FPS-Demo SWAN)
+
 install(FILES ${Headers} DESTINATION include)
 install(TARGETS SWAN ARCHIVE DESTINATION lib)
