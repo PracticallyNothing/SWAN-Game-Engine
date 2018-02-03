@@ -1,3 +1,5 @@
+#define SDL_main_h_ // SDL_Main might be very useful, but I find it to be pesky.
+
 #include "Core/Display.hpp"       // For SWAN::Display
 #include "Core/EventListener.hpp" // For SWAN::EventListener
 #include "Core/Input.hpp"         // For SWAN_Input
