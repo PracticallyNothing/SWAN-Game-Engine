@@ -78,80 +78,36 @@ namespace Util {
 	};
 
 	constexpr Radians::Radians(Degrees deg) : v((double) deg * M_PI / 180.0) {}
-	constexpr Radians::operator Degrees() const {
-		return Degrees(v * 180 / M_PI);
-	}
-	constexpr Radians Radians::FromDegrees(double deg) {
-		return Radians(Degrees(deg));
-	}
+	constexpr Radians::operator Degrees() const { return Degrees(v * 180 / M_PI); }
+	constexpr Radians Radians::FromDegrees(double deg) { return Radians(Degrees(deg)); }
 
 	inline constexpr Radians operator+(Radians lhs) { return lhs; }
 	inline Radians operator-(Radians lhs) { return Radians(-(double) lhs); }
-	inline Radians operator+(Radians lhs, Radians rhs) {
-		return Radians((double) lhs + (double) rhs);
-	}
-	inline Radians operator-(Radians lhs, Radians rhs) {
-		return Radians((double) lhs - (double) rhs);
-	}
-	inline Radians operator*(Radians lhs, double rhs) {
-		return Radians((double) lhs * rhs);
-	}
-	inline Radians operator/(Radians lhs, double rhs) {
-		return Radians((double) lhs / rhs);
-	}
+	inline Radians operator+(Radians lhs, Radians rhs) { return Radians((double) lhs + (double) rhs); }
+	inline Radians operator-(Radians lhs, Radians rhs) { return Radians((double) lhs - (double) rhs); }
+	inline Radians operator*(Radians lhs, double rhs) { return Radians((double) lhs * rhs); }
+	inline Radians operator/(Radians lhs, double rhs) { return Radians((double) lhs / rhs); }
 
-	inline bool operator==(Radians lhs, Radians rhs) {
-		return (double) lhs == (double) rhs;
-	}
-	inline bool operator!=(Radians lhs, Radians rhs) {
-		return (double) lhs != (double) rhs;
-	}
-	inline bool operator>=(Radians lhs, Radians rhs) {
-		return (double) lhs >= (double) rhs;
-	}
-	inline bool operator<=(Radians lhs, Radians rhs) {
-		return (double) lhs <= (double) rhs;
-	}
-	inline bool operator<(Radians lhs, Radians rhs) {
-		return (double) lhs < (double) rhs;
-	}
-	inline bool operator>(Radians lhs, Radians rhs) {
-		return (double) lhs > (double) rhs;
-	}
+	inline bool operator==(Radians lhs, Radians rhs) { return (double) lhs == (double) rhs; }
+	inline bool operator!=(Radians lhs, Radians rhs) { return (double) lhs != (double) rhs; }
+	inline bool operator>=(Radians lhs, Radians rhs) { return (double) lhs >= (double) rhs; }
+	inline bool operator<=(Radians lhs, Radians rhs) { return (double) lhs <= (double) rhs; }
+	inline bool operator<(Radians lhs, Radians rhs) { return (double) lhs < (double) rhs; }
+	inline bool operator>(Radians lhs, Radians rhs) { return (double) lhs > (double) rhs; }
 
 	inline constexpr Degrees operator+(Degrees lhs) { return lhs; }
 	inline Degrees operator-(Degrees lhs) { return Degrees(-(double) lhs); }
-	inline Degrees operator+(Degrees lhs, Degrees rhs) {
-		return Degrees((double) lhs + (double) rhs);
-	}
-	inline Degrees operator-(Degrees lhs, Degrees rhs) {
-		return Degrees((double) lhs - (double) rhs);
-	}
-	inline Degrees operator*(Degrees lhs, double rhs) {
-		return Degrees((double) lhs * rhs);
-	}
-	inline Degrees operator/(Degrees lhs, double rhs) {
-		return Degrees((double) lhs / rhs);
-	}
+	inline Degrees operator+(Degrees lhs, Degrees rhs) { return Degrees((double) lhs + (double) rhs); }
+	inline Degrees operator-(Degrees lhs, Degrees rhs) { return Degrees((double) lhs - (double) rhs); }
+	inline Degrees operator*(Degrees lhs, double rhs) { return Degrees((double) lhs * rhs); }
+	inline Degrees operator/(Degrees lhs, double rhs) { return Degrees((double) lhs / rhs); }
 
-	inline bool operator==(Degrees lhs, Degrees rhs) {
-		return (double) lhs == (double) rhs;
-	}
-	inline bool operator!=(Degrees lhs, Degrees rhs) {
-		return (double) lhs != (double) rhs;
-	}
-	inline bool operator>=(Degrees lhs, Degrees rhs) {
-		return (double) lhs >= (double) rhs;
-	}
-	inline bool operator<=(Degrees lhs, Degrees rhs) {
-		return (double) lhs <= (double) rhs;
-	}
-	inline bool operator<(Degrees lhs, Degrees rhs) {
-		return (double) lhs < (double) rhs;
-	}
-	inline bool operator>(Degrees lhs, Degrees rhs) {
-		return (double) lhs > (double) rhs;
-	}
+	inline bool operator==(Degrees lhs, Degrees rhs) { return (double) lhs == (double) rhs; }
+	inline bool operator!=(Degrees lhs, Degrees rhs) { return (double) lhs != (double) rhs; }
+	inline bool operator>=(Degrees lhs, Degrees rhs) { return (double) lhs >= (double) rhs; }
+	inline bool operator<=(Degrees lhs, Degrees rhs) { return (double) lhs <= (double) rhs; }
+	inline bool operator<(Degrees lhs, Degrees rhs) { return (double) lhs < (double) rhs; }
+	inline bool operator>(Degrees lhs, Degrees rhs) { return (double) lhs > (double) rhs; }
 
 	namespace StreamOps {
 		inline std::ostream& operator<<(std::ostream& os, Radians rad) {
@@ -163,8 +119,8 @@ namespace Util {
 			os << "Degrees(" << (double) deg << ")";
 			return os;
 		}
-	}
-}
-}
+	} // namespace StreamOps
+} // namespace Util
+} // namespace SWAN
 
 #endif

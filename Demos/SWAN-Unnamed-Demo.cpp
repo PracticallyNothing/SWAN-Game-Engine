@@ -9,7 +9,7 @@
 #include "GUI/Renderer.hpp" // For SWAN::GUI::Renderer
 
 #include "Utility/Debug.hpp"      // For SWAN_DEBUG_OUT()
-#include "Utility/Math.hpp"       // For SWAN::Util::pixelToGLCoord()
+#include "Utility/Math.hpp"       // For SWAN::Util::PixelToGLCoord()
 #include "Utility/Profile.hpp"    // For SWAN::Util::CurrentProfile, UTIL_PROFILE()
 #include "Utility/StreamOps.hpp"  // For SWAN::Util::StreamOps::*
 #include "Utility/StringUtil.hpp" // For SWAN::Util::GetDirectory(), SWAN::Util::IsAbsolutePath()

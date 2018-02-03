@@ -41,7 +41,7 @@ struct Transform {
 		glm::mat4 rotMatY = glm::rotate(rot.y, glm::vec3(0, 1, 0));
 		glm::mat4 rotMatZ = glm::rotate(rot.z, glm::vec3(0, 0, 1));
 
-		return rotMatZ * rotMatY * rotMatX;
+		return rotMatZ * rotMatX * rotMatY;
 	}
 	inline glm::mat4 getScaleMat() const { return glm::scale(scale); }
 
@@ -59,6 +59,6 @@ struct Transform {
 
 	Transform* parent;
 };
-}
+} // namespace SWAN
 
 #endif

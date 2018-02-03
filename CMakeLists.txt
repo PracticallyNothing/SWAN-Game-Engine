@@ -5,9 +5,9 @@ project("SWAN")
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMakeModules/")
 
 if(UNIX)
-	# set(CMAKE_C_COMPILER "clang")
-	# set(CMAKE_CXX_COMPILER "clang++")
-	# list(APPEND CMAKE_CXX_FLAGS "-fsanitize=undefined")
+	set(CMAKE_C_COMPILER "clang")
+	set(CMAKE_CXX_COMPILER "clang++")
+	list(APPEND CMAKE_CXX_FLAGS "-fsanitize=undefined")
 endif()
 
 if(WIN32)

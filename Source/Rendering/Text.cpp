@@ -45,6 +45,8 @@ void RenderText(
 	assert(s->hasUniform("transform"));
 	assert(s->hasUniform("UVtransform"));
 
+	glClear(GL_DEPTH_BUFFER_BIT);
+
 	std::unique_ptr<Mesh> rect(genRect2D_ptr());
 
 	int letter = 0,

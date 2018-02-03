@@ -56,6 +56,7 @@ struct MouseState {
 
 extern MouseState GetCurrMouseState();
 extern MouseState GetPrevMouseState();
-}
+extern void SetMousePos(int x, int y);
+} // namespace SWAN
 
 #endif // INPUT_H

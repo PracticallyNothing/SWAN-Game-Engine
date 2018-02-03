@@ -1,4 +1,5 @@
 #include "Input.hpp"
+#include "Display.hpp"
 #include <SDL2/SDL.h>
 
 #ifndef __cplusplus
@@ -15,18 +16,22 @@ namespace detail {
 
 MouseState GetCurrMouseState() {
 	return { SWAN_Input.Mouse.x, SWAN_Input.Mouse.y,
-
 		     SWAN_Input.Mouse.lButton, SWAN_Input.Mouse.mButton,
 		     SWAN_Input.Mouse.rButton };
 }
 
 MouseState GetPrevMouseState() {
 	return { detail::prevState.Mouse.x, detail::prevState.Mouse.y,
-
 		     detail::prevState.Mouse.lButton, detail::prevState.Mouse.mButton,
 		     detail::prevState.Mouse.rButton };
 }
+
+void SetMousePos(int x, int y) {
+	SDL_WarpMouseInWindow(Display::detail::window, x, y);
+	SWAN_Input.Mouse.x = x;
+	SWAN_Input.Mouse.y = y;
 }
+} // namespace SWAN
 
 void _handleEvents() {
 	SWAN::detail::prevState = SWAN_Input;
@@ -131,7 +136,6 @@ void _handleEvents() {
 
 				SWAN_Input.Mouse.xRel = e.motion.xrel;
 				SWAN_Input.Mouse.yRel = e.motion.yrel;
-
 				break;
 
 			case SDL_MOUSEBUTTONDOWN:
