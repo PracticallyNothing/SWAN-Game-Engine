@@ -1,6 +1,8 @@
 #ifndef SWAN_MESH_HPP
 #define SWAN_MESH_HPP
 
+#include "OpenGL/VAO.hpp"
+
 #include "Physics/AABB.hpp"
 #include "Physics/ColWrapper.hpp"
 
@@ -41,7 +43,7 @@ class Mesh {
 	Mesh(InitList<Vertex> verts, Vector<uint> inds);
 	Mesh(InitList<Vertex> verts, InitList<uint> inds);
 
-	~Mesh();
+	//	~Mesh();
 
 	// TODO: Deprecate in favour of ColWrappers
 	inline bool hasAABB() const { return _hasAABB; }
@@ -84,9 +86,13 @@ class Mesh {
 		VBO_TOTAL
 	};
 
+	GL::VAO vao;
+
+	/*
 	GLuint vaoID;
 	GLuint vboID[VBO_TOTAL];
+	*/
 };
-}
+} // namespace SWAN
 
 #endif

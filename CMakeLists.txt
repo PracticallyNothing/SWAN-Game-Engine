@@ -100,6 +100,9 @@ set(Sources
 	Source/Core/Resources.cpp
 	Source/Core/Input.cpp
 
+	# OpenGL rendering code
+	Source/OpenGL/VAO.cpp
+
 	# Utility code (parsers, maths, debugging, etc.)
 	Source/Utility/XML.cpp
 	Source/Utility/StringUtil.cpp

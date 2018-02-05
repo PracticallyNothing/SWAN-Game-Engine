@@ -1,11 +1,12 @@
 #include "Mesh.hpp"
+#include "OpenGL/VAO.hpp"
 
 #include <GL/gl.h>
 
 #include "Utility/Debug.hpp"
 
-using std::vector;
 using std::initializer_list;
+using std::vector;
 
 namespace SWAN {
 Mesh::Mesh(uint numVerts, Vertex* verts, uint numInds, uint* inds) {
@@ -75,90 +76,25 @@ Mesh::Mesh(initializer_list<Vertex> verts, initializer_list<uint> inds) {
 }
 
 void Mesh::init(Vertex* verts, uint* inds) {
-	glGenVertexArrays(1, &vaoID);
-	glBindVertexArray(vaoID);
-
 	std::vector<glm::vec3> posV;
-	std::vector<glm::vec2> texCoordV;
+	std::vector<glm::vec2> UVs;
 	std::vector<glm::vec3> normV;
 
 	for(uint i = 0; i < vertCount; i++) {
 		posV.push_back(verts[i].pos);
-		texCoordV.push_back(verts[i].UV);
+		UVs.push_back(verts[i].UV);
 		normV.push_back(verts[i].norm);
 	}
 
-	glGenBuffers(VBO_TOTAL, vboID);
-
-	//---------------Positions---------------//
-	glBindBuffer(GL_ARRAY_BUFFER, vboID[VBO_POS]);
-	glBufferData(GL_ARRAY_BUFFER, posV.size() * sizeof(posV[0]), posV.data(),
-	             GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(
-	    VBO_POS); // This enables the first vertex attribute
-
-	glVertexAttribPointer(
-	    VBO_POS,  // index 	 - This is the Vertex Attribute we just enabled,
-	              // we'll be changing that
-	    3,        // size 		 - Since this attribute is the vertex's
-	              // position,
-	              // i.e. vec3, we need an attribute of size 3
-	    GL_FLOAT, // type 		 - Specifies the type of the attribute,
-	              // or
-	    // in this case, floats for the positions in OpenGL coordinates
-	    // [-1.0, 1.0]
-	    GL_FALSE, // normalized - If these are vertex normals, this should be
-	              // GL_TRUE
-	    0,        // stride 	 - This tells OpenGL how we are going to pass in the
-	    // vertex attribute data. 0 means we are sending it all in one go.
-	    0); // pointer 	 - A pointer that represents the offset of the data we
-	        // are sending. If stride is 0, this should be zero too.
-
-	//---------------Texture coordinates---------------//
-	glBindBuffer(GL_ARRAY_BUFFER, vboID[VBO_UV]);
-	glBufferData(GL_ARRAY_BUFFER, texCoordV.size() * sizeof(texCoordV[0]),
-	             texCoordV.data(), GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(VBO_UV);
-	glVertexAttribPointer(VBO_UV, 2, GL_FLOAT, GL_FALSE, 0, 0);
-
-	//---------------Normals---------------//
-	glBindBuffer(GL_ARRAY_BUFFER, vboID[VBO_NORM]);
-	glBufferData(GL_ARRAY_BUFFER, normV.size() * sizeof(normV[0]), normV.data(),
-	             GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(VBO_NORM);
-	glVertexAttribPointer(VBO_NORM, 3, GL_FLOAT, GL_TRUE, 0, 0);
-
-	//---------------Indices---------------//
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboID[VBO_INDEX]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indCount * sizeof(uint), inds,
-	             GL_STATIC_DRAW);
-
-	glBindVertexArray(0);
+	vao.bind();
+	vao.storeAttribData(0, 3, (float*) posV.data(), posV.size() * sizeof(glm::vec3));
+	vao.storeAttribData(1, 2, (float*) UVs.data(), UVs.size() * sizeof(glm::vec2));
+	vao.storeAttribData(2, 3, (float*) normV.data(), normV.size() * sizeof(glm::vec3));
+	vao.storeIndices(inds, indCount * sizeof(unsigned));
+	vao.unbind();
 }
 
-Mesh::~Mesh() { glDeleteVertexArrays(1, &vaoID); }
-
-void Mesh::render() const {
-	glBindVertexArray(vaoID);
-	// glDrawArrays(GL_TRIANGLES, 0, drawCount);
-	glDrawElements(GL_TRIANGLES, indCount, GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
-}
-
-void Mesh::renderWireframe() const {
-	glBindVertexArray(vaoID);
-	// glDrawArrays(GL_TRIANGLES, 0, drawCount);
-	glDrawElements(GL_LINE_LOOP, indCount, GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
-}
-
-void Mesh::renderVerts() const {
-	glBindVertexArray(vaoID);
-	// glDrawArrays(GL_TRIANGLES, 0, drawCount);
-	glDrawElements(GL_POINTS, indCount, GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
-}
-}
+void Mesh::render() const { vao.draw(indCount); }
+void Mesh::renderWireframe() const { vao.draw(indCount, GL_LINE_LOOP); }
+void Mesh::renderVerts() const { vao.draw(indCount, GL_POINTS); }
+} // namespace SWAN

@@ -55,9 +55,17 @@ int main() {
 	const SWAN::Mesh* shotgunMesh   = SWAN::Res::GetMesh("SPAS 12");
 	const SWAN::Texture* shotgunTex = SWAN::Res::GetTexture("SPAS 12");
 
-	SWAN::Transform transf;
+	SWAN::Camera cam(SWAN::Display::GetAspectRatio(), glm::vec3(0.0f, 0.0f, 0.0f));
 
-	SWAN::Camera cam(SWAN::Display::GetAspectRatio(), glm::vec3(0.0f, 2.0f, -15.0f));
+	SWAN::Transform transf;
+	transf.pos.x = -5.0;
+	transf.pos.y = -5.0;
+	transf.pos.z = 5.0;
+	transf.rot.y -= M_PI / 2;
+	transf.setParent(&cam.transform);
+
+	SWAN::Transform transf2;
+	transf.setParent(&transf2);
 
 	bool running = true;
 	SWAN::EventListener exitEvent(
@@ -101,12 +109,12 @@ int main() {
 
 		auto mouseY     = SWAN::Util::PixelToGLCoord(SWAN::Display::GetHeight(), SWAN::GetCurrMouseState().y);
 		auto prevMouseY = SWAN::Util::PixelToGLCoord(SWAN::Display::GetHeight(), SWAN::GetPrevMouseState().y);
-		cam.rotateByX(SWAN::Util::Radians((mouseY - prevMouseY) * sensitivity));
+		cam.rotateByX(-SWAN::Util::Radians((mouseY - prevMouseY) * sensitivity));
 
 		auto now = steady_clock::now();
 
 		if(now - prevTime >= 16ms) {
-			transf.rot.y += 0.01f;
+			transf2.rot.x += 0.1;
 			std::vector<SWAN::ShaderUniform> unis = {
 				{ "transform", transf },
 				{ "view", cam.getView() },
@@ -117,16 +125,17 @@ int main() {
 			shotgunTex->bind();
 			unlitShader->renderMesh(*shotgunMesh);
 
-			//placeTex->bind();
-			//unlitShader->renderMesh(*placeMesh);
+			unlitShader->setUniform({ "transform", transf2 });
+			placeTex->bind();
+			unlitShader->renderMesh(*placeMesh);
 
 			std::stringstream info;
 			info
 			    << "Frame time: " << duration_cast<fms>(frameTime).count() << " ms\n"
 			    << "FPS: " << 1000 / duration_cast<fms>(frameTime).count() << '\n'
-			    << "Pos (x: " << cam.transform.pos.x << ", y: " << cam.transform.pos.y << ", z: " << cam.transform.pos.z << ")\n"
-			    << "Rot (x: " << cam.transform.rot.x << ", y: " << cam.transform.rot.y << ", z: " << cam.transform.rot.z << ")\n"
-			    << "Mouse (x: " << SWAN::GetCurrMouseState().x << ", y: " << SWAN::GetCurrMouseState().y << ", xRel: " << SWAN_Input.Mouse.xRel << ", yRel: " << SWAN_Input.Mouse.yRel << ")\n";
+			    << "Camera:  " << cam.transform << '\n'
+			    << "Transf:  " << transf << '\n'
+			    << "Transf2: " << transf2 << '\n';
 
 			glClear(GL_DEPTH_BUFFER_BIT);
 			SWAN::RenderText(
