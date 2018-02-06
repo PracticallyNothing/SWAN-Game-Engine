@@ -1,6 +1,7 @@
 #ifndef SWAN_BITMAP_FONT_HPP
 #define SWAN_BITMAP_FONT_HPP
 
+#include <array>  // For std::array<N, T>
 #include <cctype> // For std::isprint()
 #include <string> // For std::string
 #include <vector> // For std::vector<T>
@@ -18,13 +19,13 @@ class BitmapFont {
 	explicit BitmapFont(const std::string& confFilename);
 	~BitmapFont();
 
-	Transform getGlyphUVTransform(char c) const;
-
 	int getGlyphWidth(char c = ' ') const;
 	int getGlyphHeight() const { return glyphHeight; }
 
 	int getTextWidth(std::string text) const;
 	int getTextHeight(std::string text) const;
+
+	int getGlyphsPerRow() const { return glyphsPerRow; }
 
 	bool isSupported(char c) const {
 		return supportedChars.find(c) != std::string::npos;
@@ -33,6 +34,10 @@ class BitmapFont {
 	int tabWidth;
 
 	inline const Texture* getTexture() const { return tex; }
+
+	std::array<glm::vec2, 4> getGlyphUVs(char c) const;
+	double getGLWidth() const { return (double) glyphWidth / img->width; }
+	double getGLHeight() const { return (double) glyphHeight / img->height; }
 
   private:
 	Image* img;
@@ -44,6 +49,6 @@ class BitmapFont {
 	    glyphHeight,
 	    glyphsPerRow;
 };
-}
+} // namespace SWAN
 
 #endif // BITMAP_FONT_HPP

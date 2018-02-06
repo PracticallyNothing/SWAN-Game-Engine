@@ -1,16 +1,15 @@
 #version 130
 
-in vec3 pos;
+in vec2 pos;
 in vec2 UV;
 
 out vec2 fUV;
 
-uniform mat4 transform;
-uniform mat4 UVtransform;
+uniform vec2 offset;
 
 void main(){
-	gl_Position = transform * vec4(pos, 1);
+	gl_Position = vec4(pos + offset, 0, 1);
 	gl_PointSize = 5;
 
-	fUV = (UVtransform * vec4(UV, 0, 1)).xy;
+	fUV = UV;
 }

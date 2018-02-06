@@ -63,6 +63,13 @@
 		<Uniform name="bgColor"/>
 	</Shader>
 
+	<Shader vertex="Shaders/ProperText.vert" fragment="Shaders/text.frag" name="ProperText">
+		<Attribute name="pos"/>
+		<Attribute name="UV"/>
+		<Uniform name="color"/>
+		<Uniform name="bgColor"/>
+	</Shader>
+
 	<Shader vertex="Shaders/proper.vert" fragment="Shaders/proper.frag" name="Proper">
 		<Attribute name="pos"/>
 		<Attribute name="UV"/>

@@ -9,7 +9,6 @@
 #include <initializer_list>
 #include <vector>
 
-#include <glad/glad.h>
 #include <glm/glm.hpp>
 
 namespace SWAN {

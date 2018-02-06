@@ -45,10 +45,8 @@
 		<Attribute name="pos"/>
 		<Attribute name="UV"/>
 
-		<Uniform name="transform"/>
-		<Uniform name="UVtransform"/>
+		<Uniform name="offset"/>
 		<Uniform name="color"/>
-		<Uniform name="bgColor"/>
 	</Shader>
 
 	<Shader vertex="Shaders/Lighting.vert" fragment="Shaders/Lighting.frag" name="Lit">

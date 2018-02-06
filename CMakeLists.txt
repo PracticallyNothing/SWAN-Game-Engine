@@ -131,14 +131,11 @@ set(Sources
 add_library(SWAN STATIC ${Sources})
 target_link_libraries(SWAN ${LIBS} ${CMAKE_DL_LIBS})
 
-add_executable(SWAN-Unnamed-Demo Demos/SWAN-Unnamed-Demo.cpp)
-target_link_libraries(SWAN-Unnamed-Demo SWAN)
+#add_executable(SWAN-Unnamed-Demo Demos/SWAN-Unnamed-Demo.cpp)
+#target_link_libraries(SWAN-Unnamed-Demo SWAN)
 
-add_executable(SWAN-GUI-Demo Demos/SWAN-GUI-Demo.cpp)
-target_link_libraries(SWAN-GUI-Demo SWAN)
-
-add_executable(SWAN-Text-Demo Demos/SWAN-Text-Demo.cpp)
-target_link_libraries(SWAN-Text-Demo SWAN)
+#add_executable(SWAN-GUI-Demo Demos/SWAN-GUI-Demo.cpp)
+#target_link_libraries(SWAN-GUI-Demo SWAN)
 
 add_executable(SWAN-FPS-Demo Demos/FPS/Main.cpp)
 target_link_libraries(SWAN-FPS-Demo SWAN)

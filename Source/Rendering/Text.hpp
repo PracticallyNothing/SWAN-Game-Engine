@@ -1,24 +1,27 @@
 #ifndef SWAN_TEXT_HPP
 #define SWAN_TEXT_HPP
 
-#include "BitmapFont.hpp" // For BitmapFont
-#include "Mesh.hpp"       // For Mesh
-#include "Shader.hpp"     // For Shader
-#include "Texture.hpp"    // For Texture
+#include <string>
 
-#include "Physics/Transform.hpp"
+#include "BitmapFont.hpp"
+#include "OpenGL/VAO.hpp"
+#include "Shader.hpp"
 
-#include "Utility/Debug.hpp" // For SWAN_DEBUG_DO(), SWAN_DEBUG_VAR
-
-#include <string> // For std::string
 namespace SWAN {
-void RenderText(
-    int x, int y,
-    std::string text,
-    Shader* s,
-    const BitmapFont* f,
-    SWAN::Color color   = SWAN::Color{ 0, 0, 0, 255 },
-    SWAN::Color bgColor = SWAN::Color{ 0, 0, 0, 0 });
-}
+struct Text {
+	Text(std::string text, const BitmapFont* font)
+	    : text(text), font(font) {
+		updateVAO();
+	}
+
+	void render(Shader* s, int x, int y, glm::vec4 color = { 1, 1, 1, 0 });
+	void updateVAO();
+
+	GL::VAO vao;
+	std::string text;
+	const BitmapFont* font;
+	int numVerts = 0;
+};
+} // namespace SWAN
 
 #endif

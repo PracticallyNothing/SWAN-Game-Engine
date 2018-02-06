@@ -9,10 +9,11 @@
 #include "Rendering/Camera.hpp"  // For SWAN::Camera
 #include "Rendering/Mesh.hpp"    // For SWAN::Mesh
 #include "Rendering/Shader.hpp"  // For SWAN::Shader
-#include "Rendering/Text.hpp"    // For SWAN::RenderText()
+#include "Rendering/Text.hpp"    // For SWAN::Text
 #include "Rendering/Texture.hpp" // For SWAN::Texture
 
 #include "Utility/AngleUnits.hpp" // For SWAN::Radians, SWAN::Degrees
+#include "Utility/Debug.hpp"      // For SWAN_DEBUG_DO(), SWAN_DEBUG_VAR
 #include "Utility/Math.hpp"       // For SWAN::Util::PixelToGLCoord()
 
 #include <chrono>   // For std::chrono::*
@@ -62,9 +63,11 @@ int main() {
 	transf.pos.y = -5.0;
 	transf.pos.z = 5.0;
 	transf.rot.y -= M_PI / 2;
+	transf.scale *= 0.25;
 	transf.setParent(&cam.transform);
 
 	SWAN::Transform transf2;
+	transf2.scale *= 2;
 	transf.setParent(&transf2);
 
 	bool running = true;
@@ -84,7 +87,7 @@ int main() {
 		exitEvent();
 		SWAN_Input.handleEvents();
 
-		float speed = 0.0001f;
+		float speed = 0.01f;
 
 		if(SWAN_Input.Keyboard.letterKeys['w' - 'a'])
 			cam.moveForw(speed);
@@ -113,8 +116,10 @@ int main() {
 
 		auto now = steady_clock::now();
 
+		SWAN::Text text("ABCDEFGHIJKLMNOPQRSTUVWXYZ  -----  abcdefghijklmnopqrstuvwxyz", SWAN::Res::GetBitmapFont("Monospace 12"));
+
 		if(now - prevTime >= 16ms) {
-			transf2.rot.x += 0.1;
+			//transf2.rot.x += 0.1;
 			std::vector<SWAN::ShaderUniform> unis = {
 				{ "transform", transf },
 				{ "view", cam.getView() },
@@ -137,14 +142,11 @@ int main() {
 			    << "Transf:  " << transf << '\n'
 			    << "Transf2: " << transf2 << '\n';
 
+			text.text = info.str();
+			text.updateVAO();
+
 			glClear(GL_DEPTH_BUFFER_BIT);
-			SWAN::RenderText(
-			    0, 0,
-			    info.str(),
-			    SWAN::Res::GetShader("Text"),
-			    SWAN::Res::GetBitmapFont("Terminus 10"),
-			    SWAN::Color{ 255, 255, 255, 255 },
-			    SWAN::Color{ 0, 0, 0, 255 });
+			text.render(SWAN::Res::GetShader("Text"), 0, 0, glm::vec4(0, 0, 0, 1));
 
 			glClear(GL_DEPTH_BUFFER_BIT);
 			SWAN::Display::Clear();
