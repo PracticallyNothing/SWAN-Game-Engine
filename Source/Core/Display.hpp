@@ -2,6 +2,7 @@
 #define SWAN_DISPLAY_HPP
 
 #include <SDL2/SDL.h>
+#include <glm/glm.hpp>
 #include <string>
 
 typedef unsigned int uint;
@@ -17,7 +18,7 @@ namespace Display {
 		extern bool initialized;
 
 		extern float red, green, blue, alpha;
-	}
+	} // namespace detail
 
 	extern void Init(int width, int height, const std::string& title);
 	extern void Clear();
@@ -26,6 +27,9 @@ namespace Display {
 	extern void Resize(int newWidth, int newHeight);
 
 	extern void SetClearColor(float red, float green, float blue, float alpha);
+	inline glm::vec4 GetClearColor() {
+		return glm::vec4(detail::red, detail::green, detail::blue, detail::alpha);
+	}
 
 	inline bool IsInitialized() { return detail::initialized; }
 
@@ -35,7 +39,7 @@ namespace Display {
 
 	inline int GetWidth() { return detail::width; }
 	inline int GetHeight() { return detail::height; }
-}
-}
+} // namespace Display
+} // namespace SWAN
 
 #endif // !DISPLAY_HPP

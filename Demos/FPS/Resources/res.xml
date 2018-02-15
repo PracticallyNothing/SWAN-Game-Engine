@@ -19,6 +19,17 @@
 	<BitmapFont file="Fonts/Font2.toml"    name="Monospace 12"/>
 	<BitmapFont file="Fonts/Terminus.toml" name="Terminus 10"/>
 
+	<Shader vertex="Shaders/Fog.vert" fragment="Shaders/Fog.frag" name="Fog">
+		<Attribute name="pos"/>
+		<Attribute name="UV"/>
+
+		<Uniform name="fogZ"/>
+		<Uniform name="fogColor"/>
+		<Uniform name="perspective"/>
+		<Uniform name="view"/>
+		<Uniform name="transform"/>
+	</Shader>
+
 	<Shader vertex="Shaders/NoLighting.vert" fragment="Shaders/NoLighting.frag" name="Unlit">
 		<Attribute name="pos"/>
 		<Attribute name="UV"/>

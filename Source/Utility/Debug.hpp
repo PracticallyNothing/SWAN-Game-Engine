@@ -61,7 +61,7 @@ using namespace SWAN::Util::StreamOps;
 #define SWAN_DEBUG_DO(func) (void) 0
 #define SWAN_DEBUG_IF(condition, expr) (void) 0
 #define SWAN_DEBUG_IF_ELSE(condition, expr_true, expr_false) (void) 0
-#warning Header "Utility/Debug.hpp" included, but SWAN_DEBUG isnt defined.
+//#warning Header "Utility/Debug.hpp" included, but SWAN_DEBUG isnt defined.
 #endif
 
 #endif

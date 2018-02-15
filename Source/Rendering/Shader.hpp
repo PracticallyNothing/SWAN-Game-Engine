@@ -128,6 +128,22 @@ struct ShaderUniform {
 		data.slight = slight;
 		type        = T_SPOTLIGHT;
 	}
+	ShaderUniform(std::string name, Light light) : name(name) {
+		switch(light.type) {
+			case L_DIRECTIONAL:
+				type        = T_DIRLIGHT;
+				data.dlight = light.dirLight;
+				break;
+			case L_POINT:
+				type        = T_POINTLIGHT;
+				data.plight = light.pointLight;
+				break;
+			case L_SPOT:
+				type        = T_SPOTLIGHT;
+				data.slight = light.spotLight;
+				break;
+		}
+	}
 
 	ShaderUniform() {}
 
@@ -194,6 +210,13 @@ class Shader {
 		unuse();
 	}
 
+	inline void renderBatch(const std::vector<const Mesh*> batch) {
+		use();
+		for(const auto* m : batch)
+			m->render();
+		unuse();
+	}
+
 	inline void renderMesh(const Mesh& m) {
 		use();
 		m.render();
@@ -240,6 +263,7 @@ class Shader {
 	void setUniformData(const std::string& name, DirectionalLight light);
 	void setUniformData(const std::string& name, PointLight light);
 	void setUniformData(const std::string& name, Spotlight light);
+	void setUniformData(const std::string& name, Light light);
 
   private:
 	bool used    = false;
@@ -255,4 +279,4 @@ class Shader {
 
 	std::map<std::string, GLint> uniforms;
 };
-}
+} // namespace SWAN

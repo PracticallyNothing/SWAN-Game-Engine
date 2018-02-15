@@ -4,7 +4,7 @@
 #include "Core/Input.hpp"         // For SWAN_Input
 #include "Core/Resources.hpp"     // For SWAN::Res::Get*
 
-#include "Rendering/Text.hpp" // For SWAN::RenderText()
+//#include "Rendering/Text.hpp" // For SWAN::RenderText()
 
 #include "GUI/Element.hpp"  // For SWAN::GUI::Element
 #include "GUI/Renderer.hpp" // For SWAN::GUI::Renderer
@@ -60,7 +60,7 @@ int main(int argc, const char** argv) {
 		            SWAN::Display::detail::green,
 		            SWAN::Display::detail::blue,
 		            1);
-		    }));
+	        }));
 
 	guiRenderer.add(
 	    SWAN::GUI::CreateSlider(
@@ -75,7 +75,7 @@ int main(int argc, const char** argv) {
 		            v,
 		            SWAN::Display::detail::blue,
 		            1);
-		    }));
+	        }));
 
 	guiRenderer.add(
 	    SWAN::GUI::CreateSlider(
@@ -90,7 +90,7 @@ int main(int argc, const char** argv) {
 		            SWAN::Display::detail::green,
 		            v,
 		            1);
-		    }));
+	        }));
 
 	SWAN::Display::SetClearColor(0.0f, 0.3f, 0.25f, 0.0f);
 
@@ -98,23 +98,15 @@ int main(int argc, const char** argv) {
 	    []() -> bool {
 		    return SWAN_Input.Keyboard.escapeKey ||
 		           SWAN_Input.Window.exitRequest;
-		},
+	    },
 	    [&running]() { running = false; }, false);
 
 	SWAN::EventListener renderEvent =
 	    SWAN::CreateRepeatingTimer(16ms, [=, &textX, &textY, &guiRenderer] {
 		    guiRenderer.update();
 		    guiRenderer.render();
-
-		    SWAN::RenderText(
-		        0, 0,
-		        "!!!! \\\\\\\\ \"\"\"\"",
-		        SWAN::Res::GetShader("Text"),
-		        SWAN::Res::GetBitmapFont("Monospace 16"),
-		        sliderActiveColor, sliderBGColor);
-
 		    SWAN::Display::Clear();
-		});
+	    });
 
 	while(running) {
 		exitEvent();

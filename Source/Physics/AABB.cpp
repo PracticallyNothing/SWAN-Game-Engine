@@ -7,12 +7,12 @@
 
 using glm::length;
 
+using glm::mat4;
 using glm::vec3;
 using glm::vec4;
-using glm::mat4;
 
-using std::min;
 using std::max;
+using std::min;
 
 void MakeMinMax(vec3& a, vec3& b) {
 	vec3 tmp1 = a, tmp2 = b;
@@ -37,8 +37,9 @@ bool PointIsInsideAABB(AABB box, glm::vec3 point) {
 }
 
 AABB ApplyTransform(AABB box, Transform t) {
-	box.min = vec3(vec4(box.min, 1) * t.getRotMat());
-	box.max = vec3(vec4(box.max, 1) * t.getRotMat());
+	auto rotMat = t.getRotMat();
+	box.min     = vec3(vec4(box.min, 1) * rotMat);
+	box.max     = vec3(vec4(box.max, 1) * rotMat);
 
 	box.min += t.pos;
 	box.max += t.pos;
@@ -77,4 +78,4 @@ void Render(AABB box, const Camera* cam, bool colliding) {
 	s->renderWireframeMesh(*m);
 	s->unuse();
 }
-}
+} // namespace SWAN

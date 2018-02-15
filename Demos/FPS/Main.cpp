@@ -8,6 +8,7 @@
 #include "Physics/Transform.hpp" // For SWAN::Transform
 #include "Rendering/Camera.hpp"  // For SWAN::Camera
 #include "Rendering/Mesh.hpp"    // For SWAN::Mesh
+#include "Rendering/Scene.hpp"   // For SWAN::Scene
 #include "Rendering/Shader.hpp"  // For SWAN::Shader
 #include "Rendering/Text.hpp"    // For SWAN::Text
 #include "Rendering/Texture.hpp" // For SWAN::Texture
@@ -16,28 +17,62 @@
 #include "Utility/Debug.hpp"      // For SWAN_DEBUG_DO(), SWAN_DEBUG_VAR
 #include "Utility/Math.hpp"       // For SWAN::Util::PixelToGLCoord()
 
-#include <chrono>   // For std::chrono::*
-#include <iostream> // For std::cout
-#include <sstream>  // For std::stringstream
-#include <string>   // For std::string
-#include <vector>   // For std::vector<T>
+#include <algorithm> // For std::generate()
+#include <chrono>    // For std::chrono::*
+#include <iostream>  // For std::cout
+#include <map>       // For std::map<K, V>
+#include <random>    // For std::random_device
+#include <sstream>   // For std::stringstream
+#include <string>    // For std::string
+#include <vector>    // For std::vector<T>
 
 using namespace std::chrono;
 using std::cout;
+using std::map;
 using std::vector;
 
 using SWAN::Util::Radians;
 
 typedef duration<float, milliseconds::period> fms;
 
-int main() {
+std::random_device rd;
+SWAN::Transform getRandTransform() {
+	std::uniform_real_distribution<double> d(-75, 75);
+	std::uniform_real_distribution<double> d2(1, 7.5);
+
+	return SWAN::Transform(
+	    glm::vec3(d(rd), d(rd), d(rd)),
+	    glm::vec3(d(rd), d(rd), d(rd)));
+}
+
+void _CheckGLError(std::string funcCall) {
+	cout << "    Checking GL errors...\n";
+	map<GLenum, std::string> errors = {
+		{ 0x0500, "GL_INVALID_ENUM" },
+		{ 0x0501, "GL_INVALID_VALUE" },
+		{ 0x0502, "GL_INVALID_OPERATION" },
+		{ 0x0503, "GL_STACK_OVERFLOW" },
+		{ 0x0504, "GL_STACK_UNDERFLOW" },
+		{ 0x0505, "GL_OUT_OF_MEMORY" },
+		{ 0x0506, "GL_INVALID_FRAMEBUFFER_OPERATION" },
+		{ 0x0507, "GL_CONTEXT_LOST" }
+	};
+
+	GLenum err;
+	while((err = glGetError()) != GL_NO_ERROR) {
+		cout << "OpenGL error:\n"
+		     << "    type: " << errors[err] << '\n'
+		     << "    func: " << funcCall << '\n';
+	}
+}
+
+void Init() {
 	SWAN::Display::Init(1280, 720, "SWAN-FPS");
 	SWAN::Display::SetClearColor(0.5f, 0.3f, 0.25f, 0.0f);
 	SWAN_Input_Init();
 
 	glEnable(GL_PROGRAM_POINT_SIZE);
 	glEnable(GL_DEPTH_TEST);
-
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 
@@ -45,30 +80,44 @@ int main() {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	SWAN::Res::LoadFromFile("Resources/res.xml");
+}
+
+void CamControl(SWAN::Camera& cam, double speed = 0.001, double sensitivity = 2.0) {
+	if(SWAN_Input.Keyboard.letterKeys['w' - 'a'])
+		cam.moveForw(speed);
+	else if(SWAN_Input.Keyboard.letterKeys['s' - 'a'])
+		cam.moveForw(-speed);
+
+	if(SWAN_Input.Keyboard.letterKeys['a' - 'a'])
+		cam.moveRight(-speed);
+	else if(SWAN_Input.Keyboard.letterKeys['d' - 'a'])
+		cam.moveRight(speed);
+
+	if(SWAN_Input.Keyboard.spaceKey)
+		cam.moveUp(speed);
+	else if(SWAN_Input.Keyboard.LShiftKey)
+		cam.moveUp(-speed);
+
+	auto mouseX     = SWAN::Util::PixelToGLCoord(SWAN::Display::GetHeight(), SWAN::GetCurrMouseState().x);
+	auto prevMouseX = SWAN::Util::PixelToGLCoord(SWAN::Display::GetHeight(), SWAN::GetPrevMouseState().x);
+	cam.rotateByY(SWAN::Util::Radians((mouseX - prevMouseX) * sensitivity));
+
+	auto mouseY     = SWAN::Util::PixelToGLCoord(SWAN::Display::GetHeight(), SWAN::GetCurrMouseState().y);
+	auto prevMouseY = SWAN::Util::PixelToGLCoord(SWAN::Display::GetHeight(), SWAN::GetPrevMouseState().y);
+	cam.rotateByX(-SWAN::Util::Radians((mouseY - prevMouseY) * sensitivity));
+}
+
+int main() {
+	Init();
 
 	SWAN::Shader* unlitShader = SWAN::Res::GetShader("Unlit");
+	SWAN::Shader* fogShader   = SWAN::Res::GetShader("Fog");
+	SWAN::Shader* shader      = fogShader;
 
-	const SWAN::Mesh* placeMesh   = SWAN::Res::GetMesh("Place");
+	const SWAN::Mesh* cubeMesh    = SWAN::Res::GetMesh("1x1 Cube");
 	const SWAN::Texture* placeTex = SWAN::Res::GetTexture("Place");
 
-	const SWAN::Mesh* planeMesh = SWAN::Res::GetMesh("Plane");
-
-	const SWAN::Mesh* shotgunMesh   = SWAN::Res::GetMesh("SPAS 12");
-	const SWAN::Texture* shotgunTex = SWAN::Res::GetTexture("SPAS 12");
-
 	SWAN::Camera cam(SWAN::Display::GetAspectRatio(), glm::vec3(0.0f, 0.0f, 0.0f));
-
-	SWAN::Transform transf;
-	transf.pos.x = -5.0;
-	transf.pos.y = -5.0;
-	transf.pos.z = 5.0;
-	transf.rot.y -= M_PI / 2;
-	transf.scale *= 0.25;
-	transf.setParent(&cam.transform);
-
-	SWAN::Transform transf2;
-	transf2.scale *= 2;
-	transf.setParent(&transf2);
 
 	bool running = true;
 	SWAN::EventListener exitEvent(
@@ -83,70 +132,48 @@ int main() {
 	// Hacky way to set type to duration
 	auto frameTime = prevTime - prevTime;
 
+	int nCubes = 1000;
+	std::vector<SWAN::Transform> transforms(nCubes);
+	std::generate(transforms.begin(), transforms.end(), getRandTransform);
+
 	while(running) {
 		exitEvent();
 		SWAN_Input.handleEvents();
 
-		float speed = 0.01f;
-
-		if(SWAN_Input.Keyboard.letterKeys['w' - 'a'])
-			cam.moveForw(speed);
-		else if(SWAN_Input.Keyboard.letterKeys['s' - 'a'])
-			cam.moveForw(-speed);
-
-		if(SWAN_Input.Keyboard.letterKeys['a' - 'a'])
-			cam.moveRight(-speed);
-		else if(SWAN_Input.Keyboard.letterKeys['d' - 'a'])
-			cam.moveRight(speed);
-
-		if(SWAN_Input.Keyboard.spaceKey)
-			cam.moveUp(speed);
-		else if(SWAN_Input.Keyboard.LShiftKey)
-			cam.moveUp(-speed);
-
-		float sensitivity = 2.0;
-
-		auto mouseX     = SWAN::Util::PixelToGLCoord(SWAN::Display::GetHeight(), SWAN::GetCurrMouseState().x);
-		auto prevMouseX = SWAN::Util::PixelToGLCoord(SWAN::Display::GetHeight(), SWAN::GetPrevMouseState().x);
-		cam.rotateByY(SWAN::Util::Radians((mouseX - prevMouseX) * sensitivity));
-
-		auto mouseY     = SWAN::Util::PixelToGLCoord(SWAN::Display::GetHeight(), SWAN::GetCurrMouseState().y);
-		auto prevMouseY = SWAN::Util::PixelToGLCoord(SWAN::Display::GetHeight(), SWAN::GetPrevMouseState().y);
-		cam.rotateByX(-SWAN::Util::Radians((mouseY - prevMouseY) * sensitivity));
+		CamControl(cam);
 
 		auto now = steady_clock::now();
 
-		SWAN::Text text("ABCDEFGHIJKLMNOPQRSTUVWXYZ  -----  abcdefghijklmnopqrstuvwxyz", SWAN::Res::GetBitmapFont("Monospace 12"));
+		SWAN::Text text("", SWAN::Res::GetBitmapFont("Monospace 12"));
 
 		if(now - prevTime >= 16ms) {
-			//transf2.rot.x += 0.1;
 			std::vector<SWAN::ShaderUniform> unis = {
-				{ "transform", transf },
 				{ "view", cam.getView() },
-				{ "perspective", cam.getPerspective() }
+				{ "perspective", cam.getPerspective() },
+				{ "fogColor", glm::vec3(SWAN::Display::GetClearColor()) },
+				{ "fogZ", 0.85f * cam.zFar }
 			};
-			unlitShader->setUniforms(unis);
+			shader->setUniforms(unis);
 
-			shotgunTex->bind();
-			unlitShader->renderMesh(*shotgunMesh);
-
-			unlitShader->setUniform({ "transform", transf2 });
 			placeTex->bind();
-			unlitShader->renderMesh(*placeMesh);
+
+			for(int i = 0; i < nCubes; i++) {
+				if(glm::length(transforms[i].pos - cam.transform.pos) <= cam.zFar) {
+					shader->setUniform({ "transform", transforms[i] });
+					shader->renderMesh(*cubeMesh);
+				}
+			}
 
 			std::stringstream info;
 			info
 			    << "Frame time: " << duration_cast<fms>(frameTime).count() << " ms\n"
-			    << "FPS: " << 1000 / duration_cast<fms>(frameTime).count() << '\n'
-			    << "Camera:  " << cam.transform << '\n'
-			    << "Transf:  " << transf << '\n'
-			    << "Transf2: " << transf2 << '\n';
+			    << "FPS: " << 1000 / duration_cast<fms>(frameTime).count() << '\n';
 
 			text.text = info.str();
 			text.updateVAO();
 
 			glClear(GL_DEPTH_BUFFER_BIT);
-			text.render(SWAN::Res::GetShader("Text"), 0, 0, glm::vec4(0, 0, 0, 1));
+			text.render(SWAN::Res::GetShader("Text"), 0, 0, glm::vec4(1, 1, 1, 1));
 
 			glClear(GL_DEPTH_BUFFER_BIT);
 			SWAN::Display::Clear();

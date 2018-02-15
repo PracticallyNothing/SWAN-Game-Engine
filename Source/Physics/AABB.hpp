@@ -9,6 +9,10 @@
 namespace SWAN {
 struct AABB {
 	glm::vec3 min, max;
+	glm::vec3 center() { return max - min; }
+	double xLen() { return max.x - min.x; }
+	double yLen() { return max.y - min.y; }
+	double zLen() { return max.z - min.z; }
 };
 
 /// Finite line
@@ -23,6 +27,6 @@ AABB ApplyTransform(AABB box, Transform t);
 
 /// Renders an AABB onscreen using the "Cube" mesh
 void Render(AABB aabb, const Camera* cam, bool colliding = false);
-}
+} // namespace SWAN
 
 #endif

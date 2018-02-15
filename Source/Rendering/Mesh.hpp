@@ -59,11 +59,11 @@ class Mesh {
 		_hasColWrapper = true;
 	}
 
-  private:
 	void render() const;
 	void renderWireframe() const;
 	void renderVerts() const;
 
+  private:
 	void init(Vertex* verts, uint* inds);
 
 	uint vertCount;
@@ -75,22 +75,7 @@ class Mesh {
 	bool _hasColWrapper = false;
 	ColWrapper colWrapper;
 
-	enum {
-		VBO_POS,
-		VBO_UV,
-		VBO_NORM,
-
-		VBO_INDEX,
-
-		VBO_TOTAL
-	};
-
 	GL::VAO vao;
-
-	/*
-	GLuint vaoID;
-	GLuint vboID[VBO_TOTAL];
-	*/
 };
 } // namespace SWAN
 

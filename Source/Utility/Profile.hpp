@@ -27,7 +27,7 @@
 	} while(0)
 #else
 #define SWAN_UTIL_PROFILE() (void) 0
-#warning Header "Utility/Profile.hpp" included, but SWAN_PROFILE isnt defined.
+//#warning Header "Utility/Profile.hpp" included, but SWAN_PROFILE isnt defined.
 #endif
 
 namespace SWAN {

@@ -5,6 +5,7 @@
 #include "Utility/Debug.hpp"  // For SWAN_DEBUG_PRINT()
 #include "Utility/Math.hpp"   // For SWAN::Util::PixelToGLCoord
 
+#include <array>   // For std::array<T, N>
 #include <cassert> // For assert()
 
 namespace SWAN {
@@ -22,16 +23,13 @@ namespace GUI {
 	}
 
 	void Renderer::initMesh() {
-		SWAN::Vertex v0(glm::vec3(-1, 1, 0), glm::vec2(0, 1),
-		                glm::normalize(glm::vec3(-0.5, -0.5, 0.5)));
-		SWAN::Vertex v1(glm::vec3(1, 1, 0), glm::vec2(1, 1),
-		                glm::normalize(glm::vec3(0.5, 0.5, 0.5)));
-		SWAN::Vertex v2(glm::vec3(-1, -1, 0), glm::vec2(0, 0),
-		                glm::normalize(glm::vec3(0.5, -0.5, 0.5)));
-		SWAN::Vertex v3(glm::vec3(1, -1, 0), glm::vec2(1, 0),
-		                glm::normalize(glm::vec3(-0.5, 0.5, 0.5)));
-
-		rect = std::unique_ptr<Mesh>(new SWAN::Mesh({ v0, v1, v2, v3 }, { 0, 2, 1, 1, 2, 3 }));
+		std::array<glm::vec2, 4>
+		    pos = { glm::vec2(-1, -1), glm::vec2(-1, 1), glm::vec2(1, 1), glm::vec2(1, -1) },
+		    UVs = { glm::vec2(0, 0), glm::vec2(0, 1), glm::vec2(1, 1), glm::vec2(1, 0) };
+		vao.bind();
+		vao.storeAttribData(0, 2, (float*) pos.data(), pos.size() * sizeof(glm::vec2));
+		vao.storeAttribData(1, 2, (float*) UVs.data(), UVs.size() * sizeof(glm::vec2));
+		vao.unbind();
 	}
 
 	Element* Renderer::add(std::unique_ptr<Element> e) {
@@ -77,7 +75,9 @@ namespace GUI {
 		}
 
 		shad->setUniforms(unis);
-		shad->renderMesh(*rect);
+		shad->use();
+		vao.draw(4, GL_TRIANGLE_FAN);
+		shad->unuse();
 
 		if(el->hasChildren())
 			for(auto& c : el->children)
@@ -88,6 +88,7 @@ namespace GUI {
 		if(!elems.empty())
 			assert(shad != nullptr);
 
+		vao.bind();
 		for(auto& el : elems) {
 			renderElement(el.get());
 		}

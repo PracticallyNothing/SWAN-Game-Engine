@@ -4,6 +4,7 @@ project("SWAN")
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMakeModules/")
 
+
 if(UNIX)
 	set(CMAKE_C_COMPILER "clang")
 	set(CMAKE_CXX_COMPILER "clang++")
@@ -134,8 +135,8 @@ target_link_libraries(SWAN ${LIBS} ${CMAKE_DL_LIBS})
 #add_executable(SWAN-Unnamed-Demo Demos/SWAN-Unnamed-Demo.cpp)
 #target_link_libraries(SWAN-Unnamed-Demo SWAN)
 
-#add_executable(SWAN-GUI-Demo Demos/SWAN-GUI-Demo.cpp)
-#target_link_libraries(SWAN-GUI-Demo SWAN)
+add_executable(SWAN-GUI-Demo Demos/SWAN-GUI-Demo.cpp)
+target_link_libraries(SWAN-GUI-Demo SWAN)
 
 add_executable(SWAN-FPS-Demo Demos/FPS/Main.cpp)
 target_link_libraries(SWAN-FPS-Demo SWAN)

@@ -16,7 +16,7 @@ namespace Display {
 		bool initialized = false;
 
 		float red, green, blue, alpha;
-	}
+	} // namespace detail
 
 	void Init(int width, int height, const std::string& title) {
 		// Initialize SDL for the first display only
@@ -48,10 +48,10 @@ namespace Display {
 		    height,             // Window width and height
 		    SDL_WINDOW_OPENGL); // Flags for the window
 
-		SDL_assert(detail::window != nullptr);
+		SDL_assert_release(detail::window != nullptr);
 
 		detail::glContext = SDL_GL_CreateContext(detail::window);
-		SDL_assert(gladLoadGL());
+		SDL_assert_release(gladLoadGL());
 
 		detail::initialized = true;
 
@@ -93,5 +93,5 @@ namespace Display {
 
 		SDL_SetWindowSize(detail::window, newWidth, newHeight);
 	}
-}
-}
+} // namespace Display
+} // namespace SWAN

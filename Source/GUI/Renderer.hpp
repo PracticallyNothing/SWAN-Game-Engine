@@ -3,6 +3,7 @@
 
 #include "Element.hpp" // For SWAN::GUIElement
 
+#include "OpenGL/VAO.hpp"        // For SWAN::GL::VAO
 #include "Physics/Transform.hpp" // For SWAN::Transform
 #include "Rendering/Mesh.hpp"    // For SWAN::Mesh
 #include "Rendering/Shader.hpp"  // For SWAN::Shader
@@ -75,8 +76,7 @@ namespace GUI {
 		/// Function that handles the rendering of a single GUI element
 		void renderElement(const Element*);
 
-		/// Rectangle mesh used for rendering GUI elements, initialized in constructor
-		UniqPtr<Mesh> rect;
+		GL::VAO vao;
 
 		bool sortedByLayer;
 	};

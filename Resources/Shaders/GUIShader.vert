@@ -1,7 +1,6 @@
-
 #version 130
 
-in vec3 pos;
+in vec2 pos;
 in vec2 UV;
 
 out vec2 _pos;

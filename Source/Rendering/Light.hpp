@@ -47,6 +47,15 @@ struct Spotlight {
 	float linearAtt;      // Linear attenuation
 	float quadraticAtt;   // Quadratic attenuation
 };
-}
+
+struct Light {
+	LightType type;
+	union {
+		DirectionalLight dirLight;
+		PointLight pointLight;
+		Spotlight spotLight;
+	};
+};
+} // namespace SWAN
 
 #endif // LIGHT_HPP

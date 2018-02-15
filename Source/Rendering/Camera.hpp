@@ -18,7 +18,7 @@ class Camera {
 	    : aspect(aspect), fov(fov), zNear(zNear), zFar(zFar), transform(pos) {}
 
 	explicit Camera(OrthographicT)
-	    : aspect(0), fov(0), zNear(0), zFar(0), ortho(true),
+	    : aspect(0), fov(0), zNear(0), zFar(100), ortho(true),
 	      transform(glm::vec3(0.0f)),
 	      perspective(
 	          glm::ortho(0, Display::GetWidth(), Display::GetHeight(), 0)) {}
@@ -61,5 +61,5 @@ class Camera {
 	glm::mat4 perspective;
 	bool ortho = false;
 };
-}
+} // namespace SWAN
 #endif

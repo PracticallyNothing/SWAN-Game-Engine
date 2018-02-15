@@ -58,9 +58,7 @@
 		<Attribute name="UV"/>
 
 		<Uniform name="transform"/>
-		<Uniform name="UVtransform"/>
 		<Uniform name="color"/>
-		<Uniform name="bgColor"/>
 	</Shader>
 
 	<Shader vertex="Shaders/ProperText.vert" fragment="Shaders/text.frag" name="ProperText">

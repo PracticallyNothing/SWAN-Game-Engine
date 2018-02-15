@@ -34,14 +34,5 @@
 		<Uniform name="tex"/>
 	</Shader>
 
-	<Shader vertex="Shaders/text.vert" fragment="Shaders/text.frag" name="Text">
-		<Attribute name="pos"/>
-		<Attribute name="UV"/>
-
-		<Uniform name="transform"/>
-		<Uniform name="UVtransform"/>
-		<Uniform name="color"/>
-		<Uniform name="bgColor"/>
-	</Shader>
 </Resources>
 
