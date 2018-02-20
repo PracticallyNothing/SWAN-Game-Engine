@@ -20,29 +20,30 @@ using std::unique_ptr;
 using std::vector;
 
 struct Scene {
-	vector<unique_ptr<Mesh>> meshes;
-	vector<Light> lights;
+	bool valid = false;
+	vector<unique_ptr<SWAN::Mesh>> meshes;
+	vector<SWAN::Light> lights;
 };
 
 void logError(string s) {
 	cout << "  Importing error: " << s << '\n';
 }
 
-glm::vec3& operator=(glm::vec3& lhs, const aiColor3D& rhs) {
+static glm::vec3& operator=(glm::vec3& lhs, const aiColor3D& rhs) {
 	lhs.x = rhs.r;
 	lhs.y = rhs.g;
 	lhs.z = rhs.b;
 	return lhs;
 }
 
-glm::vec3& operator=(glm::vec3& lhs, const aiVector3D& rhs) {
+static glm::vec3& operator=(glm::vec3& lhs, const aiVector3D& rhs) {
 	lhs.x = rhs.x;
 	lhs.y = rhs.y;
 	lhs.z = rhs.z;
 	return lhs;
 }
 
-unique_ptr<SWAN::Mesh> processMesh(const aiMesh* mesh) {
+static unique_ptr<SWAN::Mesh> processMesh(const aiMesh* mesh) {
 	vector<SWAN::Vertex> verts;
 	vector<unsigned> inds;
 
@@ -51,9 +52,9 @@ unique_ptr<SWAN::Mesh> processMesh(const aiMesh* mesh) {
 
 	for(int i = 0; i < f.mNumVertices; i++) {
 		verts.push_back(Vertex(
-		    mesh->mVertices[i],
-		    mesh->HasTextureCoords(0) ? mesh->mTextureCoords[0][i] : zero2D,
-		    mesh->hasNormals() ? mesh->mNormals[i] : zero3D));
+							   mesh->mVertices[i],
+							   mesh->HasTextureCoords(0) ? mesh->mTextureCoords[0][i] : zero2D,
+							   mesh->hasNormals() ? mesh->mNormals[i] : zero3D));
 	}
 
 	for(int i = 0; i < mesh->mNumFaces; i++) {
@@ -66,52 +67,55 @@ unique_ptr<SWAN::Mesh> processMesh(const aiMesh* mesh) {
 	return make_unique<SWAN::Mesh>(verts, indices);
 }
 
-Scene processScene(const aiScene* s) {
+static SWAN::Light processLight(const aiLight* l) {
+	SWAN::Light light;
+	switch(l->mType) {
+	case aiLightSource_DIRECTIONAL:
+		light.type                  = L_DIRECTIONAL;
+		light.dirLight.direction    = l->mDirection;
+		light.dirLight.ambient      = l->mColorAmbient;
+		light.dirLight.diffuse      = l->mColorDiffuse;
+		light.dirLight.specular     = l->mColorSpecular;
+		light.dirLight.constAtt     = l->mAttenuationConstant;
+		light.dirLight.linearAtt    = l->mAttenuationLinear;
+		light.dirLight.quadraticAtt = l->mAttenuationQuadratic;
+		break;
+	case aiLightSource_POINT:
+		light.type                    = L_POINT;
+		light.pointLight.position     = l->mPosition;
+		light.pointLight.ambient      = l->mColorAmbient;
+		light.pointLight.diffuse      = l->mColorDiffuse;
+		light.pointLight.specular     = l->mColorSpecular;
+		light.pointLight.constAtt     = l->mAttenuationConstant;
+		light.pointLight.linearAtt    = l->mAttenuationLinear;
+		light.pointLight.quadraticAtt = l->mAttenuationQuadratic;
+		break;
+	case aiLightSource_SPOT:
+		light.type                   = L_SPOT;
+		light.spotLight.position     = l->mPosition;
+		light.spotLight.direction    = l->mDirection;
+		light.spotLight.ambient      = l->mColorAmbient;
+		light.spotLight.diffuse      = l->mColorDiffuse;
+		light.spotLight.specular     = l->mColorSpecular;
+		light.spotLight.constAtt     = l->mAttenuationConstant;
+		light.spotLight.linearAtt    = l->mAttenuationLinear;
+		light.spotLight.quadraticAtt = l->mAttenuationQuadratic;
+		break;
+	}
+	return light;
+}
+
+static Scene processScene(const aiScene* s) {
 	Scene res;
+	res.valid = true;
 	res.meshes.reserve(s->mNumMeshes);
 	res.lights.reserve(s->mNumLights);
 
 	for(int i = 0; i < s->mNumMeshes; i++)
 		res.meshes.emplace_back(processMesh(s->mMeshes[i]));
 
-	for(int i = 0; i < s->mNumLights; i++) {
-		Light light;
-		const aiLight* l = s->mLights[i];
-		switch(l->mType) {
-			case aiLightSource_DIRECTIONAL:
-				light.type                  = L_DIRECTIONAL;
-				light.dirLight.direction    = l->mDirection;
-				light.dirLight.ambient      = l->mColorAmbient;
-				light.dirLight.diffuse      = l->mColorDiffuse;
-				light.dirLight.specular     = l->mColorSpecular;
-				light.dirLight.constAtt     = l->mAttenuationConstant;
-				light.dirLight.linearAtt    = l->mAttenuationLinear;
-				light.dirLight.quadraticAtt = l->mAttenuationQuadratic;
-				break;
-			case aiLightSource_POINT:
-				light.type                    = L_POINT;
-				light.pointLight.position     = l->mPosition;
-				light.pointLight.ambient      = l->mColorAmbient;
-				light.pointLight.diffuse      = l->mColorDiffuse;
-				light.pointLight.specular     = l->mColorSpecular;
-				light.pointLight.constAtt     = l->mAttenuationConstant;
-				light.pointLight.linearAtt    = l->mAttenuationLinear;
-				light.pointLight.quadraticAtt = l->mAttenuationQuadratic;
-				break;
-			case aiLightSource_SPOT:
-				light.type                   = L_SPOT;
-				light.spotLight.position     = l->mPosition;
-				light.spotLight.direction    = l->mDirection;
-				light.spotLight.ambient      = l->mColorAmbient;
-				light.spotLight.diffuse      = l->mColorDiffuse;
-				light.spotLight.specular     = l->mColorSpecular;
-				light.spotLight.constAtt     = l->mAttenuationConstant;
-				light.spotLight.linearAtt    = l->mAttenuationLinear;
-				light.spotLight.quadraticAtt = l->mAttenuationQuadratic;
-				break;
-		}
-		res.lights.push_back(light);
-	}
+	for(int i = 0; i < s->mNumLights; i++)
+		res.lights.push_back(processLight(s->mLights[i]));
 
 	return res;
 }
@@ -120,12 +124,11 @@ Scene AssimpImport(const std::string& pFile) {
 	Assimp::Importer importer;
 
 	const aiScene* scene =
-	    importer.ReadFile(
-	        pFile,
-	        aiProcess_CalcTangentSpace |
-	            aiProcess_Triangulate |
-	            aiProcess_JoinIdenticalVertices |
-	            aiProcess_SortByPType);
+		importer.ReadFile(pFile,
+						  aiProcess_CalcTangentSpace |
+						  aiProcess_Triangulate |
+						  aiProcess_JoinIdenticalVertices |
+						  aiProcess_SortByPType);
 
 	if(!scene) {
 		logError(importer.GetErrorString());

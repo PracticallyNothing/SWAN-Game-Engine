@@ -8,7 +8,6 @@
 #include "Physics/Transform.hpp" // For SWAN::Transform
 #include "Rendering/Camera.hpp"  // For SWAN::Camera
 #include "Rendering/Mesh.hpp"    // For SWAN::Mesh
-#include "Rendering/Scene.hpp"   // For SWAN::Scene
 #include "Rendering/Shader.hpp"  // For SWAN::Shader
 #include "Rendering/Text.hpp"    // For SWAN::Text
 #include "Rendering/Texture.hpp" // For SWAN::Texture
@@ -118,8 +117,9 @@ int main() {
 	const SWAN::Texture* placeTex = SWAN::Res::GetTexture("Place");
 
 	SWAN::Camera cam(SWAN::Display::GetAspectRatio(), glm::vec3(0.0f, 0.0f, 0.0f));
+	SWAN::
 
-	bool running = true;
+	    bool running = true;
 	SWAN::EventListener exitEvent(
 	    []() -> bool {
 		    return SWAN_Input.Keyboard.escapeKey ||
@@ -157,17 +157,21 @@ int main() {
 
 			placeTex->bind();
 
+			int nRenderedCubes = 0;
+
 			for(int i = 0; i < nCubes; i++) {
 				if(glm::length(transforms[i].pos - cam.transform.pos) <= cam.zFar) {
 					shader->setUniform({ "transform", transforms[i] });
 					shader->renderMesh(*cubeMesh);
+					nRenderedCubes++;
 				}
 			}
 
 			std::stringstream info;
 			info
 			    << "Frame time: " << duration_cast<fms>(frameTime).count() << " ms\n"
-			    << "FPS: " << 1000 / duration_cast<fms>(frameTime).count() << '\n';
+			    << "FPS: " << 1000 / duration_cast<fms>(frameTime).count() << '\n'
+			    << "# rendered cubes: " << nRenderedCubes << " out of " << nCubes << '\n';
 
 			text.text = info.str();
 			text.updateVAO();

@@ -49,12 +49,24 @@ struct Spotlight {
 };
 
 struct Light {
+	Light() {}
+	Light(LightType type) : type(type) {}
+
+	explicit Light(DirectionalLight dl) {type = L_DIRECTIONAL; dirLight = dl;}
+	explicit Light(PointLight pl) {type = L_POINT; pointLight = pl;}
+	explicit Light(SpotLight sl) {type = L_SPOT; spotLight = l;}
+
+	explicit operator DirectionalLight() {return dirLight;}
+	explicit operator PointLight() {return pointLight;}
+	explicit operator SpotLight() {return spotLight;}
+
 	LightType type;
 	union {
 		DirectionalLight dirLight;
 		PointLight pointLight;
 		Spotlight spotLight;
 	};
+
 };
 } // namespace SWAN
 
