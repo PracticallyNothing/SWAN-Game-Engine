@@ -1,0 +1,1 @@
+/usr/bin/c++    -rdynamic CMakeFiles/SWAN-GUI-Demo.dir/SWAN-GUI-Demo.cpp.o  -o ../SWAN-GUI-Demo ../libSWAN.a -L/usr/lib  -lSDL2 -lGL -lGLU -ldl 

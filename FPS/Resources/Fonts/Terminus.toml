@@ -1,0 +1,6 @@
+name         = "Terminus 10"
+image_file   = "Terminus_10.png"
+glyph_width  = 6
+glyph_height = 12
+tab_width    = 4
+

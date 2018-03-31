@@ -24,7 +24,6 @@ void Version();
 	    SWAN::Res::GetTexture("Pressed Button")
 
 int main(int argc, const char** argv) {
-  SWAN::
 	SWAN::Display::Init(1280, 720, "SWAN GUI Demo");
 	SWAN_Input_Init();
 	SWAN::Display::SetClearColor(0.1f, 0.3f, 0.3f, 0.0f);
@@ -41,8 +40,6 @@ int main(int argc, const char** argv) {
 	guiRenderer.add(SWAN::GUI::CreateButton(10, 10, 100, 100, BUTTON_RES, [&running] { running = false; }));
 	guiRenderer.add(SWAN::GUI::CreateButton(10, 150, 100, 100, BUTTON_RES, [] {}))->setVisible(false);
 	guiRenderer.add(SWAN::GUI::CreateButton(150, 150, 100, 100, BUTTON_RES, [] {}));
-
-	SWA
 
 	SWAN::Color sliderBGColor{ 60, 60, 60, 255 };
 	SWAN::Color sliderHandleColor{ 183, 186, 0, 255 };

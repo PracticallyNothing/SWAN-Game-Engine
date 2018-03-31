@@ -1,0 +1,5 @@
+name                    = "Monospace 16"
+image_file              = "Monospace_16.png"
+glyph_width             = 15
+glyph_height            = 29
+tab_width               = 4

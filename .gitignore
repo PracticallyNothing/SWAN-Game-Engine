@@ -13,6 +13,7 @@ test*
 *out
 *log*
 *.gch
+\#*\#
 
 SWAN_*
 

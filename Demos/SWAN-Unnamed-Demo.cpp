@@ -1,6 +1,6 @@
 #define SDL_main_h_ // SDL_Main might be very useful, but I find it to be pesky.
 
-#include "CMakeConfig.h"
+//#include "CMakeConfig.h"
 
 #include "Core/Display.hpp"   // For SWAN::Display
 #include "Core/Input.hpp"     // For SWAN_Input
@@ -68,31 +68,31 @@ class Game {
 		textShader = SWAN::Res::GetShader("Text");
 
 		cam = make_unique<SWAN::Camera>(SWAN::Display::GetAspectRatio(),
-		                                glm::vec3(0.0f, 0.0f, -1.0f));
+		                                SWAN::vec3(0.0f, 0.0f, -1.0f));
 
 		SWAN::DirectionalLight dl0;
-		dl0.direction = glm::normalize(glm::vec3(1, 1, 1));
-		dl0.ambient   = glm::vec3(0.003, 0.0, 0.003);
-		dl0.diffuse   = glm::vec3(0.0, 0.0, 0.3);
-		dl0.specular  = glm::vec3(1, 1, 1);
+		dl0.direction = SWAN::Normalized(SWAN::vec3(1, 1, 1));
+		dl0.ambient   = SWAN::vec3(0.003, 0.0, 0.003);
+		dl0.diffuse   = SWAN::vec3(0.0, 0.0, 0.3);
+		dl0.specular  = SWAN::vec3(1, 1, 1);
 
 		SWAN::PointLight pl1;
-		pl1.position     = glm::vec3(1, 7, 15);
-		pl1.ambient      = glm::vec3(0.05, 0.0005, 0.0);
-		pl1.diffuse      = glm::vec3(0.5, 0.005, 0.0);
-		pl1.specular     = glm::vec3(1, 1, 1);
+		pl1.position     = SWAN::vec3(1, 7, 15);
+		pl1.ambient      = SWAN::vec3(0.05, 0.0005, 0.0);
+		pl1.diffuse      = SWAN::vec3(0.5, 0.005, 0.0);
+		pl1.specular     = SWAN::vec3(1, 1, 1);
 		pl1.linearAtt    = 0.045;
 		pl1.quadraticAtt = 0.0075;
 
-		pl2.position     = glm::vec3(0, 0, 0);
-		pl2.ambient      = glm::vec3(0.5, 0.5, 0.5);
-		pl2.diffuse      = glm::vec3(1, 1, 1);
-		pl2.specular     = glm::vec3(1, 1, 1);
+		pl2.position     = SWAN::vec3(0, 0, 0);
+		pl2.ambient      = SWAN::vec3(0.5, 0.5, 0.5);
+		pl2.diffuse      = SWAN::vec3(1, 1, 1);
+		pl2.specular     = SWAN::vec3(1, 1, 1);
 		pl2.linearAtt    = 0.09;
 		pl2.quadraticAtt = 0.075;
 
 		std::vector<SWAN::ShaderUniform> uniforms = {
-			{ "matSpecular", glm::vec3(0.5, 0.5, 0.5) },
+			{ "matSpecular", SWAN::vec3(0.5, 0.5, 0.5) },
 			{ "matShininess", 2.0f },
 			{ "lights[0]", dl0 },
 			{ "lights[1]", pl1 },
@@ -160,23 +160,17 @@ class Game {
 			cam->rotateByX(SWAN::Util::Radians::FromDegrees(45.0f));
 
 		if(SWAN_Input.Keyboard.letterKeys['y' - 'a'])
-			std::cout << "Camera FOV: " << (cam->fov -= glm::radians(1.0))
-			          << '\n';
-		if(SWAN_Input.Keyboard.letterKeys['h' - 'a'])
-			std::cout << "Camera FOV: " << (cam->fov += glm::radians(1.0))
-			          << '\n';
+			std::cout << "Camera FOV: " << (cam->fov -= (double) SWAN::Util::Radians(1.0)) << '\n';
+		else if(SWAN_Input.Keyboard.letterKeys['h' - 'a'])
+			std::cout << "Camera FOV: " << (cam->fov += (double) SWAN::Util::Radians(1.0)) << '\n';
 
-		auto mouseX = SWAN::Util::PixelToGLCoord(SWAN::Display::GetWidth(),
-		                                         SWAN_Input.Mouse.x);
-		auto prevMouseX = SWAN::Util::PixelToGLCoord(SWAN::Display::GetWidth(),
-		                                             PrevInput.Mouse.x);
+		auto mouseX = SWAN::Util::PixelToGLCoord(SWAN::Display::GetWidth(), SWAN_Input.Mouse.x);
+		auto prevMouseX = SWAN::Util::PixelToGLCoord(SWAN::Display::GetWidth(), PrevInput.Mouse.x);
 
 		cam->rotateByY(SWAN::Util::Radians((mouseX - prevMouseX) * 2.0));
 
-		auto mouseY = SWAN::Util::PixelToGLCoord(SWAN::Display::GetHeight(),
-		                                         SWAN_Input.Mouse.y);
-		auto prevMouseY = SWAN::Util::PixelToGLCoord(SWAN::Display::GetHeight(),
-		                                             PrevInput.Mouse.y);
+		auto mouseY = SWAN::Util::PixelToGLCoord(SWAN::Display::GetHeight(), SWAN_Input.Mouse.y);
+		auto prevMouseY = SWAN::Util::PixelToGLCoord(SWAN::Display::GetHeight(), PrevInput.Mouse.y);
 
 		cam->rotateByX(SWAN::Util::Radians((mouseY - prevMouseY) * 2.0));
 
@@ -275,10 +269,12 @@ class Game {
 	float time      = 0;
 };
 
+/*
 void Version() {
 	std::cout << "SWAN-Unnamed-Demo with SWAN version " << SWAN_VERSION_STRING
 	          << " (SWAN Build type: " << SWAN_BUILD_TYPE << ")\n";
 }
+*/
 
 void Usage() {
 	std::cout
@@ -286,7 +282,7 @@ void Usage() {
 	    << '\n'
 	    << "Available options:\n"
 	    << "    -h, --help         Show this help\n"
-	    << "    -v, --version      Display version\n"
+		//    << "    -v, --version      Display version\n"
 	    << "    --config=<config>  Use custom configuration file, default "
 	       "is ./Config.xml\n";
 }
@@ -298,11 +294,12 @@ void ProcessArgs(int argc, char** argv) {
 		if(!std::strcmp(argv[i], "-h") || !std::strcmp(argv[i], "--help")) {
 			Usage();
 			exit(EXIT_SUCCESS);
-		} else if(!std::strcmp(argv[i], "-v") ||
+		} /*else if(!std::strcmp(argv[i], "-v") ||
 		          !std::strcmp(argv[i], "--version")) {
 			Version();
 			exit(EXIT_SUCCESS);
-		} else if(!std::strncmp(argv[i], "--config=", 9)) {
+			} */
+		else if(!std::strncmp(argv[i], "--config=", 9)) {
 			if(strlen(argv[i]) <= 9) {
 				std::cout
 				    << "ERROR: \"--config=\" flag was passed, but no file was "

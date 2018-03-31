@@ -32,4 +32,41 @@
 		Simple problem, simple solution - bind a texture.
 		Use a call to SWAN::Texture::bind() to bind a texture.
 ==========================================================================================
+- Faces are flipped
+  - How it looks:
+  		Even though rendering code has been written, nothing shows up
+
+  - Explanation
+  	   If you have made a call to glEnable(GL_CULL_FACE),
+	   OpenGL will only render the faces that are facing the camera.
+	   How that is determined is maths, but to avoid this, you need
+	   to pass in the vertices in a counter-clockwise fashion.
+
+	   That is, if you have a quad like this:
+
+	   + - vertex
+	   0 - vertex index
+	   A - triangle name
+
+	   0    1
+	   +----+
+	   | A /|
+	   |  / |
+	   | /  |
+	   |/ B |
+	   +----+
+	   2    3
+
+	   ... then the correct order of the verttices would be
+
+	   0, 2, 1, (triangle A)
+	   1, 2, 3  (triangle B)
+
+  - Solution:
+		There are two ways to solve this:
+			a) Disable face culling (NEVER USE THIS IN PRODUCTION CODE)
+			b) Fix the order of the vertices
+  	
 ==========================================================================================
+- Texture is upside-down
+  - How it looks:
