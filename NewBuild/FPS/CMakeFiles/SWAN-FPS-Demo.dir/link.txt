@@ -1,1 +1,0 @@
-/usr/bin/c++    -rdynamic CMakeFiles/SWAN-FPS-Demo.dir/Main.cpp.o  -o ../SWAN-FPS-Demo ../libSWAN.a -L/usr/lib  -lSDL2 -lGL -lGLU -ldl 
