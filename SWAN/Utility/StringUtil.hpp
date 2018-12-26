@@ -1,31 +1,32 @@
 #ifndef SWAN_UTIL_STRING_UTIL_HPP
 #define SWAN_UTIL_STRING_UTIL_HPP
 
-#include <array>  // For std::array<T,N>
-#include <string> // For std::string
-#include <vector> // For std::vector<T>
+#include "Core/Defs.hpp"
 
 namespace SWAN {
-namespace Util {
-	using std::array;
-	using std::string;
-	using std::vector;
+    namespace Util {
+	String ToLower(const String& s);
+	String ToUpper(const String& s);
 
-	string Trim(const string& s);
-	string Unquote(const string& s);
+	String Trim(const String& s);
+	String Unquote(const String& s);
 
-	vector<string> SplitOn(const string& line, char c = ' ');
+	Vector<String> SplitOn(const String& line, char c = ' ');
+	Array<String, 2> SplitOnFirst(const String& line, char c = ' ');
+	Array<String, 2> SplitOnLast(const String& line, char c = ' ');
 
 	template <typename Pred>
-	vector<string> SplitIf(const string& line, Pred&& p);
+	Vector<String> SplitIf(const String& line, Pred&& p);
 
-	array<int, 5> ReadFace(string str);
+	Array<int, 5> ReadFace(String str);
 
-	string GetDirectory(const string& location, bool withSlash = true);
+	String GetFilename(const String& location, bool keepExtension);
+	String GetDirectory(const String& location, bool withSlash = true);
 
-	inline bool IsAbsolutePath(const string& path) { return path[0] == '/'; }
-	inline bool IsRelativePath(const string& path) { return path[0] != '/'; }
-}
-}
+	inline bool IsAbsolutePath(const String& path) { return path[0] == '/'; }
+	inline bool IsRelativePath(const String& path) { return path[0] != '/'; }
+
+    } // namespace Util
+} // namespace SWAN
 
 #endif

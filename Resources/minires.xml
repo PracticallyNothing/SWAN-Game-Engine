@@ -1,38 +1,28 @@
 <Resources>
-	<Mesh file="Meshes/Cube.obj"        name="1x1 Cube"     col="None"/>
-	<Mesh file="Meshes/1x1_Sphere.obj"  name="1x1 Sphere"   col="None"/>
-	<Mesh file="Meshes/IcoSphere.obj"   name="Sphere"       />
+  <Mesh file="Meshes/Cube.obj"        name="1x1 Cube"     col="None"/>
+  <Mesh file="Meshes/1x1_Sphere.obj"  name="1x1 Sphere"   col="None"/>
+  <Mesh file="Meshes/IcoSphere.obj"   name="Sphere"       />
 
-	<Texture file="Textures/GUI/ButtonNormal.png" name="Normal Button"/>
-	<Texture file="Textures/GUI/ButtonHover.png"  name="Hovered Button"/>
-	<Texture file="Textures/GUI/ButtonPress.png"  name="Pressed Button"/>
+  <Texture file="Textures/GUI/ButtonNormal.png" name="Normal Button"/>
+  <Texture file="Textures/GUI/ButtonHover.png"  name="Hovered Button"/>
+  <Texture file="Textures/GUI/ButtonPress.png"  name="Pressed Button"/>
+  <Texture file="Textures/GUI/FPauseSong.png" name="FPause"/>
+  <Texture file="Textures/GUI/FPlaySong.png" name="FPlay"/>
+  <Texture file="Textures/GUI/PauseSong.png" name="Pause"/>
+  <Texture file="Textures/GUI/PlaySong.png" name="Play"/>
 
-	<BitmapFont file="Font.toml"  name="Monospace 16"/>
-	<BitmapFont file="Font2.toml" name="Monospace 12"/>
-	<BitmapFont file="Terminus.toml" name="Terminus 10"/>
+  <BitmapFont file="Font.toml"  name="Monospace 16"/>
+  <BitmapFont file="Font2.toml" name="Monospace 12"/>
+  <BitmapFont file="Terminus.toml" name="Terminus 10"/>
 
-	<Shader vertex="Shaders/Physics.vert" fragment="Shaders/Physics.frag" name="Physics">
-		<Attribute name="pos"/>
+  <Shader vertex="Shaders/Physics.vert" fragment="Shaders/Physics.frag" name="Physics">
+    <Attribute name="pos"/>
 
-		<Uniform name="view"/>
-		<Uniform name="perspective"/>
-		<Uniform name="transform"/>
+    <Uniform name="view"/>
+    <Uniform name="perspective"/>
+    <Uniform name="transform"/>
 
-		<Uniform name="colliding"/>
-	</Shader>
-
-	<Shader vertex="Shaders/GUIShader.vert" fragment="Shaders/GUIShader.frag" name="GUI">
-		<Attribute name="pos"/>
-		<Attribute name="UV"/>
-
-		<Uniform name="transform"/>
-		<Uniform name="topLeft"/>
-		<Uniform name="bottomRight"/>
-		<Uniform name="type"/>
-		<Uniform name="color1"/>
-		<Uniform name="color2"/>
-		<Uniform name="tex"/>
-	</Shader>
-
+    <Uniform name="colliding"/>
+  </Shader>
 </Resources>
 

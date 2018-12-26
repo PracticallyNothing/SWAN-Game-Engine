@@ -1,103 +1,97 @@
 <Resources>
-	<Mesh file="Meshes/strange-room.obj" name="Room"/>
-	<Mesh file="Meshes/Cube.obj"         name="1x1 Cube"     col="None"/>
-	<Mesh file="Meshes/1x1_Sphere.obj"   name="1x1 Sphere"   col="None"/>
-	<Mesh file="Meshes/IcoSphere.obj"    name="Sphere"       />
-	<Mesh file="Meshes/Monkey.obj"       name="Monkey Head"  />
-	<Mesh file="Meshes/SPAS-12.obj"      name="SPAS 12"      />
-	<Mesh file="Meshes/SimplePlane.obj"  name="Plane"        />
-	<Mesh file="Meshes/Torus.obj"        name="Torus"        />
-	<Mesh file="Meshes/airboat.obj"      name="Airboat"      />
+  <Mesh file="Meshes/strange-room.obj" name="Room"/>
+  <Mesh file="Meshes/Cube.obj"         name="1x1 Cube"     col="None"/>
+  <Mesh file="Meshes/1x1_Sphere.obj"   name="1x1 Sphere"   col="None"/>
+  <Mesh file="Meshes/IcoSphere.obj"    name="Sphere"       />
+  <Mesh file="Meshes/Monkey.obj"       name="Monkey Head"  />
+  <Mesh file="Meshes/SPAS-12.obj"      name="SPAS 12"      />
+  <Mesh file="Meshes/SimplePlane.obj"  name="Plane"        />
+  <Mesh file="Meshes/Torus.obj"        name="Torus"        />
+  <Mesh file="Meshes/airboat.obj"      name="Airboat"      />
 
-	<Texture file="Textures/GUI/ButtonNormal.png" name="Normal Button"/>
-	<Texture file="Textures/GUI/ButtonHover.png"  name="Hovered Button"/>
-	<Texture file="Textures/GUI/ButtonPress.png"  name="Pressed Button"/>
+  <Texture file="Textures/GUI/ButtonNormal.png" name="Normal Button"/>
+  <Texture file="Textures/GUI/ButtonHover.png"  name="Hovered Button"/>
+  <Texture file="Textures/GUI/ButtonPress.png"  name="Pressed Button"/>
 
-	<Texture file="Textures/BlackTexture.png"  name="Flat Black"/>
-	<Texture file="Textures/BlueTexture.png"   name="Flat Blue"/>
-	<Texture file="Textures/CyanTexture.png"   name="Flat Cyan"/>
-	<Texture file="Textures/GreenTexture.png"  name="Flat Green"/>
-	<Texture file="Textures/OrangeTexture.png" name="Flat Orange"/>
-	<Texture file="Textures/PinkTexture.png"   name="Flat Pink"/>
-	<Texture file="Textures/RedTexture.png"    name="Flat Red"/>
-	<Texture file="Textures/WhiteTexture.png"  name="Flat White"/>
-	<Texture file="Textures/YellowTexture.png" name="Flat Yellow"/>
-	<Texture file="Textures/Test.png" 		   name=""/>
-	<Texture file="Textures/Thingy.png"        name=""/>
-	<Texture file="Textures/tex.png" 		   name=""/>
-	<Texture file="Textures/Diffuse_Color.png" name="Monkey Head Texture"/>
+  <Texture file="Textures/BlackTexture.png"  name="Flat Black"/>
+  <Texture file="Textures/BlueTexture.png"   name="Flat Blue"/>
+  <Texture file="Textures/CyanTexture.png"   name="Flat Cyan"/>
+  <Texture file="Textures/GreenTexture.png"  name="Flat Green"/>
+  <Texture file="Textures/OrangeTexture.png" name="Flat Orange"/>
+  <Texture file="Textures/PinkTexture.png"   name="Flat Pink"/>
+  <Texture file="Textures/RedTexture.png"    name="Flat Red"/>
+  <Texture file="Textures/WhiteTexture.png"  name="Flat White"/>
+  <Texture file="Textures/YellowTexture.png" name="Flat Yellow"/>
+  <Texture file="Textures/Test.png" 		   name=""/>
+  <Texture file="Textures/Thingy.png"        name=""/>
+  <Texture file="Textures/tex.png" 		   name=""/>
+  <Texture file="Textures/Diffuse_Color.png" name="Monkey Head Texture"/>
 
-	<BitmapFont file="Font.toml"  name="Monospace 16"/>
-	<BitmapFont file="Font2.toml" name="Monospace 12"/>
+  <BitmapFont file="Font.ini"  name="Monospace 16"/>
+  <BitmapFont file="Font2.ini" name="Monospace 12"/>
+  <BitmapFont file="Terminus.ini" name="Monospace 12"/>
 
-	<Shader vertex="Shaders/Physics.vert" fragment="Shaders/Physics.frag" name="Physics">
-		<Attribute name="pos"/>
+  <Shader vertex="Shaders/Physics.vert" fragment="Shaders/Physics.frag" name="Physics">
+    <Attribute name="pos"/>
 
-		<Uniform name="view"/>
-		<Uniform name="perspective"/>
-		<Uniform name="transform"/>
+    <Uniform name="view"/>
+    <Uniform name="perspective"/>
+    <Uniform name="transform"/>
 
-		<Uniform name="colliding"/>
-	</Shader>
+    <Uniform name="colliding"/>
+  </Shader>
 
-	<Shader vertex="Shaders/GUIShader.vert" fragment="Shaders/GUIShader.frag" name="GUI">
-		<Attribute name="pos"/>
-		<Attribute name="UV"/>
+  <Shader vertex="Shaders/GUIShader.vert" fragment="Shaders/GUIShader.frag" name="GUI">
+    <Attribute name="pos"/>
+    <Attribute name="UV"/>
 
-		<Uniform name="transform"/>
-		<Uniform name="topLeft"/>
-		<Uniform name="bottomRight"/>
-		<Uniform name="type"/>
-		<Uniform name="color1"/>
-		<Uniform name="color2"/>
-		<Uniform name="tex"/>
-	</Shader>
+    <Uniform name="transform"/>
+    <Uniform name="topLeft"/>
+    <Uniform name="bottomRight"/>
+    <Uniform name="type"/>
+    <Uniform name="color1"/>
+    <Uniform name="color2"/>
+    <Uniform name="tex"/>
+  </Shader>
 
-	<Shader vertex="Shaders/text.vert" fragment="Shaders/text.frag" name="Text">
-		<Attribute name="pos"/>
-		<Attribute name="UV"/>
+  <Shader vertex="Shaders/text.vert" fragment="Shaders/text.frag" name="Text">
+    <Attribute name="pos"/>
+    <Attribute name="UV"/>
 
-		<Uniform name="transform"/>
-		<Uniform name="color"/>
-	</Shader>
+    <Uniform name="transform"/>
+    <Uniform name="color"/>
+  </Shader>
 
-	<Shader vertex="Shaders/ProperText.vert" fragment="Shaders/text.frag" name="ProperText">
-		<Attribute name="pos"/>
-		<Attribute name="UV"/>
-		<Uniform name="color"/>
-		<Uniform name="bgColor"/>
-	</Shader>
+  <Shader vertex="Shaders/proper.vert" fragment="Shaders/proper.frag" name="Proper">
+    <Attribute name="pos"/>
+    <Attribute name="UV"/>
+    <Attribute name="norm"/>
 
-	<Shader vertex="Shaders/proper.vert" fragment="Shaders/proper.frag" name="Proper">
-		<Attribute name="pos"/>
-		<Attribute name="UV"/>
-		<Attribute name="norm"/>
+    <Uniform name="perspective"/>
+    <Uniform name="view"/>
+    <Uniform name="transform"/>
 
-		<Uniform name="perspective"/>
-		<Uniform name="view"/>
-		<Uniform name="transform"/>
+    <Uniform name="camPos"/>
 
-		<Uniform name="camPos"/>
+    <StructArrayUniform name="lights" size="8">
+      <SAUniform name="type"/>
+      <SAUniform name="ambient"/>
+      <SAUniform name="diffuse"/>
+      <SAUniform name="specular"/>
+      <SAUniform name="pos"/>
+      <SAUniform name="dir"/>
+      <SAUniform name="cutoff"/>
+      <SAUniform name="outerCutoff"/>
+      <SAUniform name="constAtt"/>
+      <SAUniform name="linAtt"/>
+      <SAUniform name="quadAtt"/>
+    </StructArrayUniform>
 
-		<StructArrayUniform name="lights" size="8">
-			<SAUniform name="type"/>
-			<SAUniform name="ambient"/>
-			<SAUniform name="diffuse"/>
-			<SAUniform name="specular"/>
-			<SAUniform name="pos"/>
-			<SAUniform name="dir"/>
-			<SAUniform name="cutoff"/>
-			<SAUniform name="outerCutoff"/>
-			<SAUniform name="constAtt"/>
-			<SAUniform name="linAtt"/>
-			<SAUniform name="quadAtt"/>
-		</StructArrayUniform>
+    <Uniform name="activeLights"/>
 
-		<Uniform name="activeLights"/>
-
-		<Uniform name="matDiffuse"/>
-		<Uniform name="matSpecular"/>
-		<Uniform name="matShininess"/>
-	</Shader>
+    <Uniform name="matDiffuse"/>
+    <Uniform name="matSpecular"/>
+    <Uniform name="matShininess"/>
+  </Shader>
 
 </Resources>

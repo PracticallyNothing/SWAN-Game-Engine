@@ -1,3 +1,0 @@
-[submodule "Source/External/cpptoml"]
-	path = Source/External/cpptoml
-	url = https://github.com/skystrife/cpptoml.git

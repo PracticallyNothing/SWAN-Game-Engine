@@ -1,4 +1,5 @@
 Misc/
+Notes/
 
 --*
 test*
@@ -16,6 +17,9 @@ Sources/OldMain.cpp
 *-Demo
 
 # Created by https://www.gitignore.io/api/c,c++,cmake,vim,emacs,archives
+
+# Doxygen
+[D|d]ocs/
 
 ### C ###
 # Prerequisites

@@ -4,76 +4,86 @@
 
 #include "Core/Display.hpp" // For SWAN::Display
 
+#include "Utility/INI.hpp"       // For SWAN::Util::Normalize()
 #include "Utility/Math.hpp"       // For SWAN::Util::Normalize()
 #include "Utility/StringUtil.hpp" // For SWAN::Util::GetDirectory(), SWAN::Util::IsAbsolutePath()
 
-#include <algorithm> // For std::max_element(), std::count()
-#include "../External/cpptoml/include/cpptoml.h" // For cpptoml::parse_file()
-#include <iostream>  // For std::cout
+#include <algorithm>                             // For std::max_element(), std::count()
+#include <iostream>                              // For std::cout
 
 namespace SWAN {
-// TODO: Move to importer function
-BitmapFont::BitmapFont(const std::string& confFilename) {
-	auto conf           = cpptoml::parse_file(confFilename);
-	auto confGlyphWidth = conf->get_as<int>("glyph_width");
-
-	if(!confGlyphWidth) {
-		std::cout << "ERROR: Bitmap font config file \"" << confFilename << "\" doesn't contain a \"glyph_width\" field!\n";
-		return;
-	} else if(*confGlyphWidth < 4) {
-		std::cout << "ERROR: Bitmap font config file \"" << confFilename << "\" has too small of a \"glyph_width\" field!\n";
-		return;
-	} else {
-		glyphWidth = *confGlyphWidth;
+    // TODO: Move to importer function
+    BitmapFont::BitmapFont(const std::string& confFilename) {
+	auto conf = Util::INI::ParseFile(confFilename);
+	if(!conf.hasVar("glyph_width"))
+	{
+	    return;
+	}
+	else if(Util::INI::ToInt(conf["global"]["glyph_width"]) < 4)
+	{
+	    return;
+	}
+	else
+	{
+	    glyphWidth = Util::INI::ToInt(conf["global"]["glyph_width"]);
 	}
 
-	auto confGlyphHeight = conf->get_as<int>("glyph_height");
-	if(!confGlyphHeight) {
-		std::cout << "ERROR: Bitmap font config file \"" << confFilename << "\" doesn't contain a \"glyph_height\" field!\n";
-		return;
-	} else if(*confGlyphHeight < 4) {
-		std::cout << "ERROR: Bitmap font config file \"" << confFilename << "\" has too small of a \"glyph_height\" field!\n";
-		return;
-	} else {
-		glyphHeight = *confGlyphHeight;
+	if(!conf.hasVar("glyph_height"))
+	{
+	    return;
+	}
+	else if(Util::INI::ToInt(conf["global"]["glyph_height"]) < 4)
+	{
+	    return;
+	}
+	else
+	{
+	    glyphHeight = Util::INI::ToInt(conf["global"]["glyph_height"]);
 	}
 
-	auto confImageName = conf->get_as<std::string>("image_file");
-	if(!confImageName) {
-		std::cout << "ERROR: Bitmap font config file \"" << confFilename << "\" doesn't contain a \"image_file\" field!\n";
-		return;
+	std::string confImageName; 
+
+	if(!conf.hasVar("image_file"))
+	{
+	    return;
+	}
+	else
+	{
+	    confImageName = conf["global"]["image_file"];
 	}
 
 	std::string dir = "";
 	if(Util::IsRelativePath(confFilename))
-		dir = SWAN::Util::GetDirectory(confFilename);
+	    dir = SWAN::Util::GetDirectory(confFilename);
 
 	stbi_set_flip_vertically_on_load(true);
-	img = new Image((dir + *confImageName).c_str());
-	if(!img->data) {
-		std::cout << "ERROR: Bitmap font config file \"" << confFilename << "\" has an incorrect \"image_file\" field!\n";
-		return;
+	img = new Image((dir + confImageName).c_str());
+	if(!img->data)
+	{
+	    std::cout << "ERROR: Bitmap font config file \"" << confFilename << "\" has an incorrect \"image_file\" field!\n";
+	    return;
 	}
 	stbi_set_flip_vertically_on_load(false);
 
-	std::cout << "Success: Bitmap font config file\"" << confFilename << "\" has been loaded correctly!\n";
-	tabWidth = conf->get_as<int>("tab_width").value_or(4);
+	//std::cout << "Success: Bitmap font config file\"" << confFilename << "\" has been loaded correctly!\n";
+	tabWidth = (conf.hasVar("tab_width") ? Util::INI::ToInt(conf["global"]["tab_width"]) : 4);
 
 	glyphsPerRow = img->width / glyphWidth;
-	tex          = new Texture(*img);
-}
+	tex = new Texture(*img);
+    }
 
-int BitmapFont::getGlyphWidth(char c) const {
-	if(std::isprint(c)) {
-		return glyphWidth;
-	} else if(c == '\t') {
-		return tabWidth * glyphWidth;
-	} else {
-		return 0;
-	}
-}
+    int BitmapFont::getGlyphWidth(char c) const
+    {
+	if(std::isprint(c))
+	    return glyphWidth;
+	else if(c == '\t')
+	    return tabWidth * glyphWidth;
+	else
+	    return 0;
+    }
 
-std::array<vec2, 4> BitmapFont::getGlyphUVs(char c) const {
+    std::array<vec2, 4> BitmapFont::getGlyphUVs(char c) const
+    {
 	std::array<vec2, 4> uvs;
 
 	double glWidth  = (double) glyphWidth / img->width;
@@ -95,18 +105,32 @@ std::array<vec2, 4> BitmapFont::getGlyphUVs(char c) const {
 	uvs[3].y = uvs[0].y - glHeight;
 
 	return uvs;
-}
+    }
 
-BitmapFont::~BitmapFont() {
+    BitmapFont::~BitmapFont()
+    {
 	delete img;
 	delete tex;
-}
+    }
 
-int BitmapFont::getTextWidth(std::string text) const {
+    int BitmapFont::getTextWidth(std::string text) const {
+	if(!text.length())
+	    return 0;
+
 	auto v = Util::SplitOn(text, '\n');
-	return glyphWidth * (*std::max_element(v.begin(), v.end(), [](std::string a, std::string b) { return a.length() < b.length(); })).length();
-}
-int BitmapFont::getTextHeight(std::string text) const {
-	return glyphHeight * std::count(text.begin(), text.end(), '\n');
-}
+
+	return glyphWidth *
+	    std::max_element(
+		v.begin(), v.end(),
+		[](const std::string& a, const std::string& b) { return a.length() < b.length(); }
+	    )->length();
+    }
+
+    int BitmapFont::getTextHeight(std::string text) const
+    {
+	if(!text.length())
+	    return 0;
+
+	return glyphHeight * (1 + std::count(text.begin(), text.end(), '\n'));
+    }
 } // namespace SWAN

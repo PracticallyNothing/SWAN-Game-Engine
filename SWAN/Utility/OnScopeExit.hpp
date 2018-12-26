@@ -13,7 +13,7 @@ namespace Util {
 	  private:
 		const std::function<void(void)> f;
 	};
-}
-}
+} // namespace Util
+} // namespace SWAN
 
 #endif // UTIL_ON_SCOPE_EXIT_HPP

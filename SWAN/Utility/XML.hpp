@@ -114,8 +114,8 @@ namespace Util {
 			os << Stringify(tag);
 			return os;
 		}
-	}
-}
-}
+	} // namespace StreamOps
+} // namespace Util
+} // namespace SWAN
 
 #endif

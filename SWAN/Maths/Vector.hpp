@@ -2,269 +2,167 @@
 #define SWAN_VEC_HPP
 
 #include <cmath>
+#include <type_traits> // For std::is_arithmetic<T>, std::common_type<T, U, ...>
+
+#define IS_ARITH(T) static_assert(std::is_arithmetic<T>::value, "Type " #T "is not an arithmetic type.")
+#define ENABLE_IF_ARITH(Type, RetType) typename std::enable_if<std::is_arithmetic<Type>::value, RetType>::type
 
 namespace SWAN {
-	struct vec2 {
-		constexpr vec2() : x(0), y(0) {}
-		explicit constexpr vec2(double v) : x(v), y(v) {}
-		constexpr vec2(double x, double y) : x(x), y(y) {}
+    template<typename T>
+    struct tvec2 {
+	using Type = T;
+	
+	constexpr tvec2() : x(T()), y(T()) { IS_ARITH(T); }
+	constexpr tvec2(T x, T y) : x(x), y(y) { IS_ARITH(T); }
+	explicit constexpr tvec2(T v) : x(v), y(v) { IS_ARITH(T); }
+	template<typename U = T> constexpr tvec2(const tvec2<U>& v) : x(v.x), y(v.y) { IS_ARITH(T); }
 
-		inline constexpr void operator+=(const vec2& v) {x += v.x; y += v.y;}
-		inline constexpr void operator-=(const vec2& v) {x -= v.x; y -= v.y;}
-		inline constexpr void operator*=(const vec2& v) {x *= v.x; y *= v.y;}
-		inline constexpr void operator/=(const vec2& v) {x /= v.x; y /= v.y;}
-		inline constexpr void operator*=(double d) { x *= d; y *= d; }
-		inline constexpr void operator/=(double d) { x /= d; y /= d; }
+	template<typename U = T> constexpr void operator+=(const tvec2<U>& v) { IS_ARITH(U); x += v.x; y += v.y;}
+	template<typename U = T> constexpr void operator-=(const tvec2<U>& v) { IS_ARITH(U); x -= v.x; y -= v.y;}
+	template<typename U = T> constexpr void operator*=(const tvec2<U>& v) { IS_ARITH(U); x *= v.x; y *= v.y;}
+	template<typename U = T> constexpr void operator/=(const tvec2<U>& v) { IS_ARITH(U); x /= v.x; y /= v.y;}
 
-		double x, y;
-	};
+	template<typename U = T> constexpr void operator*=(U d) { IS_ARITH(U); x *= d; y *= d;}
+	template<typename U = T> constexpr void operator/=(U d) { IS_ARITH(U); x /= d; y /= d;}
 
-	struct ivec2 {
-		constexpr ivec2() : x(0), y(0) {}
-		explicit constexpr ivec2(int v) : x(v), y(v) {}
-		constexpr ivec2(int x, int y) : x(x), y(y) {}
-		explicit constexpr ivec2(vec2 v) : x(v.x), y(v.y) {}
+	T x, y;
+    };
 
-		inline constexpr void operator+=(const ivec2& v) {x += v.x; y += v.y;}
-		inline constexpr void operator-=(const ivec2& v) {x -= v.x; y -= v.y;}
-		inline constexpr void operator*=(const ivec2& v) {x *= v.x; y *= v.y;}
-		inline constexpr void operator/=(const ivec2& v) {x /= v.x; y /= v.y;}
-		inline constexpr void operator*=(double d) { x *= d; y *= d; }
-		inline constexpr void operator/=(double d) { x /= d; y /= d; }
+    template<typename T>
+    struct tvec3 {
+	using Type = T;
 
-		int x, y;
-	};
+	constexpr tvec3() : x(T()), y(T()), z(T()) { IS_ARITH(T); }
+	explicit constexpr tvec3(T v) : x(v), y(v), z(v) { IS_ARITH(T); }
+	constexpr tvec3(T x, T y, T z) : x(x), y(y), z(z) { IS_ARITH(T); }
+	template<typename U = T> constexpr tvec3(tvec2<U> v, T z) : x(v.x), y(v.y), z(z) { IS_ARITH(T); }
+	template<typename U = T> constexpr tvec3(tvec3<U> v)      : x(v.x), y(v.y), z(v.z) { IS_ARITH(T); }
 
-	struct vec3 {
-		constexpr vec3() : x(0), y(0), z(0) {}
-		explicit constexpr vec3(double v) : x(v), y(v), z(v) {}
-		constexpr vec3(double x, double y, double z) : x(x), y(y), z(z) {}
-		constexpr vec3(vec2 v, double z) : x(v.x), y(v.y), z(z) {}
-		constexpr vec3(ivec2 v, double z) : x(v.x), y(v.y), z(z) {}
+	template<typename U = T> constexpr operator tvec2<U>() { IS_ARITH(U); return tvec2<U>(x, y); }
 
-		constexpr operator vec2() { return vec2(x, y); }
-		constexpr operator ivec2() { return ivec2(x, y); }
+	template<typename U = T> constexpr void operator+=(const tvec3<U>& v) { IS_ARITH(U); x += v.x; y += v.y; z += v.z;}
+	template<typename U = T> constexpr void operator-=(const tvec3<U>& v) { IS_ARITH(U); x -= v.x; y -= v.y; z -= v.z;}
+	template<typename U = T> constexpr void operator*=(const tvec3<U>& v) { IS_ARITH(U); x *= v.x; y *= v.y; z *= v.z;}
+	template<typename U = T> constexpr void operator/=(const tvec3<U>& v) { IS_ARITH(U); x /= v.x; y /= v.y; z /= v.z;}
 
-		inline constexpr void operator+=(const vec3& v) { x += v.x; y += v.y; z += v.z; }
-		inline constexpr void operator-=(const vec3& v) { x -= v.x; y -= v.y; z -= v.z; }
-		inline constexpr void operator*=(const vec3& v) { x *= v.x; y *= v.y; z *= v.z; }
-		inline constexpr void operator/=(const vec3& v) { x /= v.x; y /= v.y; z /= v.z; }
-		inline constexpr void operator*=(double d) { x *= d; y *= d; z *= d; }
-		inline constexpr void operator/=(double d) { x /= d; y /= d; z /= d; }
+	template<typename U = T> constexpr void operator*=(U d) { IS_ARITH(U); x *= d; y *= d; z *= d;}
+	template<typename U = T> constexpr void operator/=(U d) { IS_ARITH(U); x /= d; y /= d; z /= d;}
 
-		double x, y, z;
-	};
-	struct ivec3 {
-		constexpr ivec3() : x(0), y(0), z(0) {}
-		explicit constexpr ivec3(int v) : x(v), y(v), z(v) {}
-		constexpr ivec3(int x, int y, int z) : x(x), y(y), z(z) {}
-		constexpr ivec3(vec2 v, double z) : x(v.x), y(v.y), z(z) {}
-		constexpr ivec3(ivec2 v, double z) : x(v.x), y(v.y), z(z) {}
+	T x, y, z;
+    };
 
-		explicit constexpr ivec3(vec2 v) : x(v.x), y(v.y), z(0) {}
-		explicit constexpr ivec3(const vec3& v) : x(v.x), y(v.y), z(v.z) {}
+    template<typename T>
+    struct tvec4 {
+	using Type = T;
 
-		constexpr ivec3(ivec2 v) : x(v.x), y(v.y), z(0) {}
+	constexpr tvec4() : x(T()), y(T()), z(T()), w(T()) { IS_ARITH(T); }
+	constexpr tvec4(T x, T y, T z, T w) : x(x), y(y), z(z), w(w) { IS_ARITH(T); }
+	explicit constexpr tvec4(T v) : x(v), y(v), z(v), w(v) { IS_ARITH(T); }
+	template<typename U = T> constexpr tvec4(tvec2<U> v, T z, T w) : x(v.x), y(v.y), z(z), w(w) { IS_ARITH(T); }
+	template<typename U = T> constexpr tvec4(tvec3<U> v, T w) : x(v.x), y(v.y), z(v.z), w(w) { IS_ARITH(T); }
+	template<typename U = T> constexpr tvec4(tvec4<U> v) : x(v.x), y(v.y), z(v.z), w(v.w) { IS_ARITH(T); }
 
-		explicit constexpr operator ivec2() { return ivec2(x, y); }
-		explicit constexpr operator vec2() { return vec2(x, y); }
-		explicit constexpr operator vec3() { return vec3(x, y, z); }
+	template<typename U = T> constexpr void operator+=(const tvec4<U>& v) { IS_ARITH(U); x += v.x; y += v.y; z += v.z; w += v.w;}
+	template<typename U = T> constexpr void operator-=(const tvec4<U>& v) { IS_ARITH(U); x -= v.x; y -= v.y; z -= v.z; w -= v.w;}
+	template<typename U = T> constexpr void operator*=(const tvec4<U>& v) { IS_ARITH(U); x *= v.x; y *= v.y; z *= v.z; w *= v.w;}
+	template<typename U = T> constexpr void operator/=(const tvec4<U>& v) { IS_ARITH(U); x /= v.x; y /= v.y; z /= v.z; w /= v.w;}
 
-		inline constexpr void operator+=(const ivec3& v) { x += v.x; y += v.y; z += v.z; }
-		inline constexpr void operator-=(const ivec3& v) { x -= v.x; y -= v.y; z -= v.z; }
-		inline constexpr void operator*=(const ivec3& v) { x *= v.x; y *= v.y; z *= v.z; }
-		inline constexpr void operator/=(const ivec3& v) { x /= v.x; y /= v.y; z /= v.z; }
-		inline constexpr void operator*=(double d) { x *= d; y *= d; z *= d; }
-		inline constexpr void operator/=(double d) { x /= d; y /= d; z /= d; }
+	template<typename U = T> constexpr void operator*=(U d) { IS_ARITH(U); x *= d; y *= d; z *= d; w *= d;}
+	template<typename U = T> constexpr void operator/=(U d) { IS_ARITH(U); x /= d; y /= d; z /= d; w /= d;}
 
-		int x, y, z;
-	};
+	template<typename U = T> constexpr operator tvec2<U>() { IS_ARITH(U); return tvec2<U>(x, y); }
+	template<typename U = T> constexpr operator tvec3<U>() { IS_ARITH(U); return tvec3<U>(x, y, z); }
 
-	struct vec4 {
-		constexpr vec4() : x(0), y(0), z(0), w(0) {}
-		explicit constexpr vec4(double v) : x(v), y(v), z(v), w(v) {}
-		constexpr vec4(double x, double y, double z, double w) : x(x), y(y), z(z), w(w) {}
-		constexpr vec4(vec2 v, double z, double w) : x(v.x), y(v.y), z(z), w(w) {}
-		constexpr vec4(const vec3& v, double w) : x(v.x), y(v.y), z(v.z), w(w) {}
-		constexpr vec4(ivec2 v, double z, double w) : x(v.x), y(v.y), z(z), w(w) {}
-		constexpr vec4(ivec3 v, double w) : x(v.x), y(v.y), z(v.z), w(w) {}
+	float x, y, z, w;
+    };
 
-		inline constexpr void operator+=(const vec4& v) { x += v.x; y += v.y; z += v.z; w += v.w; }
-		inline constexpr void operator-=(const vec4& v) { x -= v.x; y -= v.y; z -= v.z; w -= v.w; }
-		inline constexpr void operator*=(const vec4& v) { x *= v.x; y *= v.y; z *= v.z; w *= v.w; }
-		inline constexpr void operator/=(const vec4& v) { x /= v.x; y /= v.y; z /= v.z; w /= v.w; }
-		inline constexpr void operator*=(double d) { x *= d; y *= d; z *= d; w *= d; }
-		inline constexpr void operator/=(double d) { x /= d; y /= d; z /= d; w /= d; }
+    template<typename T> constexpr double Length2(tvec2<T> v) { return v.x * v.x + v.y * v.y; }
+    template<typename T> constexpr double Length2(tvec3<T> v) { return v.x * v.x + v.y * v.y + v.z * v.z; }
+    template<typename T> constexpr double Length2(tvec4<T> v) { return v.x * v.x + v.y * v.y + v.z * v.z + v.w * v.w; }
 
-		constexpr operator vec2() { return vec2(x, y); }
-		constexpr operator vec3() { return vec3(x, y, z); }
-		constexpr operator ivec2() { return ivec2(x, y); }
-		constexpr operator ivec3() { return ivec3(x, y, z); }
+    template<typename T> double Length(const tvec2<T>& v) { return std::sqrt(Length2(v)); }
+    template<typename T> double Length(const tvec3<T>& v) { return std::sqrt(Length2(v)); }
+    template<typename T> double Length(const tvec4<T>& v) { return std::sqrt(Length2(v)); }
 
-		double x, y, z, w;
-	};
-	struct ivec4 {
-		constexpr ivec4() : x(0), y(0), z(0), w(0) {}
-		explicit constexpr ivec4(int v) : x(v), y(v), z(v), w(v) {}
-		constexpr ivec4(int x, int y, int z, int w) : x(x), y(y), z(z), w(w) {}
-		explicit constexpr ivec4(const vec2& v, int z = 0, int w = 0) : x(v.x), y(v.y), z(z), w(w) {}
-		explicit constexpr ivec4(const vec3& v, int w = 0) : x(v.x), y(v.y), z(v.z), w(w) {}
-		explicit constexpr ivec4(const vec4& v) : x(v.x), y(v.y), z(v.z), w(v.w) {}
-		constexpr ivec4(ivec2 v, int z = 0, int w = 0) : x(v.x), y(v.y), z(z), w(w) {}
-		constexpr ivec4(ivec3 v, int w = 0) : x(v.x), y(v.y), z(v.z), w(w) {}
+    template<typename T> constexpr tvec2<T> operator+(tvec2<T> a) { return a; }
+    template<typename T> constexpr tvec3<T> operator+(tvec3<T> a) { return a; }
+    template<typename T> constexpr tvec4<T> operator+(tvec4<T> a) { return a; }
 
-		explicit constexpr operator ivec2() { return ivec2(x, y); }
-		explicit constexpr operator ivec3() { return ivec3(x, y, z); }
+    template<typename T> constexpr tvec2<T> operator-(tvec2<T> a) { return { -a.x, -a.y }; }
+    template<typename T> constexpr tvec3<T> operator-(tvec3<T> a) { return { -a.x, -a.y, -a.z }; }
+    template<typename T> constexpr tvec4<T> operator-(tvec4<T> a) { return { -a.x, -a.y, -a.z, -a.w }; }
 
-		explicit constexpr operator vec2() { return vec2(x, y); }
-		explicit constexpr operator vec3() { return vec3(x, y, z); }
-		explicit constexpr operator vec4() { return vec4(x, y, z, w); }
+    template<typename T, typename U> constexpr tvec2<std::common_type_t<T,U>> operator+(tvec2<T> a, tvec2<U> b) { return { a.x + b.x, a.y + b.y }; }
+    template<typename T, typename U> constexpr tvec3<std::common_type_t<T,U>> operator+(tvec3<T> a, tvec3<U> b) { return { a.x + b.x, a.y + b.y, a.z + b.z }; }
+    template<typename T, typename U> constexpr tvec4<std::common_type_t<T,U>> operator+(tvec4<T> a, tvec4<U> b) { return { a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w }; }
 
-		inline constexpr void operator+=(const ivec4& v) { x += v.x; y += v.y; z += v.z; w += v.w; }
-		inline constexpr void operator-=(const ivec4& v) { x -= v.x; y -= v.y; z -= v.z; w -= v.w; }
-		inline constexpr void operator*=(const ivec4& v) { x *= v.x; y *= v.y; z *= v.z; w *= v.w; }
-		inline constexpr void operator/=(const ivec4& v) { x /= v.x; y /= v.y; z /= v.z; w /= v.w; }
-		inline constexpr void operator*=(double d) { x *= d; y *= d; z *= d; w *= d; }
-		inline constexpr void operator/=(double d) { x /= d; y /= d; z /= d; w /= d; }
+    template<typename T, typename U> constexpr tvec2<std::common_type_t<T,U>> operator-(tvec2<T> a, tvec2<U> b) { return { a.x - b.x, a.y - b.y }; }
+    template<typename T, typename U> constexpr tvec3<std::common_type_t<T,U>> operator-(tvec3<T> a, tvec3<U> b) { return { a.x - b.x, a.y - b.y, a.z - b.z }; }
+    template<typename T, typename U> constexpr tvec4<std::common_type_t<T,U>> operator-(tvec4<T> a, tvec4<U> b) { return { a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w }; }
 
-		int x, y, z, w;
-	};
+    template<typename T, typename U = T> constexpr ENABLE_IF_ARITH(U, tvec2<T>) operator*(tvec2<T> v, U d) { return { v.x * d, v.y * d }; }
+    template<typename T, typename U = T> constexpr ENABLE_IF_ARITH(U, tvec3<T>) operator*(tvec3<T> v, U d) { return { v.x * d, v.y * d, v.z * d }; }
+    template<typename T, typename U = T> constexpr ENABLE_IF_ARITH(U, tvec4<T>) operator*(tvec4<T> v, U d) { return { v.x * d, v.y * d, v.z * d, v.w * d }; }
 
-	inline constexpr double Length2(vec2 v) { return v.x * v.x + v.y * v.y; }
-	inline constexpr double Length2(vec3 v) { return v.x * v.x + v.y * v.y + v.z * v.z; }
-	inline constexpr double Length2(vec4 v) { return v.x * v.x + v.y * v.y + v.z * v.z + v.w * v.w; }
-	inline constexpr int Length2(ivec2 v) { return v.x * v.x + v.y * v.y; }
-	inline constexpr int Length2(ivec3 v) { return v.x * v.x + v.y * v.y + v.z * v.z; }
-	inline constexpr int Length2(ivec4 v) { return v.x * v.x + v.y * v.y + v.z * v.z + v.w * v.w; }
+    template<typename T, typename U = T> constexpr ENABLE_IF_ARITH(U, tvec2<T>) operator/(tvec2<T> v, U d) { return { v.x / d, v.y / d }; }
+    template<typename T, typename U = T> constexpr ENABLE_IF_ARITH(U, tvec3<T>) operator/(tvec3<T> v, U d) { return { v.x / d, v.y / d, v.z / d }; }
+    template<typename T, typename U = T> constexpr ENABLE_IF_ARITH(U, tvec4<T>) operator/(tvec4<T> v, U d) { return { v.x / d, v.y / d, v.z / d, v.w / d }; }
 
-	inline double Length(const vec2& v) { return std::sqrt(Length2(v)); }
-	inline double Length(const vec3& v) { return std::sqrt(Length2(v)); }
-	inline double Length(const vec4& v) { return std::sqrt(Length2(v)); }
-	inline int Length(ivec2 v)   { return std::sqrt(Length2(v)); }
-	inline int Length(ivec3 v)   { return std::sqrt(Length2(v)); }
-	inline int Length(ivec4 v)   { return std::sqrt(Length2(v)); }
+    template<typename T, typename U = T> constexpr tvec2<std::common_type_t<T,U>> operator*(tvec2<T> a, tvec2<U> b) { return { a.x * b.x, a.y * b.y }; }
+    template<typename T, typename U = T> constexpr tvec3<std::common_type_t<T,U>> operator*(tvec3<T> a, tvec3<U> b) { return { a.x * b.x, a.y * b.y, a.z * b.z }; }
+    template<typename T, typename U = T> constexpr tvec4<std::common_type_t<T,U>> operator*(tvec4<T> a, tvec4<U> b) { return { a.x * b.x, a.y * b.y, a.z * b.z, a.w * b.w }; }
 
+    template<typename T, typename U = T> constexpr tvec2<std::common_type_t<T,U>> operator/(tvec2<T> a, tvec2<U> b) { return { a.x / b.x, a.y / b.y }; }
+    template<typename T, typename U = T> constexpr tvec3<std::common_type_t<T,U>> operator/(tvec3<T> a, tvec3<U> b) { return { a.x / b.x, a.y / b.y, a.z / b.z }; }
+    template<typename T, typename U = T> constexpr tvec4<std::common_type_t<T,U>> operator/(tvec4<T> a, tvec4<U> b) { return { a.x / b.x, a.y / b.y, a.z / b.z, a.w / b.w }; }
 
-	// {{ Operator+
-	inline constexpr vec2 operator+(vec2 a, vec2 b) { return { a.x + b.x, a.y + b.y }; }
-	inline constexpr vec3 operator+(vec3 a, vec3 b) { return { a.x + b.x, a.y + b.y, a.z + b.z }; }
-	inline constexpr vec4 operator+(vec4 a, vec4 b) { return { a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w }; }
-	inline constexpr ivec2 operator+(ivec2 a, ivec2 b) { return { a.x + b.x, a.y + b.y }; }
-	inline constexpr ivec3 operator+(ivec3 a, ivec3 b) { return { a.x + b.x, a.y + b.y, a.z + b.z }; }
-	inline constexpr ivec4 operator+(ivec4 a, ivec4 b) { return { a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w }; }
-	// }}
+    template<typename T> tvec2<T> Normalized(const tvec2<T>& v) { return v / Length(v); }
+    template<typename T> tvec3<T> Normalized(const tvec3<T>& v) { return v / Length(v); }
+    template<typename T> tvec4<T> Normalized(const tvec4<T>& v) { return v / Length(v); }
 
-	// {{ Operator-
-	inline constexpr vec2 operator-(vec2 a, vec2 b) { return { a.x - b.x, a.y - b.y }; }
-	inline constexpr vec3 operator-(vec3 a, vec3 b) { return { a.x - b.x, a.y - b.y, a.z - b.z }; }
-	inline constexpr vec4 operator-(vec4 a, vec4 b) { return { a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w }; }
-	inline constexpr ivec2 operator-(ivec2 a, ivec2 b) { return { a.x - b.x, a.y - b.y }; }
-	inline constexpr ivec3 operator-(ivec3 a, ivec3 b) { return { a.x - b.x, a.y - b.y, a.z - b.z }; }
-	inline constexpr ivec4 operator-(ivec4 a, ivec4 b) { return { a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w }; }
-	// }}
+    template<typename T, typename U = T> double Dot(tvec2<T> a, tvec2<U> b) { return a.x * b.x + a.y * b.y; }
+    template<typename T, typename U = T> double Dot(tvec3<T> a, tvec3<U> b) { return a.x * b.x + a.y * b.y + a.z * b.z; }
+    template<typename T, typename U = T> double Dot(tvec4<T> a, tvec4<U> b) { return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w; }
 
-	// {{ operator* double
-	inline constexpr vec2 operator*(vec2 v, double d) { return { v.x * d, v.y * d }; }
-	inline constexpr vec3 operator*(vec3 v, double d) { return { v.x * d, v.y * d, v.z * d }; }
-	inline constexpr vec4 operator*(vec4 v, double d) { return { v.x * d, v.y * d, v.z * d, v.w * d }; }
-	inline constexpr ivec2 operator*(ivec2 v, double d) { return { (int) (v.x * d), (int) (v.y * d) }; }
-	inline constexpr ivec3 operator*(ivec3 v, double d) { return { (int) (v.x * d), (int) (v.y * d), (int) (v.z * d) }; }
-	inline constexpr ivec4 operator*(ivec4 v, double d) { return { (int) (v.x * d), (int) (v.y * d), (int) (v.z * d), (int)(v.w * d) }; }
-	// }}
+    template<typename T, typename U = T> constexpr double Cross(tvec2<T> a, tvec2<U> b) { return a.x * b.y - a.y * b.x; }
 
-	// {{ operator/ double
-	inline constexpr vec2 operator/(vec2 v, double d) { return { v.x / d, v.y / d }; }
-	inline constexpr vec3 operator/(vec3 v, double d) { return { v.x / d, v.y / d, v.z / d }; }
-	inline constexpr vec4 operator/(vec4 v, double d) { return { v.x / d, v.y / d, v.z / d, v.w / d }; }
-	inline constexpr ivec2 operator/(ivec2 v, double d) { return { (int) (v.x / d), (int) (v.y / d) }; }
-	inline constexpr ivec3 operator/(ivec3 v, double d) { return { (int) (v.x / d), (int) (v.y / d), (int) (v.z / d) }; }
-	inline constexpr ivec4 operator/(ivec4 v, double d) { return { (int) (v.x / d), (int) (v.y / d), (int) (v.z / d), (int) (v.w / d)}; }
-	// }}
+    template<typename T, typename U = T>
+    constexpr tvec3<T> Cross(tvec3<T> a, tvec3<U> b) {
+	return { a.y * b.z - a.z * b.y,
+		a.z * b.x - a.x * b.z,
+		a.x * b.y - a.y * b.x };
+    }
 
-	// {{ operator* vec
-	inline constexpr vec2 operator*(vec2 a, vec2 b) { return { a.x * b.x, a.y * b.y }; }
-	inline constexpr vec3 operator*(vec3 a, vec3 b) { return { a.x * b.x, a.y * b.y, a.z * b.z }; }
-	inline constexpr vec4 operator*(vec4 a, vec4 b) { return { a.x * b.x, a.y * b.y, a.z * b.z, a.w * b.w }; }
-	inline constexpr ivec2 operator*(ivec2 a, ivec2 b) { return { a.x * b.x, a.y * b.y }; }
-	inline constexpr ivec3 operator*(ivec3 a, ivec3 b) { return { a.x * b.x, a.y * b.y, a.z * b.z }; }
-	inline constexpr ivec4 operator*(ivec4 a, ivec4 b) { return { a.x * b.x, a.y * b.y, a.z * b.z, a.w * b.w }; }
-	// }}
+    template<typename T, typename U = T> constexpr bool operator==(tvec2<T> a, tvec2<U> b) { return a.x == b.x && a.y == b.y; }
+    template<typename T, typename U = T> constexpr bool operator==(tvec3<T> a, tvec3<U> b) { return a.x == b.x && a.y == b.y && a.z == b.z; }
+    template<typename T, typename U = T> constexpr bool operator==(tvec4<T> a, tvec4<U> b) { return a.x == b.x && a.y == b.y && a.z == b.z && a.w == b.w; }
 
-	// {{ operator/ vec
-	inline constexpr vec2 operator/(vec2 a, vec2 b) { return { a.x / b.x, a.y / b.y }; }
-	inline constexpr vec3 operator/(vec3 a, vec3 b) { return { a.x / b.x, a.y / b.y, a.z / b.z }; }
-	inline constexpr vec4 operator/(vec4 a, vec4 b) { return { a.x / b.x, a.y / b.y, a.z / b.z, a.w / b.w }; }
-	inline constexpr ivec2 operator/(ivec2 a, ivec2 b) { return { a.x / b.x, a.y / b.y }; }
-	inline constexpr ivec3 operator/(ivec3 a, ivec3 b) { return { a.x / b.x, a.y / b.y, a.z / b.z }; }
-	inline constexpr ivec4 operator/(ivec4 a, ivec4 b) { return { a.x / b.x, a.y / b.y, a.z / b.z, a.w / b.w }; }
-	// }}
+    template<typename T, typename U = T> constexpr bool operator!=(const tvec2<T>& a, const tvec2<U>& b) { return !(a == b); }
+    template<typename T, typename U = T> constexpr bool operator!=(const tvec3<T>& a, const tvec3<U>& b) { return !(a == b); }
+    template<typename T, typename U = T> constexpr bool operator!=(const tvec4<T>& a, const tvec4<U>& b) { return !(a == b); }
 
-	// {{ Normalized
-	inline vec2 Normalized(const vec2& v) { return v / Length(v); }
-	inline vec3 Normalized(const vec3& v) { return v / Length(v); }
-	inline vec4 Normalized(const vec4& v) { return v / Length(v); }
-	inline ivec2 Normalized(ivec2 v) { return v / Length(v); }
-	inline ivec3 Normalized(ivec3 v) { return v / Length(v); }
-	inline ivec4 Normalized(ivec4 v) { return v / Length(v); }
-	// }}
+    using ivec2 = tvec2<int>;
+    using ivec3 = tvec3<int>;
+    using ivec4 = tvec4<int>;
 
-	inline double Dot(vec2 a, vec2 b) {
-		a = Normalized(a);
-		b = Normalized(b);
-		return a.x * b.x + a.y * b.y;
-	}
-	inline double Dot(vec3 a, vec3 b) {
-		a = Normalized(a);
-		b = Normalized(b);
-		return a.x * b.x + a.y * b.y + a.z * b.z;
-	}
-	inline double Dot(vec4 a, vec4 b) {
-		a = Normalized(a);
-		b = Normalized(b);
-		return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
-	}
-	inline double Dot(ivec2 a, ivec2 b) {
-		a = Normalized(a);
-		b = Normalized(b);
-		return a.x * b.x + a.y * b.y;
-	}
-	inline double Dot(ivec3 a, ivec3 b) {
-		a = Normalized(a);
-		b = Normalized(b);
-		return a.x * b.x + a.y * b.y + a.z * b.z;
-	}
-	inline double Dot(ivec4 a, ivec4 b) {
-		a = Normalized(a);
-		b = Normalized(b);
-		return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
-	}
-	inline constexpr double Cross(vec2 a, vec2 b) { return a.x * b.y - a.y * b.x; }
-	inline constexpr int Cross(ivec2 a, ivec2 b) { return a.x * b.y - a.y * b.x; }
+    using uvec2 = tvec2<unsigned int>;
+    using uvec3 = tvec3<unsigned int>;
+    using uvec4 = tvec4<unsigned int>;
 
-	inline constexpr vec3 Cross(vec3 a, vec3 b) {
-		return { a.y * b.z - a.z * b.y,
-				a.z * b.x - a.x * b.z,
-				a.x * b.y - a.y * b.z };
-	}
-	inline constexpr ivec3 Cross(ivec3 a, ivec3 b) {
-		return { a.y * b.z - a.z * b.y,
-				a.z * b.x - a.x * b.z,
-				a.x * b.y - a.y * b.z };
-	}
+    using fvec2 = tvec2<float>;
+    using fvec3 = tvec3<float>;
+    using fvec4 = tvec4<float>;
 
-	inline constexpr bool operator==(vec2 a, vec2 b)   {return a.x == b.x && a.y == b.y;}
-	inline constexpr bool operator==(vec3 a, vec3 b)   {return a.x == b.x && a.y == b.y && a.z == b.z;}
-	inline constexpr bool operator==(vec4 a, vec4 b)   {return a.x == b.x && a.y == b.y && a.z == b.z && a.w == b.w;}
-	inline constexpr bool operator==(ivec2 a, ivec2 b) {return a.x == b.x && a.y == b.y;}
-	inline constexpr bool operator==(ivec3 a, ivec3 b) {return a.x == b.x && a.y == b.y && a.z == b.z;}
-	inline constexpr bool operator==(ivec4 a, ivec4 b) {return a.x == b.x && a.y == b.y && a.z == b.z && a.w == b.w;}
+    using dvec2 = tvec2<double>;
+    using dvec3 = tvec3<double>;
+    using dvec4 = tvec4<double>;
 
-	inline constexpr bool operator!=(const vec2 & a, const vec2 & b)   {return !(a == b); }
-	inline constexpr bool operator!=(const vec3 & a, const vec3 & b)   {return !(a == b); }
-	inline constexpr bool operator!=(const vec4 & a, const vec4 & b)   {return !(a == b); }
-	inline constexpr bool operator!=(const ivec2& a, const ivec2& b) {return !(a == b); }
-	inline constexpr bool operator!=(const ivec3& a, const ivec3& b) {return !(a == b); }
-	inline constexpr bool operator!=(const ivec4& a, const ivec4& b) {return !(a == b); }
+    using vec2 = dvec2;
+    using vec3 = dvec3;
+    using vec4 = dvec4;
+
 } // namespace SWAN
+
+#undef IS_ARITH
 
 #endif

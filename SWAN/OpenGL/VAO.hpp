@@ -2,34 +2,62 @@
 #define SWAN_VERTEX_ARRAY_OBJECT_HPP
 
 #include <glad/glad.h>
+#include <map>
 
 namespace SWAN {
-namespace GL {
+    namespace GL {
 	struct VAO;
 
 	namespace detail {
-		const extern VAO* currBoundVAO;
+	    const extern VAO* currBoundVAO;
+	    extern unsigned long numInits;
+	    extern unsigned long numDeletions;
+	    extern unsigned long numBinds;
+	    extern unsigned long numDrawCalls;
 	}
 
+	/// A structure describing an OpenGL vertex array object.
 	struct VAO {
-		VAO();
-		~VAO();
+	    /// Construct a VAO.
+	    VAO();
+	    /// Destroy a VAO.
+	    ~VAO();
 
-		inline bool isBound() const { return this == detail::currBoundVAO; }
+	    /// Is this VAO currently bound?
+	    inline bool isBound() const { return this == detail::currBoundVAO; }
 
-		void bind() const;
-		void unbind() const;
+	    /// Bind this VAO (if necessary).
+	    void bind() const;
 
-		void draw(int count, GLenum renderType = GL_TRIANGLES) const;
-		void storeIndices(unsigned* indices, size_t size, GLenum drawType = GL_STATIC_DRAW);
+	    /// Unbind this VAO (if necessary).
+	    void unbind() const;
 
-		void storeAttribData(unsigned attribNumber, size_t glNumComponents, float* data, size_t dataSize);
+	    /// Render the contents of the VAO onscreen.
+	    void draw(int count, GLenum renderType = GL_TRIANGLES) const;
 
-		GLuint id = 0;
+	    /// Add indices to the VAO.
+	    void storeIndices(const unsigned* indices, size_t size, GLenum drawType = GL_STATIC_DRAW);
 
-		bool hasIndices = false;
+	    /// Add an attribute to the VAO.
+	    void storeAttribData(unsigned attribNumber,
+				 size_t glNumComponents,
+				 const float* data,
+				 size_t dataSize,
+				 GLenum drawType = GL_STATIC_DRAW);
+
+	    /// OpenGL ID for the VAO.
+	    GLuint id = 0;
+
+	    /// Whether the VAO has indices.
+	    /// @warning Do not change this manually, it may cause rendering errors. Use storeIndices() instead.
+	    bool hasIndices = false;
+
+	    /// ID of index VBO.
+	    GLuint indexBuffer = 0;
+	    /// A mapping of attribute numbers to the VBOs that store their data.
+	    std::map<unsigned, GLuint> attribVBOs;
 	};
-} // namespace GL
+    } // namespace GL
 } // namespace SWAN
 
 #endif //SWAN_VERTEX_ARRAY_OBJECT_HPP

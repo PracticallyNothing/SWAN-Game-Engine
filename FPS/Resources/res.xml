@@ -1,95 +1,60 @@
 <Resources>
-	<Mesh file="Meshes/Cube.obj"         name="1x1 Cube"     col="None"/>
-	<Mesh file="Meshes/1x1_Sphere.obj"   name="1x1 Sphere"   col="None"/>
-	<Mesh file="Meshes/SPAS-12.obj"      name="SPAS 12"      />
-	<Mesh file="Meshes/SimplePlane.obj"  name="Plane"        />
-	<Mesh file="Meshes/Place.obj"        name="Place"        />
+  <Mesh file="Meshes/Cube.obj"         name="1x1 Cube"     col="None"/>
 
-	<Texture file="Textures/PlayButton.png"         name="PlayButton"/>
-	<Texture file="Textures/PlayButtonFocused.png"  name="PlayFocused"/>
-	<Texture file="Textures/PlayButtonPressed.png"  name="PlayPressed"/>
-	<Texture file="Textures/ExitButton.png"         name="ExitButton"/>
-	<Texture file="Textures/ExitButtonFocused.png"  name="ExitFocused"/>
-	<Texture file="Textures/ExitButtonPressed.png"  name="ExitPressed"/>
+  <BitmapFont file="Fonts/Font.toml"/>
+  <BitmapFont file="Fonts/Font2.toml"/>
+  <BitmapFont file="Fonts/Terminus.toml"/>
 
-	<Texture file="Textures/Shotgun.png" name="SPAS 12"/>
-	<Texture file="Textures/Place.png" name="Place"/>
+  <Shader vertex="Shaders/Fog.vert" fragment="Shaders/Fog.frag" name="Fog">
+    <Attribute name="pos"/>
+    <Attribute name="UV"/>
 
-	<BitmapFont file="Fonts/Font.toml"     name="Monospace 16"/>
-	<BitmapFont file="Fonts/Font2.toml"    name="Monospace 12"/>
-	<BitmapFont file="Fonts/Terminus.toml" name="Terminus 10"/>
+    <Uniform name="fogZ"/>
+    <Uniform name="fogColor"/>
+    <Uniform name="perspective"/>
+    <Uniform name="view"/>
+    <Uniform name="transform"/>
+  </Shader>
 
-	<Shader vertex="Shaders/Fog.vert" fragment="Shaders/Fog.frag" name="Fog">
-		<Attribute name="pos"/>
-		<Attribute name="UV"/>
+  <Shader vertex="Shaders/NoLighting.vert" fragment="Shaders/NoLighting.frag" name="Unlit">
+    <Attribute name="pos"/>
+    <Attribute name="UV"/>
 
-		<Uniform name="fogZ"/>
-		<Uniform name="fogColor"/>
-		<Uniform name="perspective"/>
-		<Uniform name="view"/>
-		<Uniform name="transform"/>
-	</Shader>
+    <Uniform name="perspective"/>
+    <Uniform name="view"/>
+    <Uniform name="transform"/>
+  </Shader>
 
-	<Shader vertex="Shaders/NoLighting.vert" fragment="Shaders/NoLighting.frag" name="Unlit">
-		<Attribute name="pos"/>
-		<Attribute name="UV"/>
+  <Shader vertex="Shaders/Lighting.vert" fragment="Shaders/Lighting.frag" name="Lit">
+    <Attribute name="pos"/>
+    <Attribute name="UV"/>
+    <Attribute name="norm"/>
 
-		<Uniform name="perspective"/>
-		<Uniform name="view"/>
-		<Uniform name="transform"/>
-	</Shader>
+    <Uniform name="perspective"/>
+    <Uniform name="view"/>
+    <Uniform name="transform"/>
 
-	<Shader vertex="Shaders/GUIShader.vert" fragment="Shaders/GUIShader.frag" name="GUI">
-		<Attribute name="pos"/>
-		<Attribute name="UV"/>
+    <Uniform name="camPos"/>
 
-		<Uniform name="transform"/>
-		<Uniform name="topLeft"/>
-		<Uniform name="bottomRight"/>
-		<Uniform name="type"/>
-		<Uniform name="color1"/>
-		<Uniform name="color2"/>
-		<Uniform name="tex"/>
-	</Shader>
+    <StructArrayUniform name="lights" size="8">
+      <SAUniform name="type"/>
+      <SAUniform name="ambient"/>
+      <SAUniform name="diffuse"/>
+      <SAUniform name="specular"/>
+      <SAUniform name="pos"/>
+      <SAUniform name="dir"/>
+      <SAUniform name="cutoff"/>
+      <SAUniform name="outerCutoff"/>
+      <SAUniform name="constAtt"/>
+      <SAUniform name="linAtt"/>
+      <SAUniform name="quadAtt"/>
+    </StructArrayUniform>
 
-	<Shader vertex="Shaders/Text.vert" fragment="Shaders/Text.frag" name="Text">
-		<Attribute name="pos"/>
-		<Attribute name="UV"/>
+    <Uniform name="activeLights"/>
 
-		<Uniform name="offset"/>
-		<Uniform name="color"/>
-	</Shader>
-
-	<Shader vertex="Shaders/Lighting.vert" fragment="Shaders/Lighting.frag" name="Lit">
-		<Attribute name="pos"/>
-		<Attribute name="UV"/>
-		<Attribute name="norm"/>
-
-		<Uniform name="perspective"/>
-		<Uniform name="view"/>
-		<Uniform name="transform"/>
-
-		<Uniform name="camPos"/>
-
-		<StructArrayUniform name="lights" size="8">
-			<SAUniform name="type"/>
-			<SAUniform name="ambient"/>
-			<SAUniform name="diffuse"/>
-			<SAUniform name="specular"/>
-			<SAUniform name="pos"/>
-			<SAUniform name="dir"/>
-			<SAUniform name="cutoff"/>
-			<SAUniform name="outerCutoff"/>
-			<SAUniform name="constAtt"/>
-			<SAUniform name="linAtt"/>
-			<SAUniform name="quadAtt"/>
-		</StructArrayUniform>
-
-		<Uniform name="activeLights"/>
-
-		<Uniform name="matDiffuse"/>
-		<Uniform name="matSpecular"/>
-		<Uniform name="matShininess"/>
-	</Shader>
+    <Uniform name="matDiffuse"/>
+    <Uniform name="matSpecular"/>
+    <Uniform name="matShininess"/>
+  </Shader>
 
 </Resources>

@@ -28,9 +28,9 @@ namespace Util {
 	    []() {
 		    for(auto& f : OnExit::vec)
 			    f();
-		},
+	    },
 	    true);
-}
-}
+} // namespace Util
+} // namespace SWAN
 
 #endif // HEADER_HPP

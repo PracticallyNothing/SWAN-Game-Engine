@@ -1,58 +1,81 @@
 #ifndef SWAN_TRANSFORM_HPP
 #define SWAN_TRANSFORM_HPP
 
-#include "../Maths/Vector.hpp"
-#include "../Maths/Matrix.hpp"
+#include "Maths/Matrix.hpp"
+#include "Maths/Vector.hpp"
 
 namespace SWAN {
-	struct Transform {
-		Transform(vec3 _pos = vec3(0), vec3 _rot = vec3(0),
-				  vec3 _scale = vec3(1), Transform* _parent = NULL)
-			: pos(_pos), rot(_rot), scale(_scale), parent(_parent) {}
-		~Transform() {}
+    /// A representation of a transformation.
+    struct Transform {
+	Transform(vec3 _pos = vec3(0), vec3 _rot = vec3(0),
+		  vec3 _scale = vec3(1), Transform* _parent = NULL)
+	    : pos(_pos), rot(_rot), scale(_scale), parent(_parent) {}
+	~Transform() {}
 
-		inline Transform* getParent() { return parent; }
+	/// Get the transform's parent.
+	inline Transform* getParent() { return parent; }
 
-		inline void setParent(Transform* t) {
-			if(t->parent == this || t == this)
-				return;
-			else
-				parent = t;
-		}
+	/// Set the transform's parent.
+	inline void setParent(Transform* t) {
+	    if(t->parent == this || t == this)
+		return;
+	    else
+		parent = t;
+	}
 
-		mat4 getModel() const {
-			mat4 posMat   = getPosMat();
-			mat4 scaleMat = getScaleMat();
-			mat4 rotMat   = getRotMat();
-			mat4 parentMat =
-				(parent == NULL ? mat4() : parent->getModel());
+	void lookAt(vec3 v) {
+	}
 
-			return parentMat * posMat * rotMat * scaleMat;
-		}
+	/// Calculate a Model matrix.
+	mat4 getModel() const {
+	    mat4 posMat   = getPosMat();
+	    mat4 scaleMat = getScaleMat();
+	    mat4 rotMat   = getRotMat();
+	    mat4 parentMat = (parent == NULL ? mat4() : parent->getModel());
 
-		inline mat4 getModel_inv() const { return Inverse(getModel()); }
+	    return parentMat * posMat * rotMat * scaleMat;
+	}
 
-		inline mat4 getPosMat() const { return Translate(pos); }
-		inline mat4 getRotMat() const {
-			mat4 rotMatX = Rotate(rot.x, vec3(1, 0, 0));
-			mat4 rotMatY = Rotate(rot.y, vec3(0, 1, 0));
-			mat4 rotMatZ = Rotate(rot.z, vec3(0, 0, 1));
+	/// Get an inverse of the Model matrix.
+	inline mat4 getModel_inv() const { return Inverse(getModel()); }
 
-			return rotMatZ * rotMatX * rotMatY;
-		}
-		inline mat4 getScaleMat() const { return Scale(scale); }
+	/// Calculate a position matrix.
+	inline mat4 getPosMat() const { return Translate(pos); }
 
-		vec3 getForw() const { return vec4(0, 0, 1, 0) * getRotMat(); }
-		vec3 getUp() const { return vec4(0, 1, 0, 0) * getRotMat(); }
+	/// Calculate a rotation matrix. @note The rotation is in the order Z * X * Y.
+	inline mat4 getRotMat() const {
+	    mat4 rX = Rotate(rot.x, vec3(1, 0, 0));
+	    mat4 rY = Rotate(rot.y, vec3(0, 1, 0));
+	    mat4 rZ = Rotate(rot.z, vec3(0, 0, 1));
 
-		vec3 getRight() const { return Cross(getForw(), getUp()); }
+	    return rZ * rX * rY;
+	}
 
-		vec3 pos;
-		vec3 rot;
-		vec3 scale;
+	/// Calculate a scale matrix.
+	inline mat4 getScaleMat() const { return Scale(scale); }
 
-		Transform* parent;
-	};
+	/// Get the forward direction for this transform.
+	vec3 getForw() const { return vec4(0, 0, 1, 0) * getModel(); }
+
+	/// Get the upward direction for this transform.
+	vec3 getUp() const { return vec4(0, 1, 0, 0) * getModel(); }
+
+	/// Get the right direction for this transform.
+	vec3 getRight() const { return Cross(getUp(), getForw()); }
+
+	/// Position.
+	vec3 pos;
+	/// Rotation.
+	vec3 rot;
+	/// Scale.
+	vec3 scale;
+
+	bool lookingAt = false;
+	vec3 lookAtV;
+
+	/// Parent transform.
+	Transform* parent;
+    };
 } // namespace SWAN
 
 #endif

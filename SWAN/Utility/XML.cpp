@@ -12,23 +12,23 @@
 #include <string>    // For std::string
 #include <vector>    // For std::vector<T>
 
-using std::vector;
 using std::map;
 using std::stack;
+using std::vector;
 
-using std::string;
-using std::stringstream;
+using std::cout;
 using std::getline;
 using std::ifstream;
-using std::cout;
+using std::string;
+using std::stringstream;
 
 using std::find;
 using std::find_if;
 using std::prev;
 
+using SWAN::Util::Stringify;
 using SWAN::Util::XML;
 using SWAN::Util::XMLTag;
-using SWAN::Util::Stringify;
 
 string Trim(string s) {
 	if(find_if(s.begin(), s.end(), [](char c) -> bool { return isspace(c); }) ==
