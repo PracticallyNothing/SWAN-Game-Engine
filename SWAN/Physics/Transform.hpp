@@ -48,17 +48,18 @@ namespace SWAN {
 	    mat4 rY = Rotate(rot.y, vec3(0, 1, 0));
 	    mat4 rZ = Rotate(rot.z, vec3(0, 0, 1));
 
-	    return rZ * rX * rY;
+	    //return rZ * rX * rY;
+	    return rY * rX * rZ;
 	}
 
 	/// Calculate a scale matrix.
 	inline mat4 getScaleMat() const { return Scale(scale); }
 
 	/// Get the forward direction for this transform.
-	vec3 getForw() const { return vec4(0, 0, 1, 0) * getModel(); }
+	vec3 getForw() const { return vec4(0, 0, 1, 0) * Transpose(getModel()); }
 
 	/// Get the upward direction for this transform.
-	vec3 getUp() const { return vec4(0, 1, 0, 0) * getModel(); }
+	vec3 getUp() const { return vec4(0, 1, 0, 0) * Transpose(getModel()); }
 
 	/// Get the right direction for this transform.
 	vec3 getRight() const { return Cross(getUp(), getForw()); }

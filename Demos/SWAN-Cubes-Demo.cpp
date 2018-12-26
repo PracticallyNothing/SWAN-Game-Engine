@@ -13,7 +13,7 @@
 #include "SWAN/Input/InputFrame.hpp"
 #include "SWAN/Input/Event.hpp"
 
-#include "SWAN/Rendering/Renderer.hpp"    // For SWAN::Render(...)
+#include "SWAN/Rendering/DebugRender.hpp"    // For SWAN::Render(...)
 #include "SWAN/Rendering/Camera.hpp"      // For SWAN::Camera
 #include "SWAN/Rendering/Mesh.hpp"        // For SWAN::Mesh
 #include "SWAN/Rendering/Shader.hpp"      // For SWAN::Shader
@@ -143,8 +143,8 @@ struct CameraController : SWAN::InputFrame
 	// if(move.RelativeY) SWAN::LogVar<int>("Y", move.RelativeY);
 
 	if(SWAN::GetCurrentInputFrame() == this) {
-	    cam.rotateByY(-SWAN::Util::Radians::FromDegrees(move.RelativeX * sensitivityX));
-	    cam.rotateByX(-SWAN::Util::Radians::FromDegrees(move.RelativeY * sensitivityY));
+	    cam.rotateByY(SWAN::Util::Radians::FromDegrees(move.RelativeX * sensitivityX));
+	    cam.rotateByX(SWAN::Util::Radians::FromDegrees(move.RelativeY * sensitivityY));
 
 	    SWAN::WarpMouseTo(SWAN::Display::GetWidth() / 2, SWAN::Display::GetHeight() / 2);
 	}
@@ -158,7 +158,7 @@ struct CameraController : SWAN::InputFrame
     SWAN::Camera& cam;
     bool& running;
     double speed = 0.001;
-    double sensitivityX = 0.5, sensitivityY = sensitivityX * SWAN::Display::GetAspectRatio();
+    double sensitivityX = 0.25, sensitivityY = sensitivityX * SWAN::Display::GetAspectRatio();
 };
 
 void RenderString(std::string s, int x, int y, const SWAN::SpriteSheet& ss) {
@@ -299,14 +299,14 @@ int main() {
 
     Grid grid;
     grid.margin = 5;
-    grid.numLines = 100;
+    grid.numLines = 50;
     grid.generate();
 
     SWAN::Text
 	text("", SWAN::Res::GetBitmapFont("Terminus 10")),
 	text2 = text;
 
-    SWAN::Transform cubeTransform;
+    SWAN::Transform cubeTransform({2, -2, 5});
 
     SWAN::Pointer<SWAN::TextBox> tb = std::make_unique<SWAN::TextBox>(
 	SWAN::Rect2D(10, 10, 1000, 100, {0.3, 0.3, 0.3, 0.5}),
@@ -323,11 +323,15 @@ int main() {
     list->AddLine("Settings");
     list->AddLine("  Exit  ");
 
+    SWAN::SetCurrentInputFrame(&camContr);
+
     SWAN::GUIManager renderer;
-    SWAN::SetCurrentInputFrame(&renderer);
-    renderer.SetExtraInputFrame(&camContr);
+    // SWAN::SetCurrentInputFrame(&renderer);
+    // renderer.SetExtraInputFrame(&camContr);
     renderer.AddElement(tb.get());
     renderer.AddElement(list.get());
+
+    double time = 0;
 
     while(running) {
 	SWAN::UpdateInputEvents();
@@ -335,6 +339,7 @@ int main() {
 	auto now = steady_clock::now();
 
 	if(now - prevTime >= 16ms) {
+	    time += 0.01;
 	    count++;
 
 	    grid.render(cam);
@@ -358,21 +363,30 @@ int main() {
 
 	    auto cube = SWAN::Cube(cubeTransform);
 	    cube.color = {0.3, 1, 0.3, 1};
+	    // cube.transform.rot.x = sin(time) * M_PI;
 	    //cube.transform.setParent(&tf);
 
-	    auto cube2 = SWAN::Cube(SWAN::Transform(SWAN::vec3(0,0,5)));
+	    auto cube2 = SWAN::Cube(SWAN::Transform(SWAN::vec3(0,0,3)));
 	    cube2.color = SWAN::vec4(1,0,0,1);
-	    cube2.transform.setParent(&cubeTransform);
+	    cube2.transform.setParent(&cube.transform);
+	    // cube2.transform.rot.x = sin(time) * M_PI_2;
 
-	    auto cube3 = SWAN::Cube(SWAN::Transform(SWAN::vec3(0,0,5)));
+	    auto cube3 = SWAN::Cube(SWAN::Transform(SWAN::vec3(0,0,3)));
 	    cube3.color = SWAN::vec4(0,0,1,1);
 	    cube3.transform.setParent(&cube2.transform);
+	    // cube3.transform.rot.x = sin(time) * M_PI_2;
 
-	    cam.transform.setParent(&cube.transform);
+	    auto cube4 = SWAN::Cube(SWAN::Transform(SWAN::vec3(0,0,3)));
+	    cube4.color = SWAN::vec4(1,0,1,1);
+	    cube4.transform.setParent(&cube3.transform);
+
+	    cube.transform.setParent(&cam.transform);
 
 	    SWAN::Render(cam, cube, SWAN::DefaultFramebuffer, false);
 	    SWAN::Render(cam, cube2, SWAN::DefaultFramebuffer, false);
 	    SWAN::Render(cam, cube3, SWAN::DefaultFramebuffer, false);
+	    SWAN::Render(cam, cube4, SWAN::DefaultFramebuffer, false);
+
 	    SWAN::DrawnLine dl(
 		cube.transform.pos,
 		cube.transform.pos + cube.transform.getForw() * 5,
@@ -380,11 +394,11 @@ int main() {
 	    );
 	    SWAN::DrawnLine dl2(
 		cube.transform.pos,
-		cube2.transform.pos * cube2.transform.getModel(),
+		cube.transform.pos + cube.transform.getUp() * 5,
 		SWAN::vec4(0,1,0,1)
 	    );
 	    SWAN::Render(cam, dl);
-	    //SWAN::Render(cam, dl2);
+	    SWAN::Render(cam, dl2);
 	    // console.Render();
 
 	    auto* font = SWAN::Res::GetBitmapFont("Monospace 16");

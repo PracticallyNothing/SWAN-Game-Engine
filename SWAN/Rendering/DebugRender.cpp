@@ -1,4 +1,4 @@
-#include "Renderer.hpp"
+#include "DebugRender.hpp"
 #include "../Utility/CxArray.hpp"
 #include "../OpenGL/OnGLInit.hpp"
 

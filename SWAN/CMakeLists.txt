@@ -111,7 +111,7 @@ set(Sources
   Rendering/Shader.cpp
   Rendering/Text.cpp
   Rendering/OBJ-Import.cpp
-  Rendering/Renderer.cpp
+  Rendering/DebugRender.cpp
   Rendering/SpriteSheet.cpp
 
   # GUI stuff

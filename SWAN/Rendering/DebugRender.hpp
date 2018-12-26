@@ -1,5 +1,5 @@
-#ifndef SWAN_RENDER_HPP
-#define SWAN_RENDER_HPP
+#ifndef SWAN_DEBUG_RENDER_HPP
+#define SWAN_DEBUG_RENDER_HPP
 
 #include <vector>
 

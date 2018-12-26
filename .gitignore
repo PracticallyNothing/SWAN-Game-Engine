@@ -18,8 +18,12 @@ Sources/OldMain.cpp
 
 # Created by https://www.gitignore.io/api/c,c++,cmake,vim,emacs,archives
 
-# Doxygen
+# Doxygen #
 [D|d]ocs/
+Doxyfile
+
+### Blender (unfinished models) ###
+*.blend*
 
 ### C ###
 # Prerequisites
