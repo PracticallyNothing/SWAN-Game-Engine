@@ -6,11 +6,12 @@ test*
 
 *out
 *[L|l]og*
+!*[L|l]og*.[hpp|cpp]
 
 SWAN_*
 
 !CMakeLists.txt
-!*log*[c|cpp|h|hpp|inl]
+!*Log*[c|cpp|h|hpp|inl]
 
 Sources/OldMain.cpp
 
