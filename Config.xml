@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <Config>
-	<Display>
-		<Resolution width="1280" height="720"/>
-		<Fullscreen on="false"/>
-	</Display>
+  <Display>
+    <Resolution width="1280" height="720"/>
+    <Fullscreen on="false"/>
+  </Display>
 
-	<Resources file="Resources/res.xml"/>
+  <Resources file="Resources/res.xml"/>
 
-	<Scene file="scene.xml"/>
+  <Scene file="scene.xml"/>
 </Config>

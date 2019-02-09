@@ -13,3 +13,6 @@ set(LIBS
 
 add_executable(ImageToHpp ImageToHpp.cpp)
 target_link_libraries(ImageToHpp ${LIBS})
+
+add_executable(ShaderReader ShaderReader.cpp)
+target_link_libraries(ShaderReader ${LIBS})

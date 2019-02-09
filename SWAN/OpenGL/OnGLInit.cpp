@@ -1,15 +1,19 @@
 #include "OnGLInit.hpp"
 
-namespace SWAN {
-    namespace detail {
-	bool glInit = false;
+namespace SWAN
+{
+	namespace detail
+	{
+		bool glInit = false;
 
-	/// Vector of functions to call upon GL initialization.
-	std::vector<std::function<void(void)>> funcs;
+		/// Vector of functions to call upon GL initialization.
+		std::vector<std::function<void(void)>> funcs;
 
-	void finishInit() {
-	    glInit = true;
-	    for(auto& f : funcs) f();
-	}
-    }
-}
+		void finishInit()
+		{
+			glInit = true;
+			for(auto& f : funcs)
+				f();
+		}
+	} // namespace detail
+} // namespace SWAN

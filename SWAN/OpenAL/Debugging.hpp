@@ -2,8 +2,8 @@
 #define OPENAL_DEBUGGING_HPP
 
 #include <iostream>
-#include <string>
 #include <map>
+#include <string>
 
 #include <AL/al.h>
 
@@ -11,9 +11,16 @@
 extern std::map<ALenum, std::string> errors;
 
 #ifdef DEBUG
-#    define AL(func) do { (func); std::cout << CONTEXT_STR << ": " << errors[alGetError()] << '\n'; } while (0)
+#	define AL(func)                                                          \
+		do {                                                                  \
+			(func);                                                           \
+			std::cout << CONTEXT_STR << ": " << errors[alGetError()] << '\n'; \
+		} while(0)
 #else
-#    define AL(func) do { (func); } while (0)
+#	define AL(func) \
+		do {         \
+			(func);  \
+		} while(0)
 #endif
 
 #endif

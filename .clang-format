@@ -1,0 +1,73 @@
+---
+Language: Cpp
+
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AlignOperands: true
+AlignEscapedNewlines: Right
+AlignAfterOpenBracket: Align
+AlignTrailingComments: true
+
+AlwaysBreakAfterDefinitionReturnType: None
+AlwaysBreakAfterReturnType: None
+AlwaysBreakTemplateDeclarations: true
+
+AllowShortBlocksOnASingleLine: true
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: All
+
+BraceWrapping:
+    AfterEnum: true
+    AfterClass: true
+    #AfterControlStatements: true
+    AfterFunction: true
+    AfterNamespace: true
+    AfterStruct: true
+    AfterUnion: true
+    #AfterExternBlock: true
+    BeforeCatch: true
+    BeforeElse: true
+    #SplitEmptyFunction: false
+    #SplitEmptyRecord: false
+    #SplitEmptyNamespace: true
+
+BreakBeforeBinaryOperators: None
+BreakBeforeBraces: Linux
+BreakBeforeTernaryOperators: true
+#BreakBeforeInheritanceComma: false
+BreakConstructorInitializersBeforeComma: false
+BreakStringLiterals: true
+BreakBeforeBinaryOperators: true
+
+ConstructorInitializerAllOnOneLineOrOnePerLine: false
+
+ColumnLimit: 0
+
+Cpp11BracedListStyle: false
+
+IndentPPDirectives: AfterHash
+IndentCaseLabels: true
+
+ReflowComments: true
+
+SortIncludes: true
+
+SpaceAfterCStyleCast: true
+SpaceAfterTemplateKeyword: true
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeParens: Never
+SpacesInAngles: false
+SpaceInEmptyParentheses: false
+
+MaxEmptyLinesToKeep: 1
+
+NamespaceIndentation: All
+#FixNamespaceComments: true
+
+PointerAlignment: Left
+PointerBindsToType: true
+
+IndentWidth: 4
+TabWidth: 4
+UseTab: ForIndentation
+...

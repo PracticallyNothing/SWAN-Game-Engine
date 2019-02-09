@@ -6,43 +6,40 @@
 
 namespace SWAN
 {
-    inline String Format(const String& s) { return s; }
+	inline String Format(const String& s) { return s; }
 
-    /**
+	/**
      *
      *
      */
-    template<typename First, typename... Args>
-    String Format(const String& fmtStr, First f, Args... args)
-    {
-	using namespace SWAN::Util::StreamOps;
-	std::stringstream ss;
-
-	auto fmt = fmtStr.begin();
-	while(fmt != fmtStr.end())
+	template <typename First, typename... Args>
+	String Format(const String& fmtStr, First f, Args... args)
 	{
-	    if(*fmt == '{')
-	    {
-		/// Information about the conversion.
-		std::stringstream info;
-		while(*fmt != '}')
-		{
-		    ++fmt;
-		    info << *fmt;
+		using namespace SWAN::Util::StreamOps;
+		std::stringstream ss;
+
+		auto fmt = fmtStr.begin();
+		while(fmt != fmtStr.end()) {
+			if(*fmt == '{') {
+				/// Information about the conversion.
+				std::stringstream info;
+				while(*fmt != '}') {
+					++fmt;
+					info << *fmt;
+				}
+				++fmt;
+
+				ss << f;
+				ss << fmtStr.substr(std::distance(fmtStr.begin(), fmt));
+				return Format(ss.str(), args...);
+			} else {
+				ss << *fmt;
+				++fmt;
+			}
 		}
-		++fmt;
 
-		ss << f;
-		ss << fmtStr.substr(std::distance(fmtStr.begin(), fmt));
-		return Format(ss.str(), args...);
-	    } else {
-		ss << *fmt;
-		++fmt;
-	    }
+		return ss.str();
 	}
-
-	return ss.str();
-    }
-}
+} // namespace SWAN
 
 #endif

@@ -13,3 +13,6 @@ set(LIBS
 
 add_executable(SWAN-Cubes-Demo SWAN-Cubes-Demo.cpp)
 target_link_libraries(SWAN-Cubes-Demo ${LIBS})
+
+add_executable(SWAN-VoxelEdit-Demo SWAN-VoxelEditorDemo.cpp)
+target_link_libraries(SWAN-VoxelEdit-Demo ${LIBS})

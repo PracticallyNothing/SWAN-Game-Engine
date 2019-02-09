@@ -1,245 +1,704 @@
-#define SDL_main_h_ // SDL_Main might be very useful, but I find it to be pesky.
+#define SDL_MAIN_HANDLED
 
-#include "AssimpImport.hpp" // For AssimpImport()
+#include <chrono>
+#include <cmath>
+#include <random>
+#include <set>
+#include <unordered_set>
 
-#include "SWAN/Core/Display.hpp"       // For SWAN::Display
-#include "SWAN/Core/EventListener.hpp" // For SWAN::EventListener
-#include "SWAN/Core/Input.hpp"         // For SWAN_Input
-#include "SWAN/Core/Resources.hpp"     // For SWAN::Res::LoadFromFile(), SWAN::Res::Get*()
+#include <bullet/btBulletDynamicsCommon.h>
 
-#include "SWAN/Physics/Transform.hpp" // For SWAN::Transform
+#include "SWAN/Core/Defs.hpp"
+#include "SWAN/Core/Format.hpp"
 
-#include "SWAN/Rendering/Camera.hpp"  // For SWAN::Camera
-#include "SWAN/Rendering/Mesh.hpp"    // For SWAN::Mesh
-#include "SWAN/Rendering/Shader.hpp"  // For SWAN::Shader
-#include "SWAN/Rendering/Text.hpp"    // For SWAN::Text
-#include "SWAN/Rendering/Texture.hpp" // For SWAN::Texture
+// ----- Resource Loading ----- //
+#include "SWAN/Core/Resources.hpp"
 
-#include "SWAN/Maths/Vector.hpp"
+// ----- Video and Audio ----- //
+#include "SWAN/Core/Display.hpp"       // For SWAN::Display::*
+#include "SWAN/OpenAL/SoundSystem.hpp" // For SWAN::SoundSystem
 
-#include "SWAN/Utility/AngleUnits.hpp" // For SWAN::Radians, SWAN::Degrees
-#include "SWAN/Utility/Debug.hpp"      // For SWAN_DEBUG_DO(), SWAN_DEBUG_VAR
-#include "SWAN/Utility/StreamOps.hpp"      // For SWAN_DEBUG_DO(), SWAN_DEBUG_VAR
-#include "SWAN/Utility/Math.hpp"       // For SWAN::Util::PixelToGLCoord()
+// ----- Rendering stuff ----- //
+#include "SWAN/Rendering/Camera.hpp"      // For SWAN::Camera
+#include "SWAN/Rendering/DebugRender.hpp" // For SWAN::Render()
 
-#include <cassert>   // For std::assert()
-#include <algorithm> // For std::generate()
-#include <chrono>    // For std::chrono::*
-#include <iostream>  // For std::cout
-#include <map>       // For std::map<K, V>
-#include <random>    // For std::random_device
-#include <sstream>   // For std::stringstream
-#include <string>    // For std::string
-#include <vector>    // For std::vector<T>
+// ----- GUI ----- //
+#include "SWAN/GUI/GUIManager.hpp"
+#include "SWAN/GUI/IGUIElement.hpp"
 
-using namespace std::chrono;
-using std::cout;
-using std::map;
-using std::vector;
+// ----- OpenGL ----- //
+#include "SWAN/OpenGL/OnGLInit.hpp" // For SWAN::OnGLInit()
 
-using SWAN::Util::Radians;
-using namespace SWAN::Util::StreamOps;
+// ----- Input ----- //
+#include "SWAN/Input/Event.hpp"      // For SWAN::UpdateInputEvents();
+#include "SWAN/Input/InputFrame.hpp" // For SWAN::InputFrame
 
-/// Typedef for floating point miliseconds
-using fms = std::chrono::duration<float, milliseconds::period>;
+using fms = std::chrono::duration<double, std::milli>;
+using FloatSeconds = std::chrono::duration<double>;
 
-std::random_device rd;
+bool GameRunning = false;
+void Stop() { GameRunning = false; }
 
-/// Generate a random transformation.
-SWAN::Transform getRandTransform() {
-    std::uniform_real_distribution<double> d(-75, 75);
-    std::uniform_real_distribution<double> d2(1, 7.5);
+SWAN::vec3 ToSWANVector(btVector3 v) { return { v.getX(), v.getY(), v.getZ() }; }
+SWAN::vec4 ToSWANVector(btVector4 v) { return { v.getX(), v.getY(), v.getZ(), v.getW() }; }
+btVector3 ToBulletVector(SWAN::vec3 v) { return btVector3(v.x, v.y, v.z); }
+btVector4 ToBulletVector(SWAN::vec4 v) { return btVector4(v.x, v.y, v.z, v.w); }
 
-    return SWAN::Transform(SWAN::vec3(d(rd), d(rd), d(rd)),
-			   SWAN::vec3(d(rd), d(rd), d(rd)));
-}
+class InputHandler : public SWAN::InputFrame
+{
+  public:
+	InputHandler(SWAN::Camera& c) : cam(c) {}
 
-#if 1
-#define GLERR(func)				\
-    do {					\
-	(func);					\
-	_CheckGLError(SWAN_STRINGIFY(func));	\
-    } while(0)
-#else
-#define GLERR(func) (func)
-#endif
-
-/// Checks and reports an OpenGL error.
-void _CheckGLError(std::string funcCall) {
-    cout << "    Checking GL errors...\n";
-    map<GLenum, std::string> errors = {
-	{ 0x0500, "GL_INVALID_ENUM" },
-	{ 0x0501, "GL_INVALID_VALUE" },
-	{ 0x0502, "GL_INVALID_OPERATION" },
-	{ 0x0503, "GL_STACK_OVERFLOW" },
-	{ 0x0504, "GL_STACK_UNDERFLOW" },
-	{ 0x0505, "GL_OUT_OF_MEMORY" },
-	{ 0x0506, "GL_INVALID_FRAMEBUFFER_OPERATION" },
-	{ 0x0507, "GL_CONTEXT_LOST" }
-    };
-
-    GLenum err;
-    while((err = glGetError()) != GL_NO_ERROR) {
-	cout << "OpenGL error:\n"
-	     << "    type: " << errors[err] << "(" << err << ")\n"
-	     << "    func: " << funcCall << '\n';
-    }
-}
-
-/// Initialize a display, input, OpenGL and resources.
-void Init() {
-    SWAN::Display::Init(1280, 720, "SWAN-FPS");
-    SWAN::Display::SetClearColor(0.5f, 0.3f, 0.25f, 0.0f);
-    SWAN_Input_Init();
-
-    GLERR(glEnable(GL_PROGRAM_POINT_SIZE));
-    GLERR(glEnable(GL_DEPTH_TEST));
-    GLERR(glEnable(GL_CULL_FACE));
-    GLERR(glCullFace(GL_FRONT));
-
-    GLERR(glEnable(GL_BLEND));
-    GLERR(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-
-    SWAN::Res::LoadFromFile("Resources/res.xml");
-}
-
-/// Track inputs for camera control.
-void CamControl(SWAN::Camera& cam, double speed = 0.001, double sensitivity = 2.0) {
-    if(SWAN_Input.Keyboard.letterKeys['w' - 'a'])
-	cam.moveForw(speed);
-    else if(SWAN_Input.Keyboard.letterKeys['s' - 'a'])
-	cam.moveForw(-speed);
-
-    if(SWAN_Input.Keyboard.letterKeys['a' - 'a'])
-	cam.moveRight(speed);
-    else if(SWAN_Input.Keyboard.letterKeys['d' - 'a'])
-	cam.moveRight(-speed);
-
-    if(SWAN_Input.Keyboard.spaceKey)
-	cam.moveUp(-speed);
-    else if(SWAN_Input.Keyboard.LShiftKey)
-	cam.moveUp(speed);
-
-    auto mouseX     = SWAN::Util::PixelToGLCoord(SWAN::Display::GetHeight(), SWAN::GetCurrMouseState().x);
-    auto prevMouseX = SWAN::Util::PixelToGLCoord(SWAN::Display::GetHeight(), SWAN::GetPrevMouseState().x);
-    cam.rotateByY(-SWAN::Util::Radians((mouseX - prevMouseX) * sensitivity));
-
-    auto mouseY     = SWAN::Util::PixelToGLCoord(SWAN::Display::GetHeight(), SWAN::GetCurrMouseState().y);
-    auto prevMouseY = SWAN::Util::PixelToGLCoord(SWAN::Display::GetHeight(), SWAN::GetPrevMouseState().y);
-    cam.rotateByX(SWAN::Util::Radians((mouseY - prevMouseY) * sensitivity));
-}
-
-/// Pointer to a texture that indicates a lack of a proper texture
-const SWAN::Texture* emptyTex = nullptr;
-
-/// Render a node's actors.
-void RenderNode(SWAN::Shader* shader, const Node* node) {
-    assert(shader);
-    assert(node);
-    shader->setUniform({ "transform", node->getMat() });
-
-    // Render actors
-    for(const auto& actor : node->actors) {
-	if(actor.tex)
-	    actor.tex->bind();
-	else
-	    emptyTex->bind();
-	shader->renderMesh(*actor.mesh);
-    }
-
-    // Render children
-    for(const auto& pc : node->children)
-	RenderNode(shader, pc.get());
-}
-
-/// Render a Scene.
-void Render(SWAN::Shader* shader, const Scene& scene) {
-    assert(shader);
-    assert(scene.root.get());
-    RenderNode(shader, scene.root.get());
-}
-
-int main() {
-    Init();
-
-    Scene scene = AssimpImport("Resources/Scene.dae");
-
-    SWAN::Shader* unlitShader = SWAN::Res::GetShader("Unlit");
-    SWAN::Shader* fogShader = SWAN::Res::GetShader("Fog");
-    SWAN::Shader* shader = fogShader;
-
-    emptyTex = SWAN::Res::GetTexture("Error");
-
-    const SWAN::Mesh* planeMesh = SWAN::Res::GetMesh("Plane");
-    const SWAN::Texture* planeTex  = SWAN::Res::GetTexture("Place");
-
-    const SWAN::Mesh* cubeMesh = SWAN::Res::GetMesh("1x1 Cube");
-    const SWAN::Texture* placeTex = SWAN::Res::GetTexture("Place");
-
-    SWAN::Camera cam (SWAN::Display::GetAspectRatio(),
-		      SWAN::vec3(0.0f, 0.0f, 0.0f),
-		      SWAN::Util::Radians::FromDegrees(90.0f),
-		      0.001, 1000.0);
-
-    bool running = true;
-    SWAN::EventListener exitEvent([]() {return SWAN_Input.Keyboard.escapeKey || SWAN_Input.Window.exitRequest;},
-				  [&running]() { running = false; }, false);
-
-    auto prevTime = steady_clock::now();
-
-    // Hacky way to set type to duration
-    auto frameTime = prevTime - prevTime;
-
-    int nCubes = 100;
-    std::vector<SWAN::Transform> transforms(nCubes);
-    std::generate(transforms.begin(), transforms.end(), getRandTransform);
-
-    while(running) {
-	exitEvent();
-	SWAN_Input.handleEvents();
-
-	CamControl(cam);
-
-	auto now = steady_clock::now();
-
-	SWAN::Text text("", SWAN::Res::GetBitmapFont("Monospace 12"));
-	if(now - prevTime >= 16ms) {
-	    std::vector<SWAN::ShaderUniform> unis = {
-		{ "view", cam.getView() },
-		{ "perspective", cam.getPerspective() },
-		{ "fogColor", (SWAN::vec3) SWAN::Display::GetClearColor() },
-		{ "fogZ", 0.85f * cam.zFar }
-	    };
-	    shader->setUniforms(unis);
-
-	    placeTex->bind();
-	    Render(shader, scene);
-
-	    std::stringstream info;
-	    info << "Frame time: " << duration_cast<fms>(frameTime).count() << " ms\n"
-		 << "FPS: " << 1000 / duration_cast<fms>(frameTime).count() << '\n'
-		//<< "# rendered cubes: " << nRenderedCubes << " out of " << nCubes << '\n'
-		 << "Camera: " << cam.pos() << '\n'
-		 << "     View: " << SWAN::Transpose(cam.getView()) << '\n'
-		;
-
-	    text.text = info.str();
-	    text.updateVAO();
-
-	    GLERR(glClear(GL_DEPTH_BUFFER_BIT));
-	    text.render(SWAN::Res::GetShader("Text"), 0, 0, SWAN::vec4(1, 1, 1, 1));
-
-	    GLERR(glClear(GL_DEPTH_BUFFER_BIT));
-	    SWAN::Display::Clear();
-
-	    now       = steady_clock::now();
-	    frameTime = now - prevTime;
-	    prevTime  = now;
-	    SWAN::SetMousePos(SWAN::Display::detail::width / 2, SWAN::Display::detail::height / 2);
+	void OnKeyPress(SWAN::Key key) override
+	{
+		if(key.Code == SWAN::Escape)
+			Stop();
+		if(key.Code == SWAN::J && body) {
+			body->activate(true);
+			body->applyCentralImpulse({ 0, 2, 0 });
+			// body->applyImpulse({0, 20000000, 0}, {0,-1,0});
+			SWAN::Log(SWAN::Format("{}", ToSWANVector(body->getLinearVelocity())));
+		}
 	}
-    }
 
-    SWAN::Display::Close();
+	void OnKeyRepeat(SWAN::Key key) override {}
+	void OnKeyRelease(SWAN::Key key) override {}
 
-    return 0;
+	void OnKeyHold(SWAN::Key key) override
+	{
+		if(key.Code == SWAN::W)
+			cam.moveForw(speed);
+		if(key.Code == SWAN::S)
+			cam.moveForw(-speed);
+
+		if(key.Code == SWAN::A)
+			cam.moveRight(-speed);
+		if(key.Code == SWAN::D)
+			cam.moveRight(speed);
+
+		SWAN::GetKeyName()
+
+		if(key.Code == SWAN::Spacebar)
+			cam.moveUp(speed);
+		if(key.Code == SWAN::LShift)
+			cam.moveUp(-speed);
+	}
+
+	void OnMouseMove(SWAN::MouseMove move) override
+	{
+		if(SWAN::GetCurrentInputFrame() == this) {
+			cam.rotateByY(
+			    SWAN::Util::Radians::FromDegrees(
+			        move.RelativeX * sensitivityX));
+
+			cam.rotateByX(
+			    SWAN::Util::Radians::FromDegrees(
+			        move.RelativeY * sensitivityY));
+
+			SWAN::WarpMouseTo(
+			    SWAN::Display::GetWidth() / 2,
+			    SWAN::Display::GetHeight() / 2);
+		}
+	}
+
+	void OnWindowResize(SWAN::WindowResize wr) override {}
+
+	void OnWindowExit() override { Stop(); }
+
+	btRigidBody* body = nullptr;
+	SWAN::Camera& cam;
+	double speed = 0.001;
+	double sensitivityX = 0.125,
+	       sensitivityY = sensitivityX * SWAN::Display::GetAspectRatio();
+};
+
+const char* const unlitFrag = R"ddd(
+#version 130
+
+out vec4 fCol;
+
+void main() { 
+    fCol = vec4(0.3, 0.3, 0.3, 1.0); 
+}
+)ddd";
+
+const char* const unlitVert = R"ddd(
+#version 130
+in vec3 pos;
+
+uniform mat4 perspective;
+uniform mat4 view;
+uniform mat4 transform;
+
+void main() {
+    gl_Position = perspective * view * transform * vec4(pos, 1);
+    gl_PointSize = 20;
+}
+)ddd";
+
+struct Grid {
+	Grid()
+	{
+		SWAN::OnGLInit _ = {
+			[this] {
+			    shader.compileShadersFromSrc(unlitVert, unlitFrag);
+			    shader.addAttrib("pos");
+			    shader.linkShaders();
+
+			    shader.use();
+			    shader.addUniform("perspective");
+			    shader.addUniform("view");
+			    shader.addUniform("transform");
+			}
+		};
+	}
+
+	SWAN::GL::VAO vao;
+	SWAN::Shader shader;
+
+	double margin = 1.0;
+	int numLines = 20;
+
+	void generate()
+	{
+		std::vector<SWAN::fvec3> p;
+
+		for(int z = 0; z < numLines; z++) {
+			for(int x = 0; x < numLines; x++) {
+				SWAN::vec3 start(margin * x, 0.0, margin * z);
+				p.push_back(start - SWAN::vec3(1000, 0, 0));
+				p.push_back(start + SWAN::vec3(1000, 0, 0));
+
+				p.push_back(start - SWAN::vec3(0, 0, 1000));
+				p.push_back(start + SWAN::vec3(0, 0, 1000));
+			}
+		}
+		vao.storeAttribData(0, 3, (float*) p.data(), p.size() * sizeof(SWAN::fvec3));
+	}
+
+	void render(const SWAN::Camera& cam)
+	{
+		shader.use();
+		shader.SetMat4("transform", SWAN::Transform().getModel());
+		shader.SetMat4("perspective", cam.getPerspective());
+		shader.SetMat4("view", cam.getView());
+		vao.draw(numLines * numLines * 4, GL_LINES);
+	}
+};
+
+SWAN::Pointer<btRigidBody> CreatePlane()
+{
+	btTransform transform;
+	transform.setIdentity();
+	transform.setOrigin({ 0, 0, 0 });
+
+	btScalar mass = 0;
+	btVector3 localInertia;
+
+	btCollisionShape* groundShape = new btBoxShape({ 1000, 0, 1000 });
+	btDefaultMotionState* groundMotionState = new btDefaultMotionState(transform);
+
+	groundShape->calculateLocalInertia(mass, localInertia);
+
+	btRigidBody::btRigidBodyConstructionInfo groundRBInfo(mass, groundMotionState, groundShape, localInertia);
+	return std::make_unique<btRigidBody>(groundRBInfo);
+}
+
+SWAN::Pointer<btRigidBody> CreateCube(SWAN::vec3 pos, SWAN::Cube* user)
+{
+	btTransform transform;
+	transform.setIdentity();
+	transform.setOrigin(ToBulletVector(pos));
+	btQuaternion rotation;
+	rotation.setEulerZYX(0, 0, 0);
+	transform.setRotation(rotation);
+
+	btScalar mass = 0.1;
+	btVector3 localInertia;
+
+	btCollisionShape* shape = new btBoxShape({ 1, 1, 1 });
+	btDefaultMotionState* motionState = new btDefaultMotionState(transform);
+
+	shape->calculateLocalInertia(mass, localInertia);
+
+	btRigidBody::btRigidBodyConstructionInfo
+	    RBInfo(mass, motionState, shape, localInertia);
+	RBInfo.m_restitution = 1;
+	RBInfo.m_friction = 0.5;
+
+	btRigidBody* body = new btRigidBody(RBInfo);
+	body->setUserPointer(user);
+
+	return std::unique_ptr<btRigidBody>(body);
+}
+
+struct PhysicsCube {
+	PhysicsCube(btDynamicsWorld* world, SWAN::vec3 pos = { 0, 0, 0 })
+	{
+		btTransform transform;
+		transform.setIdentity();
+		transform.setOrigin(ToBulletVector(pos));
+
+		btQuaternion rotation;
+		rotation.setEulerZYX(0, 0, 0);
+		transform.setRotation(rotation);
+
+		btScalar mass = 1;
+		btVector3 localInertia;
+
+		btCollisionShape* shape = new btBoxShape({ 1, 1, 1 });
+		btDefaultMotionState* motionState = new btDefaultMotionState(transform);
+
+		shape->calculateLocalInertia(mass, localInertia);
+
+		btRigidBody::btRigidBodyConstructionInfo
+		    RBInfo(mass, motionState, shape, localInertia);
+		RBInfo.m_restitution = 0.5;
+		RBInfo.m_friction = 0.5;
+
+		RigidBody = new btRigidBody(RBInfo);
+		RigidBody->setUserPointer(&Model);
+
+		World = world;
+		World->addRigidBody(RigidBody);
+	}
+
+	~PhysicsCube()
+	{
+		World->removeRigidBody(RigidBody);
+		delete RigidBody;
+	}
+
+	void Render(const SWAN::Camera& cam)
+	{
+		btTransform tr;
+		RigidBody->getMotionState()->getWorldTransform(tr);
+
+		btQuaternion orientation = tr.getRotation();
+		SWAN::Cube* user = &Model;
+		user->transform.pos = ToSWANVector(tr.getOrigin());
+		SWAN::fvec3 v;
+		orientation.getEulerZYX(v.z, v.y, v.x);
+		user->transform.rot = v;
+
+		SWAN::Render(cam, Model);
+	}
+
+	SWAN::Cube Model;
+	btRigidBody* RigidBody;
+	btDynamicsWorld* World;
+};
+
+void GenerateCubes(btDynamicsWorld* world, SWAN::Vector<PhysicsCube>& vec, int numCubes = 5)
+{
+	std::random_device rd;
+	std::default_random_engine eng(rd());
+	std::uniform_real_distribution<double> dist(125, 150);
+
+	vec.reserve(numCubes);
+
+	for(int i = 0; i < numCubes; i++)
+		vec.emplace_back(world, SWAN::vec3(dist(eng), dist(eng), dist(eng)));
+}
+
+class PhysicsSystem
+{
+  public:
+	PhysicsSystem()
+	{
+		Broadphase = new btDbvtBroadphase();
+		CollisionConfiguration = new btDefaultCollisionConfiguration();
+		Dispatcher = new btCollisionDispatcher(CollisionConfiguration);
+		Solver = new btSequentialImpulseConstraintSolver();
+		World = new btDiscreteDynamicsWorld(
+		    Dispatcher,
+		    Broadphase,
+		    Solver,
+		    CollisionConfiguration);
+		World->setGravity(btVector3(0, -9.8, 0));
+	}
+
+	btBroadphaseInterface* Broadphase;
+	btDefaultCollisionConfiguration* CollisionConfiguration;
+	btCollisionDispatcher* Dispatcher;
+	btSequentialImpulseConstraintSolver* Solver;
+	btDiscreteDynamicsWorld* World;
+};
+
+class FPSCounter : public SWAN::IGUIElement
+{
+  public:
+	FPSCounter(const SWAN::BitmapFont* font)
+	    : Font(font)
+	{
+	}
+
+	SWAN::Rect2D GetRect() const override
+	{
+		return SWAN::Rect2D::FromMinMax(
+		    { 0, 0 },
+		    { Font->getGlyphWidth() * 5, Font->getGlyphHeight() });
+	}
+
+	void OnRender(SWAN::GUIManager& man) override
+	{
+		man.RenderText(0, 0, Font, std::to_string(ShowFPS ? 1.0 / FrameTime_ms.count() : FrameTime_ms.count()));
+	}
+
+	void SetFrameTime(fms ms) { FrameTime_ms = ms; }
+	void ToggleShowFPSorFrameTime() { ShowFPS = !ShowFPS; }
+
+  private:
+	bool ShowFPS = true;
+	fms FrameTime_ms = fms{ 0 };
+	const SWAN::BitmapFont* Font;
+};
+
+class Timer
+{
+	using Clock = std::chrono::steady_clock;
+	using FloatSeconds = std::chrono::duration<double>;
+
+  public:
+	Timer() {}
+
+	template <typename Func>
+	Timer(FloatSeconds dur, Func&& f, bool repeat = false)
+	    : started(Clock::now()), duration(dur), func(f), repeat(repeat)
+	{
+	}
+
+	void Update()
+	{
+		if(!expired && TimeSinceStart() >= duration) {
+			func();
+			if(repeat)
+				started = Clock::now();
+			else
+				expired = true;
+		}
+	}
+
+	void Restart()
+	{
+		started = Clock::now();
+		expired = false;
+	}
+
+	FloatSeconds TimeSinceStart() const { return Clock::now() - started; }
+
+  private:
+	std::function<void(void)> func;
+	Clock::time_point started;
+	FloatSeconds duration;
+	bool repeat = false;
+	bool expired = false;
+};
+
+static SWAN::Vector<Timer> Timers;
+
+template <typename Func>
+void Every(FloatSeconds seconds, Func&& f)
+{
+	Timers.emplace_back(seconds, std::forward<Func&&>(f), true);
+}
+
+template <typename Func>
+void After(FloatSeconds seconds, Func&& f)
+{
+	Timers.emplace_back(seconds, std::forward<Func&&>(f), false);
+}
+
+void UpdateTimers()
+{
+	for(auto& t : Timers)
+		t.Update();
+}
+
+class VoxelLevelEditor : public SWAN::InputFrame
+{
+	using ivec3 = SWAN::ivec3;
+	using uvec3 = SWAN::uvec3;
+	using vec3 = SWAN::vec3;
+
+  public:
+	VoxelLevelEditor()
+	{
+		Voxels.reserve(128);
+	}
+
+#define MAPKEY(keycode, codeblock) \
+	do {                           \
+		if(key.Code == keycode)    \
+			codeblock;             \
+	} while(0)
+
+#define MAPKEYEX(keycode, NoCtrl, OnCtrlHeld) \
+	do {                                      \
+		if(key.Code == keycode) {             \
+			if(key.LCtrlHeld)                 \
+				OnCtrlHeld;                   \
+			else                              \
+				NoCtrl;                       \
+		}                                     \
+	} while(0)
+
+	void OnKeyPress(SWAN::Key key) override
+	{
+		MAPKEY(SWAN::Spacebar, AddVoxelAtCursor());
+		MAPKEY(SWAN::Backspace, RemoveVoxelAtCursor());
+		MAPKEY(SWAN::LeftArrow, CursorLeft());
+		MAPKEY(SWAN::RightArrow, CursorRight());
+		MAPKEYEX(SWAN::UpArrow, CursorForward(), CursorUp());
+		MAPKEYEX(SWAN::DownArrow, CursorBackward(), CursorDown());
+		MAPKEY(SWAN::Z, ToggleWireframe());
+	}
+
+	void OnKeyHold(SWAN::Key key) override
+	{
+		double speed = 0.001;
+		if(key.Code == SWAN::W)
+			cam->moveForw(speed);
+		if(key.Code == SWAN::S)
+			cam->moveForw(-speed);
+
+		if(key.Code == SWAN::A)
+			cam->moveRight(-speed);
+		if(key.Code == SWAN::D)
+			cam->moveRight(speed);
+
+		if(key.Code == SWAN::Tab)
+			cam->moveUp(speed);
+		if(key.Code == SWAN::LShift)
+			cam->moveUp(-speed);
+	}
+
+	void ToggleWireframe()
+	{
+		wire = !wire;
+	}
+
+	void OnKeyRepeat(SWAN::Key key) override
+	{
+		OnKeyPress(key);
+	}
+
+	void Render()
+	{
+		for(const auto& cube : Voxels) {
+			SWAN::Render(*cam, cube, SWAN::DefaultFramebuffer, wire);
+		}
+		glClear(GL_DEPTH_BUFFER_BIT);
+		SWAN::Render(*cam, SWAN::Cube(SWAN::Transform(CursorPos, {}, { 0.6, 0.6, 0.6 }), { 0.3, 0.3, 1.0, 0.4 }));
+	}
+
+	void OnMouseMove(SWAN::MouseMove move) override
+	{
+		double sensitivityX = 0.125,
+		       sensitivityY = sensitivityX * SWAN::Display::GetAspectRatio();
+		if(SWAN::GetCurrentInputFrame() == this) {
+			cam->rotateByY(
+			    SWAN::Util::Radians::FromDegrees(
+			        move.RelativeX * sensitivityX));
+
+			cam->rotateByX(
+			    SWAN::Util::Radians::FromDegrees(
+			        move.RelativeY * sensitivityY));
+
+			SWAN::WarpMouseTo(
+			    SWAN::Display::GetWidth() / 2,
+			    SWAN::Display::GetHeight() / 2);
+		}
+	}
+
+	void SetCamera(SWAN::Camera* cam) { this->cam = cam; }
+
+#undef MAPKEY
+#undef MAPKEYEX
+
+  private:
+	void AddVoxelAtCursor()
+	{
+		auto it = std::find_if(
+		    Voxels.begin(),
+		    Voxels.end(),
+		    [this](const SWAN::Cube& c) { return c.transform.pos == CursorPos; });
+
+		if(it == Voxels.end())
+			Voxels.emplace_back(SWAN::Transform(CursorPos, {}, { 0.5, 0.5, 0.5 }));
+	}
+
+	void RemoveVoxelAtCursor()
+	{
+		auto it = std::find_if(
+		    Voxels.begin(),
+		    Voxels.end(),
+		    [this](const SWAN::Cube& c) { return c.transform.pos == CursorPos; });
+
+		if(it != Voxels.end())
+			Voxels.erase(it);
+	}
+
+	void CursorLeft() { CursorPos += GetRight(); }
+	void CursorRight() { CursorPos -= GetRight(); }
+
+	void CursorUp() { CursorPos += GetUp(); }
+	void CursorDown() { CursorPos -= GetUp(); }
+
+	void CursorForward() { CursorPos += GetForward(); }
+	void CursorBackward() { CursorPos -= GetForward(); }
+
+	struct Axes {
+		SWAN::vec3 forw, up, right;
+	};
+
+	vec3 GetUp()
+	{
+		if(!cam)
+			return DefaultAxes.up;
+
+		auto up = cam->up();
+		if(abs(up.x) >= abs(up.y)) {
+			if(abs(up.x) >= abs(up.z))
+				return (up.x >= 0 ? vec3(1, 0, 0) : vec3(-1, 0, 0));
+			else
+				return (up.z >= 0 ? vec3(0, 0, 1) : vec3(0, 0, -1));
+		} else {
+			if(abs(up.y) >= abs(up.z))
+				return (up.y >= 0 ? vec3(0, 1, 0) : vec3(0, -1, 0));
+			else
+				return (up.z >= 0 ? vec3(0, 0, 1) : vec3(0, 0, -1));
+		}
+	}
+
+	vec3 GetForward()
+	{
+		if(!cam)
+			return DefaultAxes.forw;
+
+		auto forw = cam->forw();
+		if(abs(forw.x) >= abs(forw.y)) {
+			if(abs(forw.x) >= abs(forw.z))
+				return (forw.x >= 0 ? SWAN::vec3(1, 0, 0) : SWAN::vec3(-1, 0, 0));
+			else
+				return (forw.z >= 0 ? SWAN::vec3(0, 0, 1) : SWAN::vec3(0, 0, -1));
+		} else {
+			if(abs(forw.y) >= abs(forw.z))
+				return (forw.y >= 0 ? SWAN::vec3(0, 1, 0) : SWAN::vec3(0, -1, 0));
+			else
+				return (forw.z >= 0 ? SWAN::vec3(0, 0, 1) : SWAN::vec3(0, 0, -1));
+		}
+	}
+
+	vec3 GetRight()
+	{
+		if(!cam)
+			return DefaultAxes.right;
+
+		return SWAN::Cross(GetForward(), GetUp());
+	}
+
+	Axes GetAxesFromCam()
+	{
+		if(!cam)
+			return DefaultAxes;
+
+		return { GetForward(), GetUp(), GetRight() };
+	}
+
+	const Axes DefaultAxes{
+		{ 1, 0, 0 }, // Forward
+		{ 0, 1, 0 }, // Up
+		{ 0, 0, 1 }  // Right
+	};
+
+	SWAN::Camera* cam;
+
+	bool wire = false;
+
+	SWAN::vec3 CursorPos;
+	std::vector<SWAN::Cube> Voxels;
+};
+
+int main()
+{
+	Timers.reserve(20);
+
+	PhysicsSystem sys;
+
+	auto Ground = CreatePlane();
+	sys.World->addRigidBody(Ground.get());
+
+	SWAN::Vector<PhysicsCube> Cubes;
+	GenerateCubes(sys.World, Cubes, 100);
+
+	// ----- Video initilazitaion ----- //
+	SWAN::Display::Init(1280, 720, "Hello, world!");
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	// ----- Audio initialization ----- //
+	SWAN::SoundSystem SoundSys;
+
+	// ----- Camera ----- //
+	SWAN::Camera cam;
+	cam.moveByZ(-1);
+	cam.zNear = 0.01;
+	cam.zFar = 10000.0;
+	// cam.transform.setParent(&CubeUser.transform);
+
+	// ----- Voxel Level Editor ----- //
+	VoxelLevelEditor vle;
+	vle.SetCamera(&cam);
+
+	// ----- Grid ----- //
+	Grid grid;
+	grid.margin = 5;
+	grid.numLines = 50;
+	grid.generate();
+
+	// ----- Input initialization ----- //
+	// InputHandler Handler(cam);
+	SWAN::SetCurrentInputFrame(&vle);
+
+	// ----- GUI ----- //
+	SWAN::Res::ReportLoad(SWAN::Res::LoadBitmapFont("Resources/Fonts/Terminus.toml", "font"));
+	FPSCounter fps(SWAN::Res::GetBitmapFont("font"));
+	SWAN::GUIManager gui;
+	gui.AddElement(&fps);
+
+	double PosValue = 0;
+	auto prevTime = std::chrono::steady_clock::now();
+	FloatSeconds dt{ 0 };
+
+	//Every(FloatSeconds(0.008), [&sys] { sys.World->stepSimulation(0.064); });
+
+	GameRunning = true;
+	while(GameRunning) {
+		auto now = std::chrono::steady_clock::now();
+		SWAN::UpdateInputEvents();
+		UpdateTimers();
+		//sys.World->stepSimulation(FloatSeconds{ dt }.count());
+
+		if(now - prevTime >= std::chrono::milliseconds{ 16 }) {
+			fps.SetFrameTime(now - prevTime);
+			gui.RenderElements();
+			grid.render(cam);
+			vle.Render();
+
+			// for(auto& c : Cubes)
+			// c.Render(cam);
+
+			glClear(GL_DEPTH_BUFFER_BIT);
+			SWAN::Display::Clear();
+
+			prevTime = std::chrono::steady_clock::now();
+		}
+
+		dt = std::chrono::duration_cast<FloatSeconds>(std::chrono::steady_clock::now() - now);
+	}
+
+	SWAN::Display::Close();
 }

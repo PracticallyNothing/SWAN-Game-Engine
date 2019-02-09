@@ -11,10 +11,10 @@
 
 namespace SWAN
 {
-    /// @addtogroup Input
-    /// @{
+	/// @addtogroup Input
+	/// @{
 
-    /** @brief An interface for an object 
+	/** @brief An interface for an object 
      *         (the GUI, a text box, the game window itself) that receives input.
      *
      * The input frame is an abstract class that receives events and acts upon those events.
@@ -27,12 +27,13 @@ namespace SWAN
      *       however, any unprocessed input may disappear, unless the implementation itself passes
      *       it on to another input frame.
      */
-    struct InputFrame
-    {
-	/// Virtual destructor.
-	virtual ~InputFrame() {}
+	class InputFrame
+	{
+	  public:
+		/// Virtual destructor.
+		virtual ~InputFrame() {}
 
-	/** @brief Callback for whenever a key on the keyboard is pressed.
+		/** @brief Callback for whenever a key on the keyboard is pressed.
 	 *
 	 * @note This only activates at the start of a key press.\n
 	 *       If you want to do something whenever the key is being **held down**,
@@ -42,9 +43,9 @@ namespace SWAN
 	 *
 	 * @param key The key that's been pressed.
 	 */
-	virtual void OnKeyPress(Key key) {}
+		virtual void OnKeyPress(Key key) {}
 
-	/** @brief Callback for whenever a key on the keyboard 
+		/** @brief Callback for whenever a key on the keyboard 
 	 *         is reported as pressed while being held down.
 	 *
 	 * A key is considered to repeat whenever the OS 
@@ -54,15 +55,15 @@ namespace SWAN
 	 * 
 	 * @param key The key that's repeating.
 	 */
-	virtual void OnKeyRepeat(Key key) {}
-	/** @brief Callback for whenever the key has been released.
+		virtual void OnKeyRepeat(Key key) {}
+		/** @brief Callback for whenever the key has been released.
 	 * 
 	 * A key is released whenever you lift your finger off it.
 	 *
 	 * @param key The key that's been released.
 	 */
-	virtual void OnKeyRelease(Key key) {}
-	/** @brief Callback for whenever a key on the keyboard is being held down.
+		virtual void OnKeyRelease(Key key) {}
+		/** @brief Callback for whenever a key on the keyboard is being held down.
 	 *
 	 * A key is considered to be held down whenever 
 	 * it's been pressed and it still hasn't been released.
@@ -70,67 +71,68 @@ namespace SWAN
 	 * 
 	 * @param key The key that's being held down.
 	 */
-	virtual void OnKeyHold(Key key) {}
+		virtual void OnKeyHold(Key key) {}
 
-	/** @brief Callback for whenever a mouse button is pressed.
+		/** @brief Callback for whenever a mouse button is pressed.
 	 *
 	 * @param button The mouse button which was pressed.
 	 */
-	virtual void OnMouseKeyPress(MouseKey key) {}
-	/** @brief Callback for whenever a mouse button is released.
+		virtual void OnMouseKeyPress(MouseKey key) {}
+		/** @brief Callback for whenever a mouse button is released.
 	 *
 	 * @param button The mouse button which was released. 
 	 */
-	virtual void OnMouseKeyRelease(MouseKey key) {}
-	/** @brief Callback for whenever the mouse is moved. 
+		virtual void OnMouseKeyRelease(MouseKey key) {}
+		/** @brief Callback for whenever the mouse is moved. 
 	 *
 	 * @param move MouseMove with information on how the mouse has moved. 
 	 */
-	virtual void OnMouseMove(MouseMove move) {}
-	/** @brief Callback for whenever the scroll wheel on the mouse is used. 
+		virtual void OnMouseMove(MouseMove move) {}
+		/** @brief Callback for whenever the scroll wheel on the mouse is used. 
 	 *
 	 * @param scroll The amount the mouse has scrolled. 
 	 */
-	virtual void OnMouseScroll(MouseScroll scroll) {}
+		virtual void OnMouseScroll(MouseScroll scroll) {}
 
-	/** @brief Callback for whenever the window changes size.
+		/** @brief Callback for whenever the window changes size.
 	 *
 	 * By default, just resizes the display by calling Display::Resize().
 	 *
 	 * @param resize WindowResize with information about the new window's size.
 	 */
-	virtual void OnWindowResize(WindowResize resize) { Display::Resize(resize.Width, resize.Height); }
+		virtual void OnWindowResize(WindowResize resize) { Display::Resize(resize.Width, resize.Height); }
 
-	/** @brief Callback for whenever the window loses keyboard focus. */
-	virtual void OnWindowLoseKeyboardFocus() {}
+		/** @brief Callback for whenever the window loses keyboard focus. */
+		virtual void OnWindowLoseKeyboardFocus() {}
 
-	/** @brief Callback for whenever the window regains keyboard focus. */
-	virtual void OnWindowRegainKeyboardFocus() {}
+		/** @brief Callback for whenever the window regains keyboard focus. */
+		virtual void OnWindowRegainKeyboardFocus() {}
 
-	/** @brief Callback for whenever the window loses mouse focus. */
-	virtual void OnWindowMouseLeave() {}
-	/** @brief Callback for whenever the window regains mouse focus. */
-	virtual void OnWindowMouseEnter() {}
+		/** @brief Callback for whenever the window loses mouse focus. */
+		virtual void OnWindowMouseLeave() {}
+		/** @brief Callback for whenever the window regains mouse focus. */
+		virtual void OnWindowMouseEnter() {}
 
-	/** @brief Callback for whenever the window is being closed. 
+		/** @brief Callback for whenever the window is being closed. 
 	 *
 	 * By default calls Display::Close().
 	 *
 	 * @note This will not be triggered, unless the window manager itself
 	 *       requests that the window be closed (the user has clicked the "X" button).
 	 */
-	virtual void OnWindowExit() { Display::Close(); }
-    };
+		virtual void OnWindowExit() { Display::Close(); }
+	};
 
-    namespace detail {
-	/// A pointer to the current input frame.
-	extern InputFrame* currentInputFrame;
-    }
+	namespace detail
+	{
+		/// A pointer to the current input frame.
+		extern InputFrame* currentInputFrame;
+	} // namespace detail
 
-    /// Get the current active input frame.
-    inline InputFrame* GetCurrentInputFrame() { return detail::currentInputFrame; }
+	/// Get the current active input frame.
+	inline InputFrame* GetCurrentInputFrame() { return detail::currentInputFrame; }
 
-    /** @brief Set the current active input frame.
+	/** @brief Set the current active input frame.
      *
      * The current input frame may be set to any pointer to an implementation of the interface.
      * It may also be set to nullptr if no input is to be processed.
@@ -140,9 +142,9 @@ namespace SWAN
      *
      * @param frame A pointer to the frame that will become the active frame.
      */
-    inline void SetCurrentInputFrame(InputFrame* frame) { detail::currentInputFrame = frame; }
+	inline void SetCurrentInputFrame(InputFrame* frame) { detail::currentInputFrame = frame; }
 
-    /// @}
-}
+	/// @}
+} // namespace SWAN
 
 #endif

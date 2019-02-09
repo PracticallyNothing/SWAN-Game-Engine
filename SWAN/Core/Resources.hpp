@@ -1,220 +1,221 @@
 #ifndef SWAN_RESOURCES_HPP
 #define SWAN_RESOURCES_HPP
 
-//#include <unordered_map> // For std::unordered_map<K, V>
-#include <map>    // For std::map<K, V>
-#include <memory> // For std::unique_ptr<T>
-#include <string> // For std::string
-#include <vector> // For std::vector<T>
+#include "Core/Defs.hpp"
 
 #include "Rendering/BitmapFont.hpp" // For BitmapFont
 #include "Rendering/Mesh.hpp"       // For Mesh
 #include "Rendering/Shader.hpp"     // For Shader
 #include "Rendering/Texture.hpp"    // For Texture
 
-namespace SWAN {
-    namespace Res {
-	/// Shorthand for a string type.
-	using String  = std::string;
-	/// Shorthand for a constant String reference.
-	using CStrRef = const String&;
+namespace SWAN
+{
+	namespace Res
+	{
+		namespace detail
+		{
+			/// (Internal) A dictionary with every mesh that has been loaded.
+			extern Map<String, Pointer<Mesh>> meshes;
 
-	/// Shorthand for a owning pointer type.
-	template <typename T>
-	using Pointer = std::unique_ptr<T>;
+			/// (Internal) A dictionary with every texture that has been loaded.
+			extern Map<String, Pointer<Texture>> textures;
 
-	/// Shorthand for a map type.
-	template <typename K, typename V>
-	using Map = std::map<K, V>;
+			/// (Internal) A dictionary with every bitmap font that has been loaded.
+			extern Map<String, Pointer<BitmapFont>> bitmapFonts;
 
-	/// Shorthand for a vector type.
-	template <typename T>
-	using Vector = std::vector<T>;
+			/// (Internal) A dictionary with every shader that has been loaded.
+			extern Map<String, Pointer<Shader>> shaders;
 
-	namespace detail {
-	    /// (Internal) A dictionary with every mesh that has been loaded.
-	    extern Map<String, Pointer<Mesh>> meshes;
+		} // namespace detail
 
-	    /// (Internal) A dictionary with every texture that has been loaded.
-	    extern Map<String, Pointer<Texture>> textures;
+		/// Information about how the loading of the resource went.
+		enum LoadStatus {
+			/// Resource was loaded correctly.
+			LS_OK,
 
-	    /// (Internal) A dictionary with every bitmap font that has been loaded.
-	    extern Map<String, Pointer<BitmapFont>> bitmapFonts;
+			/// Resource couldn't be loaded, because the name has already been taken by another resource.
+			LS_NAMETAKEN,
 
-	    /// (Internal) A dictionary with every shader that has been loaded.
-	    extern Map<String, Pointer<Shader>> shaders;
+			/// Resource couldn't be loaded, because there file to load it from is incorrect.
+			LS_FILEMISSING,
 
-	} // namespace detail
+			/// Resource couldn't be loaded, because of some resource specific or unspecified error.
+			LS_ERR,
 
-	/// Information about how the loading of the resource went.
-	enum LoadStatus {
-	    /// Resource was loaded correctly.
-	    LS_OK,
+			/// Whether the resource was loaded or not is unknown.
+			LS_UNKNOWN,
+		};
 
-	    /// Resource couldn't be loaded, because the name has already been taken by another resource.
-	    LS_NAMETAKEN,
+		enum ResourceType {
+			// The resource's type is unknown.
+			RT_UNKNOWN,
 
-	    /// Resource couldn't be loaded, because there file to load it from is incorrect.
-	    LS_FILEMISSING,
+			/// The resource is a SWAN::Mesh.
+			RT_MESH,
 
-	    /// Resource couldn't be loaded, because of some resource specific or unspecified erro.
-	    LS_ERR,
-	    
-	    /// Whether the resource was loaded or not is unknown.
-	    LS_UNKNOWN,
-	};
-	enum ResourceType {
-	    // The resource's type is unknown. 
-	    RT_UNKNOWN, 
+			/// The resource is a SWAN::Texture.
+			RT_TEX,
 
-	    /// The resource is a SWAN::Mesh.
-	    RT_MESH,
+			/// The resource is a SWAN::Shader.
+			RT_SHAD,
 
-	    /// The resource is a SWAN::Texture.
-	    RT_TEX,
+			/// The resource is a SWAN::BitmapFont.
+			RT_FONT,
+		};
 
-	    /// The resource is a SWAN::Shader.
-	    RT_SHAD,
+		/// Structure with information concerning whether the resource loaded correctly and what resource it was.
+		struct LoadInfo {
+			/// Status of the resource. See LoadStatus.
+			LoadStatus status = LS_UNKNOWN;
 
-	    /// The resource is a SWAN::BitmapFont.
-	    RT_FONT,
-	};
+			/// Resource type. See ResourceType.
+			ResourceType resType = RT_UNKNOWN;
 
-	/// Structure with information concerning whether the resource loaded correctly and what resource it was.
-	struct LoadInfo { 
-	    /// Status of the resource. See LoadStatus.
-	    LoadStatus status    = LS_UNKNOWN;
+			/// Name with which the resource will be accessed.
+			String name = "";
 
-	    /// Resource type. See ResourceType.
-	    ResourceType resType = RT_UNKNOWN;
+			/// File from which the resource was (or was supposed to be) loaded.
+			String file = "";
 
-	    /// Name with which the resource will be accessed.
-	    String name = "";
+			/**
+			 * @brief Construct a LoadInfo instance with parameters.
+			 * 
+			 * @param ls LoadStatus of the resource.
+			 * @param rt Type of resource.
+			 * @param name Name of the resource. 
+			 * @param file Resource source.
+			 */
+			LoadInfo(LoadStatus ls = LS_UNKNOWN,
+			         ResourceType rt = RT_UNKNOWN,
+			         String name = "",
+			         String file = "")
+			    : status(ls),
+			      resType(rt),
+			      name(name),
+			      file(file) {}
 
-	    /// File from which the resource was (or was supposed to be) loaded.
-	    String file = "";
+			/**
+			 * @brief Set a LoadInfo's LoadStatus.
+			 * @param ls LoadStatus of the resource.
+			 */
+			LoadInfo& withStatus(LoadStatus ls)
+			{
+				status = ls;
+				return *this;
+			}
 
-	    /**
-	     * @brief Construct a LoadInfo instance with parameters.
-	     * 
-	     * @param ls LoadStatus of the resource.
-	     * @param rt Type of resource.
-	     * @param name Name of the resource. 
-	     * @param file Resource source.
-	     */
-	    LoadInfo(LoadStatus ls = LS_UNKNOWN,
-		     ResourceType rt = RT_UNKNOWN,
-		     String name = "",
-		     String file = "")
-		: status(ls),
-		  resType(rt),
-		  name(name),
-		  file(file) {}
+			/**
+			 * @brief Set a LoadInfo's ResourceType.
+			 * @param rt Type of resource.
+			 */
+			LoadInfo& withResType(ResourceType rt)
+			{
+				resType = rt;
+				return *this;
+			}
 
-	    /**
-	     * @brief Set a LoadInfo's LoadStatus.
-	     * @param ls LoadStatus of the resource.
-	     */
-	    LoadInfo& withStatus(LoadStatus ls) {status = ls; return *this;}
+			/**
+			 * @brief Set a LoadInfo's name.
+			 * @param str Name of the resource.
+			 */
+			LoadInfo& withName(String str)
+			{
+				name = str;
+				return *this;
+			}
 
-	    /**
-	     * @brief Set a LoadInfo's ResourceType.
-	     * @param rt Type of resource.
-	     */
-	    LoadInfo& withResType(ResourceType rt) {resType = rt; return *this;}
+			/**
+			 * @brief Set a LoadInfo's file.
+			 * @param str Resource source.
+			 */
+			LoadInfo& withFile(String str)
+			{
+				file = str;
+				return *this;
+			}
+		};
 
-	    /**
-	     * @brief Set a LoadInfo's name.
-	     * @param str Name of the resource.
-	     */
-	    LoadInfo& withName(String str) {name = str; return *this;}
+		/**
+		 * @brief Load an individual shader.
+		 *
+		 * @param filename File of the font.
+		 * @param name Name with which the font will be recalled.
+		 * @param attribs List of all the attributes in the shader.
+		 * @param uniforms List of all the uniforms in the shader.
+		 *
+		 * @return Information about the load process.
+		 */
+		extern LoadInfo LoadShader(const String& filename, const String& name,
+		                           Vector<String> attribs,
+		                           Vector<String> uniforms);
 
-	    /**
-	     * @brief Set a LoadInfo's file.
-	     * @param str Resource source.
-	     */
-	    LoadInfo& withFile(String str) {file = str; return *this;}
-	};
+		/**
+		 * @brief Load an individual bitmap font.
+		 *
+		 * @param filename File of the font.
+		 * @param name Name with which the font will be recalled.
+		 *
+		 * @return Information about the load process.
+		 */
+		extern LoadInfo LoadBitmapFont(const String& filename, const String& name);
 
-	/**
-	 * @brief Load an individual shader.
-	 *
-	 * @param filename File of the font.
-	 * @param name Name with which the font will be recalled.
-	 * @param attribs List of all the attributes in the shader.
-	 * @param uniforms List of all the uniforms in the shader.
-	 *
-	 * @return Information about the load process.
-	 */
-	extern LoadInfo LoadShader(CStrRef filename, CStrRef name,
-				   Vector<String> attribs,
-				   Vector<String> uniforms);
+		/**
+		 * @brief Load an individual mesh.
+		 *
+		 * @param filename File of the mesh.
+		 * @param name Name with which the mesh will be recalled.
+		 *
+		 * @return Information about the load process.
+		 */
+		extern LoadInfo LoadMesh(const String& filename, const String& name);
 
-	/**
-	 * @brief Load an individual bitmap font.
-	 *
-	 * @param filename File of the font.
-	 * @param name Name with which the font will be recalled.
-	 *
-	 * @return Information about the load process.
-	 */
-	extern LoadInfo LoadBitmapFont(CStrRef filename, CStrRef name);
+		/**
+		 * @brief Load an individual texture.
+		 *
+		 * @param filename File of the texture.
+		 * @param name Name with which the texture will be recalled.
+		 *
+		 * @return Information about the load process.
+		 */
+		extern LoadInfo LoadTexture(const String& filename, const String& name, bool pixelated = false);
 
-	/**
-	 * @brief Load an individual mesh.
-	 *
-	 * @param filename File of the mesh.
-	 * @param name Name with which the mesh will be recalled.
-	 *
-	 * @return Information about the load process.
-	 */
-	extern LoadInfo LoadMesh(CStrRef filename, CStrRef name);
+		/**
+		 * @brief Load resources from an XML file.
+		 *
+		 * Loaded resources can be accessed with the GetMesh(), 
+		 * GetTexture(), GetBitmapFont() and GetShader() functions.
+		 *
+		 * @param filename XML file to read from.
+		 * @return Whether the file could be read successfully.
+		 */
+		bool LoadFromFile(const String& filename);
 
-	/**
-	 * @brief Load an individual texture.
-	 *
-	 * @param filename File of the texture.
-	 * @param name Name with which the texture will be recalled.
-	 *
-	 * @return Information about the load process.
-	 */
-	extern LoadInfo LoadTexture(CStrRef filename, CStrRef name, bool pixelated = false);
+		/**
+		 * @brief Retrieve a pointer to a loaded mesh.
+		 * @return The pointer to a SWAN::Mesh, nullptr otherwise.
+		 */
+		const Mesh* GetMesh(const String& name);
 
-	/**
-	 * @brief Load resources from an XML file.
-	 *
-	 * Loaded resources can be accessed with the GetMesh(), 
-	 * GetTexture(), GetBitmapFont() and GetShader() functions.
-	 *
-	 * @param filename XML file to read from.
-	 * @return Whether the file could be read successfully.
-	 */
-	bool LoadFromFile(const std::string& filename);
+		/**
+		 * @brief Retrieve a pointer to a loaded texture.
+		 * @return The pointer to a SWAN::Texture, nullptr otherwise.
+		 */
+		const Texture* GetTexture(const String& name);
 
-	/**
-	 * @brief Retrieve a pointer to a loaded mesh.
-	 * @return The pointer to a SWAN::Mesh, nullptr otherwise.
-	 */
-	const Mesh* GetMesh(const std::string& name);
+		/**
+		 * @brief Retrieve a pointer to a loaded font.
+		 * @return The pointer to a SWAN::BitmapFont, nullptr otherwise.
+		 */
+		const BitmapFont* GetBitmapFont(const String& name);
 
-	/**
-	 * @brief Retrieve a pointer to a loaded texture.
-	 * @return The pointer to a SWAN::Texture, nullptr otherwise.
-	 */
-	const Texture* GetTexture(const std::string& name);
+		/**
+		 * @brief Retrieve a pointer to a loaded shader. 
+		 * @return The pointer to a SWAN::Shader, nullptr otherwise.
+		 */
+		Shader* GetShader(const String& name);
 
-	/**
-	 * @brief Retrieve a pointer to a loaded font.
-	 * @return The pointer to a SWAN::BitmapFont, nullptr otherwise.
-	 */
-	const BitmapFont* GetBitmapFont(const std::string& name);
-
-	/**
-	 * @brief Retrieve a pointer to a loaded shader. 
-	 * @return The pointer to a SWAN::Shader, nullptr otherwise.
-	 */
-	Shader* GetShader(const std::string& name);
-    } // namespace Res
+		void ReportLoad(LoadInfo li, bool reportOK = true);
+	} // namespace Res
 } // namespace SWAN
 
 #endif

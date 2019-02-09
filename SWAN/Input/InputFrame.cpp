@@ -2,8 +2,8 @@
 
 namespace SWAN
 {
-    namespace detail
-    {
-	InputFrame* currentInputFrame = nullptr;
-    }
-}
+	namespace detail
+	{
+		InputFrame* currentInputFrame = nullptr;
+	}
+} // namespace SWAN

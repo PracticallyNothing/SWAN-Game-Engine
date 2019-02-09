@@ -6,62 +6,62 @@
 #include <string> // For std::string
 #include <vector> // For std::vector<T>
 
-#include "Image.hpp"   // For Image
-#include "Texture.hpp" // For Texture
+#include "Core/Defs.hpp"    // For String
+#include "Image.hpp"        // For Image
+#include "Maths/Vector.hpp" // For vec2
+#include "Texture.hpp"      // For Texture
 
-#include "Physics/Transform.hpp" // For SWAN::Transform
+namespace SWAN
+{
+	/// A structure holding a font.
+	/// @warn This class supports only monospace fonts.
+	class BitmapFont
+	{
+	  public:
+		/// Initialize a BitmapFont from a given spritesheet.
+		BitmapFont(int glyphWidth, int glyphHeight, Image* image, int tabWidth = 4);
+		/// Destructor.
+		~BitmapFont();
 
-namespace SWAN {
-    /// A structure holding a font.
-    /// @warn This class supports only monospace fonts.
-    class BitmapFont {
-    public:
-	/// Load a bitmap from a configuration file.
-	explicit BitmapFont(const std::string& confFilename);
-	~BitmapFont();
+		/// Get the width in pixels of an ASCII glyph.
+		int getGlyphWidth(char c = ' ') const;
 
-	/// Get the width in pixels of an ASCII glyph.
-	int getGlyphWidth(char c = ' ') const;
+		/// Get the height in pixels of the font.
+		int getGlyphHeight() const { return glyphHeight; }
 
-	/// Get the height in pixels of the font.
-	int getGlyphHeight() const { return glyphHeight; }
+		/// Get the width of a string of text.
+		int getTextWidth(String text) const;
 
-	/// Get the width of a string of text.
-	int getTextWidth(std::string text) const;
+		/// Get the height of a string of text.
+		int getTextHeight(String text) const;
 
-	/// Get the height of a string of text.
-	int getTextHeight(std::string text) const;
+		/// Get how many glyphs there are per row in the font's texture.
+		int getGlyphsPerRow() const { return glyphsPerRow; }
 
-	/// Get how many glyphs there are per row in the font's texture.
-	int getGlyphsPerRow() const { return glyphsPerRow; }
+		/// Width of the tab character.
+		int tabWidth = 4;
 
-	/// Can a character be rendered?
-	bool isSupported(char c) const {return supportedChars.find(c) != std::string::npos;}
+		/// Get the texture of the font.
+		inline const Texture* getTexture() const { return tex; }
 
-	/// Width of the tab character.
-	int tabWidth;
+		/// Get the UVs for a certain glyph.
+		std::array<vec2, 4> getGlyphUVs(char c) const;
 
-	/// Get the texture of the font.
-	inline const Texture* getTexture() const { return tex; }
+		/// Get the width of the font's texture in OpenGL texture units.
+		double getGLWidth() const { return (double) glyphWidth / img->width; }
+		/// Get the height of the font's texture in OpenGL texture units.
+		double getGLHeight() const { return (double) glyphHeight / img->height; }
 
-	/// Get the UVs for a certain glyph.
-	std::array<vec2, 4> getGlyphUVs(char c) const;
+	  private:
+		Image* img;
+		Texture* tex;
 
-	/// Get the width of the font's texture in OpenGL texture units.
-	double getGLWidth() const { return (double) glyphWidth / img->width; }
-	/// Get the height of the font's texture in OpenGL texture units.
-	double getGLHeight() const { return (double) glyphHeight / img->height; }
+		int glyphWidth, glyphHeight;
+		int glyphsPerRow;
+	};
 
-    private:
-	Image* img;
-	Texture* tex;
-
-	std::string supportedChars;
-
-	int glyphWidth,
-	    glyphHeight,
-	    glyphsPerRow;
-    };
+	/// Load a bitmap from an INI style configuration file.
+	extern BitmapFont* ImportBitmapFromINI(const String& file);
 } // namespace SWAN
 
 #endif // BITMAP_FONT_HPP

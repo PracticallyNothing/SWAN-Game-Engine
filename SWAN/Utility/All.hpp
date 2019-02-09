@@ -10,6 +10,5 @@
 #include "OnScopeExit.hpp"
 #include "Profile.hpp"
 #include "StringUtil.hpp"
-#include "XML.hpp"
 
 #endif // UTIL_ALL_HPP

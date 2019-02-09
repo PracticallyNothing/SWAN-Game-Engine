@@ -41,6 +41,7 @@ uniform int activeLights;
 // so seperate uniforms are used
 uniform sampler2D matDiffuse;
 uniform vec3	  matSpecular;
+uniform bool      asdf;
 uniform float 	  matShininess = 0.0;
 
 void main(){

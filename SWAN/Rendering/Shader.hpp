@@ -1,215 +1,318 @@
 #pragma once
 
+#include <initializer_list>
 #include <map>
 #include <string>
 #include <vector>
-#include <initializer_list>
 
 #include <glad/glad.h>
 
+#include "Core/Defs.hpp"
 #include "Light.hpp"
 #include "Maths/Vector.hpp"
 #include "Mesh.hpp"
 #include "Physics/Transform.hpp"
 #include "Texture.hpp"
 
-namespace SWAN {
-    /// A representation of an OpenGL shader uniform.
-    struct ShaderUniform {
-	std::string name;
+namespace SWAN
+{
+	/// A representation of an OpenGL shader uniform.
+	struct ShaderUniform {
+		String Name;
 
-	/// Type of shader data.
-	enum Type {
-	    /// Integer uniform
-	    T_INT,
-	    /// Boolean uniform
-	    T_BOOL,
-	    /// Float uniform
-	    T_FLOAT,
-	    /// Double uniform
-	    T_DOUBLE,
+		/// Type of shader data.
+		enum class Type {
+			Boolean,
+			Integer,
+			Unsigned,
+			Float,
+			Double,
+			Vector2,
+			Vector3,
+			Vector4,
+			Matrix2x2,
+			Matrix3x3,
+			Matrix4x4,
+			Transform,
+			Sampler2D,
+			PointLight,
+			DirLight,
+			Spotlight,
+		};
 
-	    /// 2D vector uniform
-	    T_VEC2,
-	    /// 3D vector uniform
-	    T_VEC3,
-	    /// 4D vector uniform
-	    T_VEC4,
+		enum Type Type;
 
-	    /// 2x2 matrix uniform
-	    T_MAT2,
-	    /// 3x3 matrix uniform
-	    T_MAT3,
-	    /// 4x4 matrix uniform
-	    T_MAT4,
+		/// Union with data for uniform.
+		union Data {
+			Data() {}
+			~Data() {}
 
-	    /// Texture uniform
-	    /// @note This is not handled the correct way. This just binds the given texture.
-	    T_TEXTURE,
+			bool BooleanData;
+			int IntegerData;
+			unsigned UnsignedData;
+			float FloatData;
+			double DoubleData;
 
-	    /// Transform uniform
-	    /// @note This uniform is just transformed to a mat4.
-	    T_TRANSFORM,
+			vec2 Vector2Data;
+			vec3 Vector3Data;
+			vec4 Vector4Data;
 
-	    /// Point light uniform
-	    T_POINTLIGHT,
-	    /// Directional light uniform
-	    T_DIRLIGHT,
-	    /// Spotlight uniform
-	    T_SPOTLIGHT,
-	} type;
+			mat2 Matrix2x2Data;
+			mat3 Matrix3x3Data;
+			mat4 Matrix4x4Data;
 
-	/// Union with data for uniform.
-	union Data {
-	    Data() {}
-	    ~Data() {}
+			const Texture* Sampler2DData;
 
-	    /// Integer data
-	    int i;
-	    /// Boolean data
-	    bool b;
-	    /// Float data
-	    float f;
-	    /// Double data
-	    double d;
+			Transform TransformData;
 
-	    /// 2D vector data
-	    vec2 v2;
-	    /// 3D vector data
-	    vec3 v3;
-	    /// 4D vector data
-	    vec4 v4;
+			PointLight PointLightData;
+			DirectionalLight DirLightData;
+			Spotlight SpotlightData;
+		};
+		union Data Data;
 
-	    /// 2x2 matrix data
-	    mat2 m2;
-	    /// 3x3 matrix data
-	    mat3 m3;
-	    /// 4x4 matrix data
-	    mat4 m4;
+		ShaderUniform(const String& name, int i) : Name(name)
+		{
+			Data.IntegerData = i;
+			Type = Type::Integer;
+		}
+		ShaderUniform(const String& name, bool b) : Name(name)
+		{
+			Data.BooleanData = b;
+			Type = Type::Boolean;
+		}
+		ShaderUniform(const String& name, float f) : Name(name)
+		{
+			Data.FloatData = f;
+			Type = Type::Float;
+		}
 
-	    /// Texture data
-	    /// @note This is not handled the correct way. This just binds the given texture.
-	    const Texture* tex;
+		ShaderUniform(const String& name, vec2 v2) : Name(name)
+		{
+			Data.Vector2Data = v2;
+			Type = Type::Vector2;
+		}
+		ShaderUniform(const String& name, vec3 v3) : Name(name)
+		{
+			Data.Vector3Data = v3;
+			Type = Type::Vector3;
+		}
+		ShaderUniform(const String& name, vec4 v4) : Name(name)
+		{
+			Data.Vector4Data = v4;
+			Type = Type::Vector4;
+		}
 
-	    /// Transform data
-	    /// @note This data is just transformed to a mat4.
-	    Transform transf;
+		ShaderUniform(const String& name, mat2 m2) : Name(name)
+		{
+			Data.Matrix2x2Data = m2;
+			Type = Type::Matrix2x2;
+		}
+		ShaderUniform(const String& name, mat3 m3) : Name(name)
+		{
+			Data.Matrix3x3Data = m3;
+			Type = Type::Matrix3x3;
+		}
+		ShaderUniform(const String& name, mat4 m4) : Name(name)
+		{
+			Data.Matrix4x4Data = m4;
+			Type = Type::Matrix4x4;
+		}
 
-	    /// Point light data
-	    PointLight plight;
-	    /// Directional light data
-	    DirectionalLight dlight;
-	    /// Spotlight data
-	    Spotlight slight;
+		ShaderUniform(const String& name, const Texture* tex) : Name(name)
+		{
+			Data.Sampler2DData = tex;
+			Type = Type::Sampler2D;
+		}
+		ShaderUniform(const String& name, Transform transf) : Name(name)
+		{
+			Data.TransformData = transf;
+			Type = Type::Transform;
+		}
 
-	} data;
+		ShaderUniform(const String& name, Spotlight slight) : Name(name)
+		{
+			Data.SpotlightData = slight;
+			Type = Type::Spotlight;
+		}
+		ShaderUniform(const String& name, PointLight plight) : Name(name)
+		{
+			Data.PointLightData = plight;
+			Type = Type::PointLight;
+		}
+		ShaderUniform(const String& name, DirectionalLight dlight) : Name(name)
+		{
+			Data.DirLightData = dlight;
+			Type = Type::DirLight;
+		}
 
-	/** Construct a uniform from a int. */
-	ShaderUniform(std::string name, int i) : name(name) { data.i = i; type = T_INT; }
-	/** Construct a uniform from a bool. */
-	ShaderUniform(std::string name, bool b) : name(name) { data.b = b; type = T_BOOL; }
-	/** Construct a uniform from a float. */
-	ShaderUniform(std::string name, float f) : name(name) { data.f = f; type = T_FLOAT; }
+		/** Construct a uniform from a Light. */
+		ShaderUniform(const String& name, Light light) : Name(name)
+		{
+			switch(light.type) {
+				case L_DIRECTIONAL: *this = light.dirLight; break;
+				case L_POINT: *this = light.pointLight; break;
+				case L_SPOT: *this = light.spotLight; break;
+			}
+		}
 
-	/** Construct a uniform from a vec2. */
-	ShaderUniform(std::string name, vec2 v2) : name(name) { data.v2 = v2; type = T_VEC2; }
-	/** Construct a uniform from a vec3. */
-	ShaderUniform(std::string name, vec3 v3) : name(name) { data.v3 = v3; type = T_VEC3; }
-	/** Construct a uniform from a vec4. */
-	ShaderUniform(std::string name, vec4 v4) : name(name) { data.v4 = v4; type = T_VEC4; }
+		ShaderUniform(const String& name)
+		    : Name(name) {}
 
-	/** Construct a uniform from a mat2. */
-	ShaderUniform(std::string name, mat2 m2) : name(name) { data.m2 = m2; type = T_MAT2; }
-	/** Construct a uniform from a mat3. */
-	ShaderUniform(std::string name, mat3 m3) : name(name) { data.m3 = m3; type = T_MAT3; }
-	/** Construct a uniform from a mat4. */
-	ShaderUniform(std::string name, mat4 m4) : name(name) { data.m4 = m4; type = T_MAT4; }
+		ShaderUniform& operator=(int i)
+		{
+			Data.IntegerData = i;
+			Type = Type::Integer;
+			return *this;
+		}
+		ShaderUniform& operator=(bool b)
+		{
+			Data.BooleanData = b;
+			Type = Type::Boolean;
+			return *this;
+		}
+		ShaderUniform& operator=(float f)
+		{
+			Data.FloatData = f;
+			Type = Type::Float;
+			return *this;
+		}
+		ShaderUniform& operator=(vec2 v2)
+		{
+			Data.Vector2Data = v2;
+			Type = Type::Vector2;
+			return *this;
+		}
+		ShaderUniform& operator=(vec3 v3)
+		{
+			Data.Vector3Data = v3;
+			Type = Type::Vector3;
+			return *this;
+		}
+		ShaderUniform& operator=(vec4 v4)
+		{
+			Data.Vector4Data = v4;
+			Type = Type::Vector4;
+			return *this;
+		}
+		ShaderUniform& operator=(mat2 m2)
+		{
+			Data.Matrix2x2Data = m2;
+			Type = Type::Matrix2x2;
+			return *this;
+		}
+		ShaderUniform& operator=(mat3 m3)
+		{
+			Data.Matrix3x3Data = m3;
+			Type = Type::Matrix3x3;
+			return *this;
+		}
+		ShaderUniform& operator=(mat4 m4)
+		{
+			Data.Matrix4x4Data = m4;
+			Type = Type::Matrix4x4;
+			return *this;
+		}
+		ShaderUniform& operator=(const Texture* tex)
+		{
+			Data.Sampler2DData = tex;
+			Type = Type::Sampler2D;
+			return *this;
+		}
+		ShaderUniform& operator=(Transform transf)
+		{
+			Data.TransformData = transf;
+			Type = Type::Transform;
+			return *this;
+		}
+		ShaderUniform& operator=(Spotlight slight)
+		{
+			Data.SpotlightData = slight;
+			Type = Type::Spotlight;
+			return *this;
+		}
+		ShaderUniform& operator=(PointLight plight)
+		{
+			Data.PointLightData = plight;
+			Type = Type::PointLight;
+			return *this;
+		}
+		ShaderUniform& operator=(DirectionalLight dlight)
+		{
+			Data.DirLightData = dlight;
+			Type = Type::DirLight;
+			return *this;
+		}
 
-	/** Construct a uniform from a Texture. */
-	ShaderUniform(std::string name, const Texture* tex) : name(name) { data.tex = tex; type = T_TEXTURE; }
-	/** Construct a uniform from a Transform. */
-	ShaderUniform(std::string name, Transform transf) : name(name) { data.transf = transf; type = T_TRANSFORM; }
+		/** Construct a uniform from a Light. */
+		ShaderUniform& operator=(Light light)
+		{
+			switch(light.type) {
+				case L_DIRECTIONAL: return *this = light.dirLight;
+				case L_POINT: return *this = light.pointLight;
+				case L_SPOT: return *this = light.spotLight;
+			}
+			return *this;
+		}
 
-	/** Construct a uniform from a PointLight. */
-	ShaderUniform(std::string name, PointLight plight) : name(name) { data.plight = plight; type = T_POINTLIGHT; }
-	/** Construct a uniform from a DirectionalLight. */
-	ShaderUniform(std::string name, DirectionalLight dlight) : name(name) { data.dlight = dlight; type = T_DIRLIGHT; }
-	/** Construct a uniform from a Spotlight. */
-	ShaderUniform(std::string name, Spotlight slight) : name(name) { data.slight = slight; type = T_SPOTLIGHT; }
+		/// Default constructor.
+		ShaderUniform() {}
+		/// Copy constructor.
+		ShaderUniform(const ShaderUniform& other) : Name(other.Name), Data(other.Data), Type(other.Type) {}
+		/// Move constructor.
+		ShaderUniform(ShaderUniform&& other) : Name(std::move(other.Name)), Data(std::move(other.Data)), Type(std::move(other.Type)) {}
 
-	/** Construct a uniform from a Light. */
-	ShaderUniform(std::string name, Light light) : name(name) {
-	    switch(light.type) {
-	    case L_DIRECTIONAL:
-		type = T_DIRLIGHT;
-		data.dlight = light.dirLight;
-		break;
-	    case L_POINT:
-		type = T_POINTLIGHT;
-		data.plight = light.pointLight;
-		break;
-	    case L_SPOT:
-		type = T_SPOTLIGHT;
-		data.slight = light.spotLight;
-		break;
-	    }
-	}
+		/// Copy assignment operator.
+		ShaderUniform& operator=(const ShaderUniform& other)
+		{
+			Name = other.Name;
+			Data = other.Data;
+			Type = other.Type;
 
-	/// Default constructor.
-	ShaderUniform() {}
-	/// Copy constructor.
-	ShaderUniform(const ShaderUniform& other) : name(other.name), data(other.data), type(other.type) {}
-	/// Move constructor.
-	ShaderUniform(ShaderUniform&& other) : name(std::move(other.name)), data(std::move(other.data)), type(std::move(other.type)) {}
+			return *this;
+		}
 
-	/// Copy assignment operator.
-	ShaderUniform& operator=(const ShaderUniform& other) {
-	    name = other.name;
-	    data = other.data;
-	    type = other.type;
+		/// Move assignment operator.
+		ShaderUniform& operator=(ShaderUniform&& other)
+		{
+			Name = std::move(other.Name);
+			Data = std::move(other.Data);
+			Type = std::move(other.Type);
+			return *this;
+		}
+	};
 
-	    return *this;
-	}
+	//-----------------------------------------------------------------------------------------
+	// Note:
+	//     This class was taken pretty much verbatim from MakingGamesWithBen's
+	//     excellent "Advanced C++/Graphics Tutorials" series. You should check it out.
+	//     The only things that were added to it were the "Set[Something]()" functions.
+	// Link:
+	//     https://www.youtube.com/playlist?list=PLSPw4ASQYyymu3PfG9gxywSPghnSMiOAW
+	//-----------------------------------------------------------------------------------------
+	// This class handles the compilation, linking, and usage of a GLSL shader program.
+	// Reference: http://www.opengl.org/wiki/Shader_Compilation
+	//-----------------------------------------------------------------------------------------
 
-	/// Move assignment operator.
-	ShaderUniform& operator=(ShaderUniform&& other) {
-	    name = std::move(other.name);
-	    data = std::move(other.data);
-	    type = std::move(other.type);
-	    return *this;
-	}
-    };
+	/// Representation of an OpenGL shader.
+	class Shader
+	{
+	  public:
+		/// Read the contents of the vertex and fragment shader files,
+		void compileShaders(const std::string& vertexShaderFilepath,
+		                    const std::string& fragmentShaderFilepath);
 
-    //-----------------------------------------------------------------------------------------
-    // Note:
-    //     This class was taken pretty much verbatim from MakingGamesWithBen's
-    //     excellent "Advanced C++/Graphics Tutorials" series. You should check it out.
-    //     The only things that were added to it were all of the "setUniformData" functions.
-    // Link:
-    //     https://www.youtube.com/playlist?list=PLSPw4ASQYyymu3PfG9gxywSPghnSMiOAW
-    //-----------------------------------------------------------------------------------------
-    // This class handles the compilation, linking, and usage of a GLSL shader
-    // program.
-    // Reference: http://www.opengl.org/wiki/Shader_Compilation
-    //-----------------------------------------------------------------------------------------
-    /// Representation of an OpenGL shader.
-    class Shader {
-    public:
-	/// Read the contents of the vertex and fragment shader files,
-	void compileShaders(const std::string& vertexShaderFilepath,
-			    const std::string& fragmentShaderFilepath);
+		void compileShadersFromSrc(const char* vertSrc, const char* fragSrc);
 
-	void compileShadersFromSrc(const char* vertSrc, const char* fragSrc);
+		void linkShaders();
+		void addAttrib(const std::string& attributeName);
 
-	void linkShaders();
-	void addAttrib(const std::string& attributeName);
+		void use();
+		void unuse();
 
-	void use();
-	void unuse();
+		GLuint getID() { return programID; }
 
-	GLuint getID() { return programID; }
-
-	/** @brief Does this shader have this uniform?
+		/** @brief Does this shader have this uniform?
 	 *  
 	 *  @note Shaders don't autodetect uniforms (yet). 
 	 *        This checks if a call to addUniform() with the same name has succeeded.
@@ -217,93 +320,32 @@ namespace SWAN {
 	 *  @param name The name of the uniform.
 	 *  @return Whether the uniform is in the shader.
 	 */
-	bool hasUniform(const std::string& name);
-	/** @brief 
-	 *
-	 */
-	void addUniform(const std::string& name);
+		bool hasUniform(const std::string& name);
+		void addUniform(const std::string& name);
 
-	GLint getUniformID(const std::string& name);
+		GLint getUniformID(const std::string& name);
 
-	void setUniform(ShaderUniform su);
+		void SetInt(const String& name, int value);
+		void SetReal(const String& name, double value);
 
-	inline void setUniforms(std::vector<ShaderUniform> su) {
-	    lockUse = true;
-	    if(!used) use();
-	    for(auto s : su) setUniform(s);
-	    lockUse = false;
-	    unuse();
-	}
+		void SetVec2(const String& name, vec2 vec);
+		void SetVec3(const String& name, vec3 vec);
+		void SetVec4(const String& name, vec4 vec);
 
-	inline void setUniforms(std::initializer_list<ShaderUniform> su) {
-	    lockUse = true;
-	    if(!used) use();
-	    for(auto s : su) setUniform(s);
-	    lockUse = false;
-	    unuse();
-	}
+		void SetMat2(const String& name, mat2 mat, GLboolean transposed = GL_TRUE);
+		void SetMat3(const String& name, mat3 mat, GLboolean transposed = GL_TRUE);
+		void SetMat4(const String& name, mat4 mat, GLboolean transposed = GL_TRUE);
 
-	inline void renderBatch(const std::vector<const Mesh*> batch) {
-	    use();
-	    for(const auto* m : batch) m->render();
-	    unuse();
-	}
+	  private:
+		int numAttributes = 0;
 
-	inline void renderMesh(const Mesh& m) {
-	    use();
-	    m.render();
-	    unuse();
-	}
+		void compileShader(const std::string& filePath, GLuint id);
+		void comp(const char* src, GLuint id);
 
-	inline void renderWireframeMesh(const Mesh& m) {
-	    use();
-	    m.renderWireframe();
-	    unuse();
-	}
+		GLuint programID = 0;
+		GLuint vertexShaderID = 0;
+		GLuint fragmentShaderID = 0;
 
-	inline void renderMeshVerts(const Mesh& m) {
-	    use();
-	    m.renderVerts();
-	    unuse();
-	}
-
-	void setUniformData(const std::string& name, int data);
-	void setUniformData(const std::string& name, bool data);
-	void setUniformData(const std::string& name, float data);
-	void setUniformData(const std::string& name, double data);
-
-	void setUniformData(const std::string& name, vec2 data);
-	void setUniformData(const std::string& name, vec3 data);
-	void setUniformData(const std::string& name, vec4 data);
-
-	void setUniformData(const std::string& name, const mat2& data, GLboolean transposed = GL_TRUE);
-	void setUniformData(const std::string& name, const mat3& data, GLboolean transposed = GL_TRUE);
-	void setUniformData(const std::string& name, const mat4& data, GLboolean transposed = GL_TRUE);
-
-	void setUniformData(const std::string& name, mat2&& data, GLboolean transposed = GL_TRUE);
-	void setUniformData(const std::string& name, mat3&& data, GLboolean transposed = GL_TRUE);
-	void setUniformData(const std::string& name, mat4&& data, GLboolean transposed = GL_TRUE);
-
-	void setUniformData(const std::string& name, Transform& data);
-
-	void setUniformData(const std::string& name, DirectionalLight light);
-	void setUniformData(const std::string& name, PointLight light);
-	void setUniformData(const std::string& name, Spotlight light);
-	void setUniformData(const std::string& name, Light light);
-
-    private:
-	bool used    = false;
-	bool lockUse = false;
-
-	int numAttributes = 0;
-
-	void compileShader(const std::string& filePath, GLuint id);
-	void comp(const char* src, GLuint id);
-
-	GLuint programID = 0;
-	GLuint vertexShaderID = 0;
-	GLuint fragmentShaderID = 0;
-
-	std::map<std::string, GLint> uniforms;
-    };
+		std::map<std::string, GLint> uniforms;
+	};
 } // namespace SWAN

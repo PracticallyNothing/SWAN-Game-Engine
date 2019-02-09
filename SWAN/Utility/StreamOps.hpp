@@ -9,148 +9,100 @@
 #include "Physics/Transform.hpp" // For SWAN::Transform
 #include "Rendering/Shader.hpp"  // For SWAN::ShaderUniform
 // #include "Core/Input.hpp"
-#include "INI.hpp"
+#include "Importing/INI.hpp"
 
-namespace SWAN {
-    namespace Util {
-	namespace StreamOps {
-	    using std::ostream;
-	    using std::vector;
+namespace SWAN
+{
+	namespace Util
+	{
+		namespace StreamOps
+		{
+			using std::ostream;
+			using std::vector;
 
-	    // inline ostream& operator<<(ostream& os, const Event& e)
-	    // {
-	    // 	switch(e.type)
-	    // 	{
-	    // 	case Event::Type::Key:
-	    // 	    os << "SWAN::Event { Type: Key, "
-	    // 	       << "Key: '" << e.KeyEvent.AsChar() << "' (" << e.KeyEvent.KeyPressed << "), "
-	    // 	       << "State: " << (e.KeyEvent.Pressed ? "Pressed" : (e.KeyEvent.Held ? "Held" : "Released")) << " }" ;
-	    // 	    break;
-	    // 	case Event::Type::MouseKey:
-	    // 	    os << "SWAN::Event { Type: MouseKey, " 
-	    // 	       << "Key: " << (e.MouseKeyEvent.Key == Event::MouseKey::LMB
-	    // 				? "LMB"
-	    // 				: (e.MouseKeyEvent.Key == Event::MouseKey::MMB
-	    // 				   ? "MMB"
-	    // 				   : "RMB")) << " (" << e.MouseKeyEvent.Key << "), "
-	    // 	       << "| State: " << (e.MouseKeyEvent.Pressed ? "Pressed" : "Released")
-	    // 	       << " }";
-	    // 	    break;
-	    // 	case Event::Type::MouseMove:
-	    // 	    os << "SWAN::Event { Type: MouseMove, "
-	    // 	       << "X: " << e.MouseMoveEvent.X << ", Y: " << e.MouseMoveEvent.Y << ", "
-	    // 	       << "RelX: " << e.MouseMoveEvent.RelativeX << ", RelY: " << e.MouseMoveEvent.RelativeY << " }";
-	    // 	    break;
-	    // 	case Event::Type::MouseScroll:
-	    // 	    os << "SWAN::Event { Type: MouseScroll, "
-	    // 	       << "Amount: " << e.MouseScrollEvent.ScrollAmount << " }";
-	    // 	    break;
-	    // 	case Event::Type::Window:
-	    // 	    os << "SWAN::Event { Type: Window, "
-	    // 	       << "Exit: " << e.WindowEvent.ExitRequest << " }";
-	    // 	    break;
-	    // 	}
+			inline ostream& operator<<(ostream& os, ivec2 v)
+			{
+				os << "ivec2 (" << v.x << ", " << v.y << ")";
+				return os;
+			}
+			inline ostream& operator<<(ostream& os, ivec3 v)
+			{
+				os << "ivec3 (" << v.x << ", " << v.y << ", " << v.z << ")";
+				return os;
+			}
+			inline ostream& operator<<(ostream& os, ivec4 v)
+			{
+				os << "ivec4 (" << v.x << ", " << v.y << ", " << v.z << ", " << v.w
+				   << ")";
+				return os;
+			}
 
-	    // 	return os;
-	    // }
+			inline ostream& operator<<(ostream& os, SWAN::vec2 v)
+			{
+				os << "vec2 (" << v.x << ", " << v.y << ")";
+				return os;
+			}
+			inline ostream& operator<<(ostream& os, SWAN::vec3 v)
+			{
+				os << "vec3 (" << v.x << ", " << v.y << ", " << v.z << ")";
+				return os;
+			}
+			inline ostream& operator<<(ostream& os, vec4 v)
+			{
+				os << "vec4 (" << v.x << ", " << v.y << ", " << v.z << ", " << v.w
+				   << ")";
+				return os;
+			}
 
-	    // inline ostream& operator<<(ostream& os, const EventWatcher& ew)
-	    // {
-	    // 	switch(ew.Type)
-	    // 	{
-	    // 	case EventWatcher::OnAnyEvent: os << "SWAN::EventWatcher { Type: OnAnyEvent }"; break;
-	    // 	case EventWatcher::OnKeyPress: os << "SWAN::EventWatcher { Type: OnKeyPress, Key: " << ew.WatchedKey.Key << " }"; break;
-	    // 	case EventWatcher::OnKeyRepeat: os << "SWAN::EventWatcher { Type: OnKeyRepeat, Key: " << ew.WatchedKey.Key << " }"; break;
-	    // 	case EventWatcher::OnKeyHold: os << "SWAN::EventWatcher { Type: OnKeyHold, Key: " << ew.WatchedKey.Key << " }"; break;
-	    // 	case EventWatcher::OnKeyRelease: os << "SWAN::EventWatcher { Type: OnKeyRelease, Key: " << ew.WatchedKey.Key << " }"; break;
-	    // 	case EventWatcher::OnMouseKey: os << "SWAN::EventWatcher { Type: OnMouseKey, Key: " << ew.WatchedMouseKey.Key << " }"; break;
-	    // 	case EventWatcher::OnMouseKeyRelease: os << "SWAN::EventWatcher { Type: OnMouseKeyRelease, Key: " << ew.WatchedMouseKey.Key << " }"; break;
-	    // 	case EventWatcher::OnMouseMove: os << "SWAN::EventWatcher { Type: OnMouseMove }"; break;
-	    // 	case EventWatcher::OnMouseScroll: os << "SWAN::EventWatcher { Type: OnMouseScroll }"; break;
-	    // 	case EventWatcher::OnMouseOver:
-	    // 	    os << "SWAN::EventWatcher { Type: OnMouseOver, "
-	    // 	       << "X: " << ew.WatchedScreenRect.X << ", "
-	    // 	       << "Y: " << ew.WatchedScreenRect.Y << ", "
-	    // 	       << "Width: " << ew.WatchedScreenRect.Width << ", "
-	    // 	       << "Height: " << ew.WatchedScreenRect.Height << ", "
-	    // 	       << " }";
-	    // 	    break;
-	    // 	case EventWatcher::OnWindowExit:
-	    // 	    os << "SWAN::EventWatcher { Type: OnWindowExit }";
-	    // 	    break;
-	    // 	}
-	    // 	return os;
-	    // }
-
-	    inline ostream& operator<<(ostream& os, ivec2 v) {
-		os << "ivec2 (" << v.x << ", " << v.y << ")";
-		return os;
-	    }
-	    inline ostream& operator<<(ostream& os, ivec3 v) {
-		os << "ivec3 (" << v.x << ", " << v.y << ", " << v.z << ")";
-		return os;
-	    }
-	    inline ostream& operator<<(ostream& os, ivec4 v) {
-		os << "ivec4 (" << v.x << ", " << v.y << ", " << v.z << ", " << v.w
-		   << ")";
-		return os;
-	    }
-
-	    inline ostream& operator<<(ostream& os, SWAN::vec2 v) {
-		os << "vec2 {" << v.x << ", " << v.y << "}";
-		return os;
-	    }
-	    inline ostream& operator<<(ostream& os, SWAN::vec3 v) {
-		os << "vec3 {" << v.x << ", " << v.y << ", " << v.z << "}";
-		return os;
-	    }
-	    inline ostream& operator<<(ostream& os, vec4 v) {
-		os << "vec4 (" << v.x << ", " << v.y << ", " << v.z << ", " << v.w
-		   << ")";
-		return os;
-	    }
-
-	    inline ostream& operator<<(ostream& os, const mat2& m) {
+			inline ostream& operator<<(ostream& os, const mat2& m)
+			{
 #define W std::setw(10)
-		os << "mat2 {\n" << std::fixed << std::setprecision(4)
-		   << "    (" << W << m(0, 0) << ", " << W << m(0, 1) << "),\n"
-		   << "    (" << W << m(1, 0) << ", " << W << m(1, 1) << ")\n"
-		   << "}";
+				os << "mat2 {\n"
+				   << std::fixed << std::setprecision(4)
+				   << "    (" << W << m(0, 0) << ", " << W << m(0, 1) << "),\n"
+				   << "    (" << W << m(1, 0) << ", " << W << m(1, 1) << ")\n"
+				   << "}";
 
-		return os;
-	    }
-	    inline ostream& operator<<(ostream& os, const mat3& m) {
-		os << "mat3 {\n" << std::fixed << std::setprecision(4)
-		   << "    (" << W << m(0, 0) << ", " << W << m(0, 1) << ", " << W << m(0, 2) << "),\n"
-		   << "    (" << W << m(1, 0) << ", " << W << m(1, 1) << ", " << W << m(1, 2) << "),\n"
-		   << "    (" << W << m(2, 0) << ", " << W << m(2, 1) << ", " << W << m(2, 2) << ")\n"
-		   << "}";
+				return os;
+			}
+			inline ostream& operator<<(ostream& os, const mat3& m)
+			{
+				os << "mat3 {\n"
+				   << std::fixed << std::setprecision(4)
+				   << "    (" << W << m(0, 0) << ", " << W << m(0, 1) << ", " << W << m(0, 2) << "),\n"
+				   << "    (" << W << m(1, 0) << ", " << W << m(1, 1) << ", " << W << m(1, 2) << "),\n"
+				   << "    (" << W << m(2, 0) << ", " << W << m(2, 1) << ", " << W << m(2, 2) << ")\n"
+				   << "}";
 
-		return os;
-	    }
+				return os;
+			}
 
-	    inline ostream& operator<<(ostream& os, const mat4& m) {
-		os << "SWAN::mat4 {\n" << std::fixed << std::setprecision(4)
-		   << "    (" << W << m(0, 0) << ", " << W << m(0, 1) << ", " << W << m(0, 2) << ", " << W << m(0, 3) << "),\n"
-		   << "    (" << W << m(1, 0) << ", " << W << m(1, 1) << ", " << W << m(1, 2) << ", " << W << m(1, 3) << "),\n"
-		   << "    (" << W << m(2, 0) << ", " << W << m(2, 1) << ", " << W << m(2, 2) << ", " << W << m(2, 3) << "),\n"
-		   << "    (" << W << m(3, 0) << ", " << W << m(3, 1) << ", " << W << m(3, 2) << ", " << W << m(3, 3) << ")\n"
-		   << "}";
+			inline ostream& operator<<(ostream& os, const mat4& m)
+			{
+				os << "SWAN::mat4 {\n"
+				   << std::fixed << std::setprecision(4)
+				   << "    (" << W << m(0, 0) << ", " << W << m(0, 1) << ", " << W << m(0, 2) << ", " << W << m(0, 3) << "),\n"
+				   << "    (" << W << m(1, 0) << ", " << W << m(1, 1) << ", " << W << m(1, 2) << ", " << W << m(1, 3) << "),\n"
+				   << "    (" << W << m(2, 0) << ", " << W << m(2, 1) << ", " << W << m(2, 2) << ", " << W << m(2, 3) << "),\n"
+				   << "    (" << W << m(3, 0) << ", " << W << m(3, 1) << ", " << W << m(3, 2) << ", " << W << m(3, 3) << ")\n"
+				   << "}";
 
-		return os;
+				return os;
 #undef W
-	    }
+			}
 
-	    inline ostream& operator<<(ostream& os, Transform t) {
-		os << "Transform (pos: " << t.pos << ", rot: " << t.rot
-		   << ", scale: " << t.scale << ")";
-		return os;
-	    }
+			inline ostream& operator<<(ostream& os, Transform t)
+			{
+				os << "Transform (pos: " << t.pos << ", rot: " << t.rot
+				   << ", scale: " << t.scale << ")";
+				return os;
+			}
 
+			/*
 	    inline ostream& operator<<(ostream& os, ShaderUniform s) {
-		os << "ShaderUniform (\"" << s.name << "\": ";
+		os << "ShaderUniform (\"" << s.Name << "\": ";
 
-		switch(s.type) {
+		switch(s.Type) {
 		case ShaderUniform::T_INT: os << "[int] " << s.data.i; break;
 		case ShaderUniform::T_BOOL: os << "[bool] " << s.data.b; break;
 		case ShaderUniform::T_FLOAT: os << "[float] " << s.data.f; break;
@@ -170,15 +122,6 @@ namespace SWAN {
 		return os;
 	    }
 
-	    // inline ostream& operator<<(ostream& os, MouseState s) {
-	    // 	os << "MouseState (x: " << s.x
-	    // 	   << ", y: " << s.y
-	    // 	   << ", LMB: " << s.LMB
-	    // 	   << ", MMB: " << s.MMB
-	    // 	   << ", RMB: " << s.RMB << ")";
-	    // 	return os;
-	    // }
-
 	    inline ostream& operator<<(ostream& os, vector<ShaderUniform> v) {
 		os << "std::vector<T> {\n";
 
@@ -190,20 +133,32 @@ namespace SWAN {
 		return os;
 	    }
 
-	    inline std::ostream& operator<<(std::ostream& os, const INI::Config& cfg) {
-		os << "INI::Config {\n";
-		for(const auto& kv : cfg) {
-		    os << "    [" << kv.first << "]\n";
-		    for(const auto& kv2 : kv.second) {
-			os << "    " << kv2.first << " = " << kv2.second << '\n';
-		    }
-		    os << '\n';
-		}
-		os << '}';
-		return os;
-	    }
-	} // namespace StreamOps
-    } // namespace Util
+	    */
+
+			// inline ostream& operator<<(ostream& os, MouseState s) {
+			// 	os << "MouseState (x: " << s.x
+			// 	   << ", y: " << s.y
+			// 	   << ", LMB: " << s.LMB
+			// 	   << ", MMB: " << s.MMB
+			// 	   << ", RMB: " << s.RMB << ")";
+			// 	return os;
+			// }
+
+			inline std::ostream& operator<<(std::ostream& os, const INI::Config& cfg)
+			{
+				os << "INI::Config {\n";
+				for(const auto& kv : cfg) {
+					os << "    [" << kv.first << "]\n";
+					for(const auto& kv2 : kv.second) {
+						os << "    " << kv2.first << " = " << kv2.second << '\n';
+					}
+					os << '\n';
+				}
+				os << '}';
+				return os;
+			}
+		} // namespace StreamOps
+	}     // namespace Util
 } // namespace SWAN
 
 #endif

@@ -2,5 +2,8 @@
 
 namespace SWAN
 {
-    namespace detail { FlatInputRep flatInput, prevFlatInput; }
-}
+	namespace detail
+	{
+		FlatInputRep flatInput, prevFlatInput;
+	}
+} // namespace SWAN
