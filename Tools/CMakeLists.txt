@@ -16,3 +16,6 @@ target_link_libraries(ImageToHpp ${LIBS})
 
 add_executable(ShaderReader ShaderReader.cpp)
 target_link_libraries(ShaderReader ${LIBS})
+
+add_executable(GenBuiltinFont GenBuiltinFont.cpp)
+target_link_libraries(GenBuiltinFont ${LIBS})

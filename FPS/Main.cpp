@@ -33,6 +33,8 @@
 #include "SWAN/Input/Event.hpp"      // For SWAN::UpdateInputEvents();
 #include "SWAN/Input/InputFrame.hpp" // For SWAN::InputFrame
 
+#include "BuiltinFont.hpp"
+
 using fms = std::chrono::duration<double, std::milli>;
 using FloatSeconds = std::chrono::duration<double>;
 
@@ -75,8 +77,6 @@ class InputHandler : public SWAN::InputFrame
 			cam.moveRight(-speed);
 		if(key.Code == SWAN::D)
 			cam.moveRight(speed);
-
-		SWAN::GetKeyName()
 
 		if(key.Code == SWAN::Spacebar)
 			cam.moveUp(speed);
@@ -664,8 +664,10 @@ int main()
 	SWAN::SetCurrentInputFrame(&vle);
 
 	// ----- GUI ----- //
+	SWAN::Image builtin_font = UnpackImage(fontData);
+	SWAN::Res::detail::bitmapFonts.emplace("built-in", new SWAN::BitmapFont(7, 10, &builtin_font));
 	SWAN::Res::ReportLoad(SWAN::Res::LoadBitmapFont("Resources/Fonts/Terminus.toml", "font"));
-	FPSCounter fps(SWAN::Res::GetBitmapFont("font"));
+	FPSCounter fps(SWAN::Res::GetBitmapFont("built-in"));
 	SWAN::GUIManager gui;
 	gui.AddElement(&fps);
 

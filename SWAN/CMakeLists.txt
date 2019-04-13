@@ -104,6 +104,7 @@ set(Sources
 	# Utility code (parsers, maths, debugging, etc.)
 	Utility/StringUtil.cpp
 	Utility/Octree.cpp
+	Utility/UTF-8.cpp
 
 	# Rendering code
 	Rendering/Texture.cpp

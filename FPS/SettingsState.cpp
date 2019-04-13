@@ -1,10 +1,10 @@
-#include "MenuState.hpp"
+#include "SettingsState.hpp"
 #include "ExitState.hpp"
 #include "SWAN/Core/Display.hpp"
 #include "SWAN/Core/Logging.hpp"
 #include "SWAN/Core/Resources.hpp"
 
-MenuState::MenuState()
+SettingsState::SettingsState(MenuState* state)
 {
 	int scrW = SWAN::Display::GetWidth();
 	int scrH = SWAN::Display::GetHeight();
@@ -19,13 +19,13 @@ MenuState::MenuState()
 	SWAN::SetCurrentInputFrame(&gui);
 }
 
-MenuState::~MenuState()
+SettingsState::~SettingsState()
 {
 	for(Button* b : buttons)
 		delete b;
 }
 
-void MenuState::AddButton(SWAN::String name,
+void SettingsState::AddButton(SWAN::String name,
                           std::function<void(void)> action)
 {
 	int scrW = SWAN::Display::GetWidth();
@@ -45,16 +45,16 @@ void MenuState::AddButton(SWAN::String name,
 	PositionButtons();
 }
 
-void MenuState::OnWindowExit()
+void SettingsState::OnWindowExit()
 {
 	g_CurrentState = new ExitState();
 }
 
-void MenuState::Update()
+void SettingsState::Update()
 {
 }
 
-void MenuState::PositionButtons()
+void SettingsState::PositionButtons()
 {
 	int scrW = SWAN::Display::GetWidth();
 	int scrH = SWAN::Display::GetHeight();
@@ -67,7 +67,7 @@ void MenuState::PositionButtons()
 	}
 }
 
-void MenuState::Render()
+void SettingsState::Render()
 {
 	int scrW = SWAN::Display::GetWidth();
 	int scrH = SWAN::Display::GetHeight();

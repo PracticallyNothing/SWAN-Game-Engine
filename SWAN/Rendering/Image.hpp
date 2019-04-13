@@ -33,6 +33,11 @@ namespace SWAN
 		}
 	};
 
+	inline bool operator==(const Color& a, const Color& b)
+	{
+		return a.red == b.red && a.green == b.green && a.blue == b.blue && a.alpha == b.alpha;
+	}
+
 	/// A representation of an Image from colors. For debugging purposes.
 	struct dbg_ColorImg {
 		~dbg_ColorImg() { delete data; }

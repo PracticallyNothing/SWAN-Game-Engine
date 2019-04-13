@@ -6,10 +6,11 @@
 #include <string> // For std::string
 #include <vector> // For std::vector<T>
 
-#include "Core/Defs.hpp"    // For String
-#include "Image.hpp"        // For Image
-#include "Maths/Vector.hpp" // For vec2
-#include "Texture.hpp"      // For Texture
+#include "Core/Defs.hpp"     // For String
+#include "Image.hpp"         // For Image
+#include "Maths/Vector.hpp"  // For vec2
+#include "Texture.hpp"       // For Texture
+#include "Utility/UTF-8.hpp" // For UTF8_*() functions.
 
 namespace SWAN
 {

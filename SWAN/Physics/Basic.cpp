@@ -103,7 +103,9 @@ namespace SWAN
 	{
 		Intersection res;
 
-		res.happened = Util::InRange(point.x, aabb.min.x, aabb.max.x) && Util::InRange(point.y, aabb.min.y, aabb.max.y) && Util::InRange(point.z, aabb.min.z, aabb.max.z);
+		res.happened = Util::InRange(point.x, aabb.min.x, aabb.max.x)
+		               && Util::InRange(point.y, aabb.min.y, aabb.max.y)
+		               && Util::InRange(point.z, aabb.min.z, aabb.max.z);
 
 		res.type = Intersection::Type::Point;
 		res.point = point;
@@ -229,7 +231,6 @@ namespace SWAN
 			return Intersection();
 		}
 
-
 	} // namespace SWAN
 
 	Intersection FindIntersection(Plane p1, Plane p2)
@@ -240,7 +241,9 @@ namespace SWAN
 	{
 		Intersection res;
 
-		res.happened = Util::RangesOverlap(a.min.x, a.max.x, b.min.x, b.max.x) && Util::RangesOverlap(a.min.y, a.max.y, b.min.y, b.max.y) && Util::RangesOverlap(a.min.z, a.max.z, b.min.z, b.max.z);
+		res.happened = Util::RangesOverlap(a.min.x, a.max.x, b.min.x, b.max.x)
+		               && Util::RangesOverlap(a.min.y, a.max.y, b.min.y, b.max.y)
+		               && Util::RangesOverlap(a.min.z, a.max.z, b.min.z, b.max.z);
 
 		res.point = a.center() - b.center();
 		res.type = Intersection::Type::Point;

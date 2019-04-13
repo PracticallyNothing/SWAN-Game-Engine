@@ -261,7 +261,8 @@ namespace SWAN
 			points.insert(points.end(), { p0, p1, p2, p3 });
 			colors.insert(colors.end(), { r.Colors[0], r.Colors[1],
 			                              r.Colors[2], r.Colors[3] });
-			unsigned j = i; // Can't
+			unsigned j = i; // Can't convert to unsigned inside of initializer,
+			                // so this is the next best solution.
 			indices.insert(indices.end(), { j * 4 + 0, j * 4 + 1, j * 4 + 2,
 			                                j * 4 + 2, j * 4 + 1, j * 4 + 3 });
 			i++;
